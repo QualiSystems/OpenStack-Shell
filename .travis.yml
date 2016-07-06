@@ -17,6 +17,6 @@ script:
 
 after_success:
     - coveralls
-    
-#notifications:
-# webhools: https://qualisystems.getbadges.io/api/app/webhook/{will be added later}
+
+notifications:
+    - webhools: https://qualisystems-openstack-shell.getbadges.io/api/app/webhook/84540771-02fa-4b6c-8dea-7ed8719b3a52
