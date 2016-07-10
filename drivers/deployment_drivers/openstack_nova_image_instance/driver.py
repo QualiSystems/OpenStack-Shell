@@ -1,8 +1,5 @@
-
-from cloudshell.api.cloudshell_api import InputName
 from cloudshell.shell.core.resource_driver_interface import ResourceDriverInterface
-
-from cloudshell.api.cloudshell_api import CloudShellAPISession
+import jsonpickle
 
 class DeployOSNovaImageInstance(ResourceDriverInterface):
 

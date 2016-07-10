@@ -1,4 +1,5 @@
 from cloudshell.shell.core.resource_driver_interface import ResourceDriverInterface
+import jsonpickle
 
 
 class OpenStackShellDriver(ResourceDriverInterface):
@@ -19,8 +20,17 @@ class OpenStackShellDriver(ResourceDriverInterface):
                                     "cloud_provider_resource_name" : "openstack"},
                                     unpicklable=False))
 
-    def power_on(self, context, ports):
+    def PowerOn(self, context, ports):
         return str(jsonpickle.encode(True, unpicklable=False))
 
-    def power_off(self, context, ports):
+    def PowerOff(self, context, ports):
         return str(jsonpickle.encode(True, unpicklable=False))
+
+    def PowerCycle(self, context, ports, delay):
+        pass
+
+    def destroy_vm_only(self, context, ports):
+        return str(jsonpickle.encode(True, unpicklable=False))
+
+    def remote_refresh_ip(self, context, ports, cancellation_context):
+        pass

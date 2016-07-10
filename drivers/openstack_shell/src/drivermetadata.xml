@@ -3,9 +3,16 @@
         <Category Name="Deployment">
             <Command Description="" DisplayName="Deploy From Image" Name="deploy_from_image" Tags="allow_unreserved" />
         </Category>
+        <Category Name="Connectivity">
+            <Command Description="" DisplayName="Refresh IP" EnableCancellation="true" Name="remote_refresh_ip" Tags="remote_connectivity,allow_shared" />
+        </Category>
+        <Category Name="Hidden Commands">
+            <Command Description="" DisplayName="Power Cycle" Name="PowerCycle" Tags="power" />
+            <Command Description="" DisplayName="Delete VM Only" Name="destroy_vm_only" Tags="remote_app_management,allow_shared" />
+        </Category>
         <Category Name="Power">
-            <Command Description="" DisplayName="Power On" Name="power_on" Tags="power" />
-            <Command Description="" DisplayName="Power Off" Name="power_on" Tags="power" />
+            <Command Description="" DisplayName="Power On" Name="PowerOn" Tags="power" />
+            <Command Description="" DisplayName="Power Off" Name="PowerOff" Tags="power" />
         </Category>
     </Layout>
 </Driver>
