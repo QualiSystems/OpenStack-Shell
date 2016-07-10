@@ -1,0 +1,11 @@
+<Driver Description="This driver orchestrate all the command that will be executed on OpenStack" MainClass="driver.OpenStackShellDriver" Name="OpenStack Shell Driver" Version="0.0.1">
+    <Layout>
+        <Category Name="Deployment">
+            <Command Description="" DisplayName="Deploy From Image" Name="deploy_from_image" Tags="allow_unreserved" />
+        </Category>
+        <Category Name="Power">
+            <Command Description="" DisplayName="Power On" Name="power_on" Tags="power" />
+            <Command Description="" DisplayName="Power Off" Name="power_on" Tags="power" />
+        </Category>
+    </Layout>
+</Driver>
