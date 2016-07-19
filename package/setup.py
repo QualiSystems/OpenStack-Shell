@@ -14,8 +14,8 @@ setup(
         name="cloudshell-cp-openstack",
         author="Quali",
         author_email="support@qualisystems.com",
-        description=("A repository for projects providing out of the box capabilities within CloudShell to define Openstack "
-                     "instances in CloudShell and leverage Openstack (Liberty and above) capabilities to deploy and connect "
+        description=("A repository for projects providing out of the box capabilities within CloudShell to define OpenStack "
+                     "instances in CloudShell and leverage OpenStack (Liberty and above) capabilities to deploy and connect "
                      "apps in CloudShell sandboxes."),
         packages=find_packages(),
         test_suite='nose.collector',
