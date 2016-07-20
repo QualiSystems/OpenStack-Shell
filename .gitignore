@@ -93,3 +93,5 @@ package/cloudshell/core/*
 package/cloudshell/helpers/*
 package/cloudshell/shell/*
 package/cloudshell/configuration/*
+package/temp/
+openstack_shellPackage/Resource Driver - Python/*
