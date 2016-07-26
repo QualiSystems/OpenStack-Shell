@@ -142,25 +142,25 @@
       <Models>
         <ResourceModel Description="Shell Driver for OpenStack Cloud Provider" ImagePath="openstack-cloud-software-vertical-web.png" Name="OpenStack" SupportsConcurrentCommands="true">
           <AttachedAttributes>
-            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Controller URL" userInput="true">
+            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Controller URL" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
-            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Domain Name" userInput="true">
+            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Domain Name" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
-            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Project Name" userInput="true">
+            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Project Name" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
-            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Username" userInput="true">
+            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Username" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
-            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Password" userInput="true">
+            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Password" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
-            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="OpenStack Management VLAN" userInput="true">
+            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="OpenStack Management VLAN" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
-            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Quali Management VLAN ID" userInput="true">
+            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Quali Management VLAN ID" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
           </AttachedAttributes>
@@ -226,34 +226,34 @@
       <Models>
         <ResourceModel Description="OpenStack Instance from Image Deployment Driver" Name="OpenStack Deploy from Glance Image" SupportsConcurrentCommands="false">
           <AttachedAttributes>
-            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Region" userInput="true">
+            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Region" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
-            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Image Name" userInput="true">
+            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Image Name" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
-            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Instance Flavor" userInput="true">
+            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Instance Flavor" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
-            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Add Floating IP" userInput="true">
+            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Add Floating IP" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
-            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Floating IP" userInput="false">
+            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Floating IP" UserInput="false">
               <AllowedValues />
             </AttachedAttribute>
-            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Auto Power Off" userInput="false">
+            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Auto Power Off" UserInput="false">
               <AllowedValues />
             </AttachedAttribute>
-            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Autoload" userInput="false">
+            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Autoload" UserInput="false">
               <AllowedValues />
             </AttachedAttribute>
-            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Auto Delete" userInput="false">
+            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Auto Delete" UserInput="false">
               <AllowedValues />
             </AttachedAttribute>
-            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Inbound Ports" userInput="true">
+            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Inbound Ports" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
-            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Outbound Ports" userInput="true">
+            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Outbound Ports" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
           </AttachedAttributes>
