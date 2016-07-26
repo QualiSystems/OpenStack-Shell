@@ -19,7 +19,7 @@
       </Rules>
     </AttributeInfo>
     <!-- 3 -->
-    <AttributeInfo DefaultValue="default" Description="Domain under which new instances for App deployment are to be created. Right now only 'default' domain is supported" IsReadOnly="true" Name="Domain Name" Type="String">
+    <AttributeInfo DefaultValue="default" Description="Domain under which new instances for App deployment are to be created. Right now only 'default' domain is supported" IsReadOnly="false" Name="Domain Name" Type="String">
       <Rules>
         <Rule Name="Configuration" />
         <Rule Name="Setting" />

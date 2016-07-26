@@ -10,13 +10,13 @@
                 <Description>Checks that the inputs are valid for the target OpenStack</Description>
             </AutoLoad>
             <Attributes>
-              <attribute name="Controller URL" value=""/>
-              <attribute name="Domain Name" value=""/>
-              <attribute name="Project Name" value=""/>
-              <attribute name="Username" value=""/>
-              <attribute name="Password" value=""/>
-              <attribute name="OpenStack Management VLAN" value="100"/>
-              <attribute name="Quali Management VLAN ID" value="110"/>
+              <Attribute Name="Controller URL" Value=""/>
+              <Attribute Name="Domain Name" Value=""/>
+              <Attribute Name="Project Name" Value=""/>
+              <Attribute Name="OpenStack User Name" Value=""/>
+              <Attribute Name="OpenStack User Password" Value=""/>
+              <Attribute Name="OpenStack Management VLAN" Value="100"/>
+              <Attribute Name="Quali Management VLAN ID" Value="110"/>
             </Attributes>
         </ResourceTemplate>
     </ResourceTemplates>
