@@ -33,14 +33,14 @@
       </Rules>
     </AttributeInfo>
     <!-- 5 -->
-    <AttributeInfo DefaultValue="" Description="Username" IsReadOnly="false" Name="Username" Type="String">
+    <AttributeInfo DefaultValue="" Description="OpenStack User Name" IsReadOnly="false" Name="OpenStack User Name" Type="String">
       <Rules>
         <Rule Name="Configuration" />
         <Rule Name="Setting" />
       </Rules>
     </AttributeInfo>
     <!-- 6 -->
-    <AttributeInfo DefaultValue="" Description="" IsReadOnly="false" Name="Password" Type="Password">
+    <AttributeInfo DefaultValue="" Description="" IsReadOnly="false" Name="OpenStack User Password" Type="Password">
       <Rules>
         <Rule Name="Configuration" />
         <Rule Name="Setting" />
@@ -151,10 +151,10 @@
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Project Name" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
-            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Username" UserInput="true">
+            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="OpenStack User Name" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
-            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Password" UserInput="true">
+            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="OpenStack User Password" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="OpenStack Management VLAN" UserInput="true">
