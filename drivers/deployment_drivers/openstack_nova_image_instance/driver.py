@@ -13,7 +13,12 @@ class DeployOSNovaImageInstance(ResourceDriverInterface):
         pass # TODO : Figure out what is to be done next?
 
     def Deploy(self, context, Name=None):
-        # FIXME: Just copy pasting hard-coded deploy_ami output.
+        """
+        :param context: reservation context
+        :type context:
+        """
+        print context
+        print dir(context)
         return str(jsonpickle.encode({"vm_name": "testvm", "vm_uuid": "1234-5678",
                                     "cloud_provider_resource_name" : "openstack"},
                                     unpicklable=False))

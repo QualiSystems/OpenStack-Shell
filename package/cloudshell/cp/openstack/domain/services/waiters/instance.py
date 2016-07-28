@@ -46,4 +46,5 @@ class InstanceWaiter(object):
                 if instance.status == state:
                     return instance
                 time.sleep(self.delay)
-        raise InstanceWaiterTimeoutException('Maximum time exceeded waiting for Instance {0}'.format(instance.name))
+        raise InstanceWaiterTimeoutException('Maximum time exceeded waiting \
+                                        for Instance {0}'.format(instance.name))

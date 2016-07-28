@@ -10,13 +10,23 @@ class OpenStackSessionProvider(object):
     """
 
     def __init__(self):
+        """
+        Simply allocates the object
+        """
         pass
 
-    def get_openstack_session(self, cloudshell_session, openstack_data_model):
+    def get_openstack_session(self, cloudshell_session, openstack_resource_model):
+        """
+        :param cloudshell_session:
+        :type cloudshell_session:
+        :param openstack_resource_model:
+        :type openstack_resource_model:
+        :return keystoneauth1.session.Session:
+        """
         return self._do_get_os_session(cloudshell_session,
-                                        openstack_data_model)
+                                        openstack_resource_model)
 
-    def _do_get_os_session(self, cs_session, os_data_model):
+    def _do_get_os_session(self, cs_session, os_res_model):
 
         if not cs_session or not os_data_model:
             return None
@@ -24,10 +34,10 @@ class OpenStackSessionProvider(object):
         username = os_data_model.user_name
         # FIXME : should this have to be decrypted?
         password = cs_session.DecryptPassword(os_data_model.password).Value
-        project_name = os_data_model.project_name
-        auth_url = os_data_model.auth_url
-        proj_domain_id = os_data_model.project_domain_id
-        user_domain_id = os_data_model.user_domain_id
+        project_name = os_res_model.project_name
+        auth_url = os_res_model.controller_url
+        proj_domain_id = os_res_model.domain_name
+        user_domain_id = os_res_model.domain_name
 
         auth = keystone_identity.v3.Password(auth_url=auth_url,
                                             username=username,
