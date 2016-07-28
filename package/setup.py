@@ -26,7 +26,7 @@ setup(
         include_package_data=True,
         keywords="sandbox cloud virtualization openstack cmp cloudshell",
         classifiers=[
-            "Development Status :: 4 - Beta",
+            "Development Status :: 1 - Planning",
             "Topic :: Software Development :: Libraries",
             "License :: OSI Approved :: Apache Software License",
         ]

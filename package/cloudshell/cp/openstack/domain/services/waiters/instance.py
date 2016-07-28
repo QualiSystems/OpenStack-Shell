@@ -9,6 +9,7 @@ class InstanceWaiter(object):
     """An instance waiter class that implements a synchronous waiter that
     waits till the instance reaches a state.
     """
+    SECS = 60
     # FIXME : support other states.
     ACTIVE = u'ACTIVE'
     ERROR = u'ERROR'
@@ -25,7 +26,7 @@ class InstanceWaiter(object):
         :type timeout: int
         """
         self.delay = delay
-        self.timeout = timeout * SECS
+        self.timeout = timeout * self.SECS
 
 
     def wait(self, instance, state):
@@ -43,8 +44,8 @@ class InstanceWaiter(object):
 
         while time.time() - start_time >= self.timeout:
             instance.get()
-                if instance.status == state:
-                    return instance
-                time.sleep(self.delay)
+            if instance.status == state:
+                return instance
+            time.sleep(self.delay)
         raise InstanceWaiterTimeoutException('Maximum time exceeded waiting \
                                         for Instance {0}'.format(instance.name))

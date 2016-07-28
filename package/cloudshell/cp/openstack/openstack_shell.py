@@ -1,7 +1,7 @@
 from cloudshell.cp.openstack.common.driver_helper import CloudshellDriverHelper
 
 # Model
-from cloudshell.cp.openstack.models.deploy_os_nova_image_instance_resource_model.py \
+from cloudshell.cp.openstack.models.deploy_os_nova_image_instance_resource_model \
         import DeployOSNovaImageInstanceResourceModel
 from cloudshell.cp.openstack.models.openstack_resource_model \
                                     import OpenStackResourceModel
@@ -10,24 +10,27 @@ from cloudshell.cp.openstack.models.openstack_resource_model \
 from cloudshell.cp.openstack.models.model_parser import OpenStackShellModelParser
 
 # Command Operations
-from cloudshell.cp.openstack.command.operations.power_operations \
+from cloudshell.cp.openstack.command.operations.power_operation \
                             import PowerOperation
-from cloudshell.cp.openstack.command.operations.deploy_operations \
+from cloudshell.cp.openstack.command.operations.deploy_operation \
                             import DeployOperation
-from cloudshell.cp.openstack.command.operations.connectivity_operations \
+from cloudshell.cp.openstack.command.operations.connectivity_operation \
                             import ConnectivityOperation
-from cloudshell.cp.openstack.command.operations.hidden_operations \
+from cloudshell.cp.openstack.command.operations.hidden_operation \
                             import HiddenOperation
 
 # Command Result Parser
-from cloudshell.cp.commands.command_result_parser \
+from cloudshell.cp.openstack.command.command_result_parser \
                                 import OpenStackShellCommandResultParser
 
 # Instance Services
-from cloudshell.cp.domain.services.nova.nova_instance_service \
-                                            import NovaInstanceService
-from cloudshell.cp.domain.services.neutron.neutron_network_service \
-                                            import NeutroNetworkService
+
+from cloudshell.cp.openstack.domain.services.session_providers.os_session_provider \
+                                            import OpenStackSessionProvider
+#from cloudshell.cp.openstack.domain.services.nova.nova_instance_service \
+                                            #import NovaInstanceService
+#from cloudshell.cp.openstack.domain.services.neutron.neutron_network_service \
+                                            #import NeutroNetworkService
 
 # Our Exceptions # FIXME: Derive from some Quali Standard Exception Class?
 class OpenStackShellPowerOnException(Exception):
@@ -64,9 +67,9 @@ class OpenStackShell(object):
         self.command_result_parser = OpenStackShellCommandResultParser()
 
         # services that we'd be using
-        self.instance_service = NovaInstanceService()
-        self.neutron_service = NeutronInstanceService()
-        self.cinder_service = CinderVolumeService()
+        #self.instance_service = NovaInstanceService()
+        #self.neutron_service = NeutronInstanceService()
+        #self.cinder_service = CinderVolumeService()
 
         # FIXME: get our own logger.
 
@@ -194,7 +197,7 @@ class OpenStackShell(object):
                                         context.reservation.domain)
 
         resource_model = self.model_parser.\
-                            get_resorce_model_from_context(context.resource)
+                            get_resource_model_from_context(context.resource)
 
         return cs_session, resource_model
 

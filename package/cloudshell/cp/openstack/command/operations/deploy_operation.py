@@ -2,20 +2,19 @@
 Implements a concrete DeployOperation class.
 """
 
+# Domain Services
 from cloudshell.cp.openstack.domain.services.nova.nova_instance_service \
                                     import NovaInstanceService
 from cloudshell.cp.openstack.domain.services.waiters.instance \
                                     import InstanceWaiter
 
-class DeployResult(object):
-    def __init__(self, **kw):
-
-
+# Results
+from cloudshell.cp.openstack.models.deploy_result_model import DeployResultModel
 
 class DeployOperation(object):
     def __init__(self):
         self.instance_waiter = InstanceWaiter()
-        self.instance_servie = InstanceService(self.instance_waiter)
+        self.instance_servie = NovaInstanceService(self.instance_waiter)
 
     def deploy(self, os_session, name, reservation, deploy_req_model):
         """
@@ -42,3 +41,5 @@ class DeployOperation(object):
         # Get Private IP
 
         # Populate all instance data
+
+        # FIXME: generate DeployResultModel and return
