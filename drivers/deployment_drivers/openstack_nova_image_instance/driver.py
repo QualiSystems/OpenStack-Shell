@@ -1,7 +1,7 @@
 from cloudshell.shell.core.resource_driver_interface import ResourceDriverInterface
 import jsonpickle
 
-class DeployOSNovaImageInstance(ResourceDriverInterface):
+class DeployOSNovaImageInstanceDriver(ResourceDriverInterface):
 
     def __init__(self):
         pass # Empty right now
