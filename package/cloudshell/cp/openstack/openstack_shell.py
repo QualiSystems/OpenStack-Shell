@@ -129,7 +129,7 @@ class OpenStackShell(object):
                             get_session(cs_session, resource_model)
 
         # Get App name 'to be passed to instance creation'
-
+        app_name = deploy_request.app_name
         # Get reservation
 
         # From deploy_request obtain DeployOSNovaImageInstanceResourceModel
@@ -138,7 +138,7 @@ class OpenStackShell(object):
 
         # Use the authenticated session and deploy_req_model to get instance
         # FIXME: Add, error - can be used in 'what' of Exception
-        deployed_data, error = self.deploy_operation.deploy(os_session, name,
+        deployed_data, error = self.deploy_operation.deploy(os_session, app_name,
                                                 reservation, deploy_req_model)
 
         if not deployed_data:

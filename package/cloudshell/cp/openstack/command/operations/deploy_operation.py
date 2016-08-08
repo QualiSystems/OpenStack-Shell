@@ -43,3 +43,4 @@ class DeployOperation(object):
         # Populate all instance data
 
         # FIXME: generate DeployResultModel and return
+        return DeployResultModel(name, "1234-56", "OpenStack")
