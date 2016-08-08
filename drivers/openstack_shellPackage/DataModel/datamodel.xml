@@ -184,7 +184,7 @@
           <AttachedAttributes>
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Password"/>
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="User"/>
-            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Public IP"/>
+            <!--AttachedAttribute IsLocal="true" IsOverridable="true" Name="Public IP"/-->
           </AttachedAttributes>
           <AttributeValues>
           </AttributeValues>
