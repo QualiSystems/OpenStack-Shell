@@ -11,6 +11,8 @@ from cloudshell.cp.openstack.common.deploy_data_holder import DeployDataHolder
 from cloudshell.cp.openstack.models.deploy_os_nova_image_instance_resource_model \
                             import DeployOSNovaImageInstanceResourceModel
 
+# From Cloudshell API
+from cloudshell.api.cloudshell_api import InputNameValue
 
 class DeployOSNovaImageInstanceDriver(ResourceDriverInterface):
     APP_NAME = 'app_name'
@@ -43,6 +45,8 @@ class DeployOSNovaImageInstanceDriver(ResourceDriverInterface):
                                 context.reservation.domain))
 
                 deploy_service_res_model = DeployOSNovaImageInstanceResourceModel()
+                # FIXME: hacky right now
+                deploy_service_res_model.cloud_provider = 'OpenStack'
 
                 app_name = jsonpickle.decode(context.resource.app_context.app_request_json)['name']
 
@@ -52,7 +56,18 @@ class DeployOSNovaImageInstanceDriver(ResourceDriverInterface):
                 logger.debug("Calling the Shell Driver's Deploy method for app: "
                              " {0}".format(app_name))
 
-                return str(jsonpickle.encode({"vm_name": "testvm", "vm_uuid": "1234-5678",
-                                              "cloud_provider_resource_name": "openstack"},
-                                             unpicklable=False))
+                logger.debug("cloud_provider = {0}".format(deploy_service_res_model.cloud_provider))
+                # Calls command on the OpenStack cloud provider
+                result = session.ExecuteCommand(context.reservation.reservation_id,
+                                                deploy_service_res_model.cloud_provider,
+                                                "Resource",
+                                                "deploy_from_image",
+                                                self._get_command_inputs_list(deploy_req),
+                                                False)
+                return result.Output
+                # return str(jsonpickle.encode({"vm_name": "testvm", "vm_uuid": "1234-5678",
+                #                             "cloud_provider_resource_name": "openstack"},
+                #                             unpicklable=False))
 
+    def _get_command_inputs_list(self, data_holder):
+        return [InputNameValue('request', jsonpickle.encode(data_holder, unpicklable=False))]

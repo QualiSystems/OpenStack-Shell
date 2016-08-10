@@ -3,9 +3,6 @@ import jsonpickle
 
 
 class OpenStackShellDriver(ResourceDriverInterface):
-    def cleanup(self):
-        pass
-
     def __init__(self):
         """
         ctor must be without arguments, it is created with reflection at run time
@@ -15,8 +12,11 @@ class OpenStackShellDriver(ResourceDriverInterface):
     def initialize(self, context):
         pass
 
+    def cleanup(self):
+        pass
+
     def deploy_from_image(self, context, request):
-        return str(jsonpickle.encode({"vm_name": "testvm", "vm_uuid": "1234-5678",
+        return str(jsonpickle.encode({"vm_name": "testvm_shell_driver", "vm_uuid": "1234-5678",
                                     "cloud_provider_resource_name" : "openstack"},
                                     unpicklable=False))
 

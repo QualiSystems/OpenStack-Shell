@@ -226,6 +226,9 @@
       <Models>
         <ResourceModel Description="OpenStack Instance from Image Deployment Driver" Name="OpenStack Deploy from Glance Image" SupportsConcurrentCommands="false">
           <AttachedAttributes>
+            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Cloud Provider" UserInput="true">
+              <AllowedValues />
+            </AttachedAttribute>
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Region" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
