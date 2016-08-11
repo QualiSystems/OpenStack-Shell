@@ -1,4 +1,6 @@
 from cloudshell.shell.core.resource_driver_interface import ResourceDriverInterface
+
+from cloudshell.cp.openstack.openstack_shell import OpenStackShell
 import jsonpickle
 
 
@@ -7,6 +9,7 @@ class OpenStackShellDriver(ResourceDriverInterface):
         """
         ctor must be without arguments, it is created with reflection at run time
         """
+        self.os_shell = OpenStackShell()
         pass
 
     def initialize(self, context):
