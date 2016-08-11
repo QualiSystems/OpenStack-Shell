@@ -16,7 +16,7 @@ class DeployOperation(object):
         self.instance_waiter = InstanceWaiter()
         self.instance_servie = NovaInstanceService(self.instance_waiter)
 
-    def deploy(self, os_session, name, reservation, deploy_req_model):
+    def deploy(self, os_session, name, reservation, deploy_req_model, logger):
         """
         Performs actual deploy operation.
         :param os_session:
@@ -27,20 +27,24 @@ class DeployOperation(object):
         :type reservation: str
         :param deploy_req_model:
         :type deploy_req_model:
+        :param logger:
+        :type logger:
+        :return :
+        :rtype DeployResultModel
         """
-
+        logger.info("Inside Deploy Operation.")
         # First create instance
-        instance = self.instance_service.create_instance(os_session,
-                                        name, reservation,
-                                        deploy_request)
+        # instance = self.instance_service.create_instance(os_session,
+        #                               name, reservation,
+        #                                deploy_request)
 
         # Get security groups For inbound/outbound ports
-        sgs = self.instance_service.get_security_groups(os_session,
-                                        instance)
+        # sgs = self.instance_service.get_security_groups(os_session,
+        #                                instance)
 
         # Get Private IP
 
         # Populate all instance data
-
+        logger.info("Deploy Operation Done.")
         # FIXME: generate DeployResultModel and return
-        return DeployResultModel(name, "1234-56", "OpenStack")
+        return DeployResultModel(name, "1234-56", "OpenStack"), None

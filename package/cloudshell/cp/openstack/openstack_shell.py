@@ -76,7 +76,7 @@ class OpenStackShell(object):
     ## Power Operations Begin
 
     ## Deploy Operations Begin
-    def deploy_instance(self, command_context, deploy_request):
+    def deploy_instance_from_image(self, command_context, deploy_request):
         """
         Deploys an image with specification provided by deploy_request on a
         Nova instance
@@ -98,6 +98,7 @@ class OpenStackShell(object):
                     # So this does not do an API call to 'authenticate' on 'Every Command '
                     os_session = self.os_session_provider.get_openstack_session(cs_session, resource_model)
 
+                    logger.info("Deploying app {0}".format(deploy_request.app_name))
                     # Get App name 'to be passed to instance creation'
                     app_name = deploy_request.app_name
 
@@ -112,7 +113,8 @@ class OpenStackShell(object):
                     deployed_data, error = self.deploy_operation.deploy(os_session=os_session,
                                                                         name=app_name,
                                                                         reservation=reservation_model,
-                                                                        deploy_req_model=deploy_req_model)
+                                                                        deploy_req_model=deploy_req_model,
+                                                                        logger=logger)
 
                     if not deployed_data:
                         # Raise an exception that instance creation failed

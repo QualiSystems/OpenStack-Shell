@@ -19,9 +19,18 @@ class OpenStackShellDriver(ResourceDriverInterface):
         pass
 
     def deploy_from_image(self, context, request):
-        return str(jsonpickle.encode({"vm_name": "testvm_shell_driver", "vm_uuid": "1234-5678",
-                                    "cloud_provider_resource_name" : "openstack"},
-                                    unpicklable=False))
+        """
+        :param context:
+        :type context:
+        :param request:
+        :type request:
+        :return:
+        :rtype  : str
+        """
+        return self.os_shell.deploy_instance_from_image(context, request)
+        #return str(jsonpickle.encode({"vm_name": "testvm_shell_driver", "vm_uuid": "1234-5678",
+        #                           "cloud_provider_resource_name" : "openstack"},
+        #                            unpicklable=False))
 
     def PowerOn(self, context, ports):
         return str(jsonpickle.encode(True, unpicklable=False))
