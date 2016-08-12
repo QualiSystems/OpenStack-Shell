@@ -24,25 +24,25 @@ class NovaInstanceService(object):
         :type name: str
         :param reservation: Reservation Model
         :type reservation: FIXME
-        :param deployment_info: Details of the Image to be deployed
-        :type deployment_info: FIXME
+        :param deploy_req_model: Details of the Image to be deployed
+        :type deploy_req_model: FIXME
         :return novaclient.Client.servers.Server:
         """
 
         if not openstack_session or not name or not reservation or \
-                not deployment_info:
-            return None
+                not deploy_req_model:
+            return None, None
 
-        client = novaclient.Client(API_VERSION, session=openstack_session)
+        client = novaclient.Client(self.API_VERSION, session=openstack_session)
 
         # FIXME: Add other arguments as kwargs
         instance = client.servers.create(name, deploy_req_model.image_name,
-                                    deploy_req_model.instance_flavor)
+                                      deploy_req_model.instance_flavor)
 
         if not instance:
             return None
 
-        instance_attrrs = instance.get
+        # instance_attrrs = instance.get
         # FIXME : Wait for the server to be ready
         self.instance_waiter.wait(instance, state=self.instance_waiter.ACTIVE)
 
@@ -56,14 +56,16 @@ class NovaInstanceService(object):
         :type instance: novalcient.Client.servers.Server
         :return novaclient.Client.servers.Server:
         """
-        client = novaclient.Client(API_VERSION, session=openstack_session)
+        client = novaclient.Client(self.API_VERSION, session=openstack_session)
         client.servers.delete(instance)
         return self.instance_waiter.wait(instance,
                                         state=self.instance_waiter.DELETED)
 
 
-    def get_security_groups(self, instance):
+    def get_security_groups(self, openstack_session, instance):
         """
+        :param openstack_session:
+        :type openstack_session:
         :param instance:
         :type instance: novaclient.Client.servers.Server
         :return dict: Dictionary of Security Groups attached to instance.

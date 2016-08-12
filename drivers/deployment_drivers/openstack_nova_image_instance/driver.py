@@ -6,11 +6,8 @@ from cloudshell.shell.core.session.cloudshell_session import CloudShellSessionCo
 from cloudshell.shell.core.session.logging_session import LoggingSessionContext
 
 # From OpenStack package
-from cloudshell.cp.openstack.common.driver_helper import CloudshellDriverHelper
 from cloudshell.cp.openstack.common.deploy_data_holder import DeployDataHolder
-from cloudshell.cp.openstack.models.deploy_os_nova_image_instance_resource_model \
-                            import DeployOSNovaImageInstanceResourceModel
-
+from cloudshell.cp.openstack.models.model_parser import OpenStackShellModelParser as OSModelParser
 # From Cloudshell API
 from cloudshell.api.cloudshell_api import InputNameValue
 
@@ -44,7 +41,7 @@ class DeployOSNovaImageInstanceDriver(ResourceDriverInterface):
                                 context.connectivity.admin_auth_token,
                                 context.reservation.domain))
 
-                deploy_service_res_model = DeployOSNovaImageInstanceResourceModel()
+                deploy_service_res_model = OSModelParser.get_deploy_resource_model_from_context_resource(context.resource)
                 # FIXME: hacky right now
                 deploy_service_res_model.cloud_provider = 'OpenStack'
 

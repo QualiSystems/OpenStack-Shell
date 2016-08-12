@@ -1,4 +1,4 @@
-<Driver Description="Deploy OpenStack Nova Instance from Image" MainClass="driver.DeployOSNovaImageInstanceDriver" Name="Deploy OpenStack Nova Image Instance" Version="0.0.3">
+<Driver Description="Deploy OpenStack Nova Instance from Image" MainClass="driver.DeployOSNovaImageInstanceDriver" Name="Deploy OpenStack Nova Image Instance" Version="0.0.4">
     <Layout>
         <Category Name="App Management">
             <Command Description="" DisplayName="Deploy" Name="Deploy" Tags="allow_shared" />

@@ -5,6 +5,6 @@ class OpenStackShellCommandResultParser(object):
         pass
 
     @staticmethod
-    def set_command_result(deploy_data, picklable=False):
-        return jsonpickle.encode(deploy_data, picklable=picklable)
+    def set_command_result(deploy_data, unpicklable=False):
+        return jsonpickle.encode(deploy_data, unpicklable=unpicklable)
 

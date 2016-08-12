@@ -96,7 +96,7 @@ class OpenStackShell(object):
                     # For operations to be self contained we do not 'cache' authenticated sessions
                     # Openstacks client will keep this sessions cached (or so is observed)
                     # So this does not do an API call to 'authenticate' on 'Every Command '
-                    os_session = self.os_session_provider.get_openstack_session(cs_session, resource_model)
+                    os_session = self.os_session_provider.get_openstack_session(cs_session, resource_model, logger)
 
                     logger.info("Deploying app {0}".format(deploy_request.app_name))
                     # Get App name 'to be passed to instance creation'
@@ -136,7 +136,7 @@ class OpenStackShell(object):
         with LoggingSessionContext(command_context) as logger:
             with ErrorHandlingContext(logger):
                 with CloudShellSessionContext(command_context) as cs_session:
-                    resource_model = self.model_parser.get_resource_model_from_context(command_context.resource)
+                    # resource_model = self.model_parser.get_resource_model_from_context(command_context.resource)
 
                     # FIXME: Add details
                     self.hidden_operation.delete_instance()

@@ -5,28 +5,28 @@
       <Rules/>
     </AttributeInfo>
     <!-- 1 -->
-    <AttributeInfo DefaultValue="" Description="Cloud Provider" IsReadOnly="false" Name="Cloud Provider" Type="String">
-      <Rules>
-        <Rule Name="Configuration" />
-        <Rule Name="Setting" />
-      </Rules>
-    </AttributeInfo>
-    <!-- 2 -->
     <AttributeInfo DefaultValue="" Description="Public Endpoint of the Keystone Controller URL for the OpenStack deployment." IsReadOnly="false" Name="Controller URL" Type="String">
       <Rules>
         <Rule Name="Configuration" />
         <Rule Name="Setting" />
       </Rules>
     </AttributeInfo>
+    <!-- 2 -->
+    <AttributeInfo DefaultValue="default" Description="OpenStack domain used for authentication." IsReadOnly="false" Name="OpenStack Domain Name" Type="String">
+      <Rules>
+        <Rule Name="Configuration" />
+        <Rule Name="Setting" />
+      </Rules>
+    </AttributeInfo>
     <!-- 3 -->
-    <AttributeInfo DefaultValue="default" Description="Domain under which new instances for App deployment are to be created. Right now only 'default' domain is supported" IsReadOnly="false" Name="Domain Name" Type="String">
+    <AttributeInfo DefaultValue="" Description="Project name (tenant name) inside the OpenStack domain for which the deployment will be done." IsReadOnly="false" Name="OpenStack Project Name" Type="String">
       <Rules>
         <Rule Name="Configuration" />
         <Rule Name="Setting" />
       </Rules>
     </AttributeInfo>
     <!-- 4 -->
-    <AttributeInfo DefaultValue="" Description="Project name (tenant name) inside the OpenStack domain for which the deployment will be done." IsReadOnly="false" Name="Project Name" Type="String">
+    <AttributeInfo DefaultValue="" Description="In a multi-region deployment name of the region where resources will be deployed" IsReadOnly="false" Name="OpenStack Region" Type="String">
       <Rules>
         <Rule Name="Configuration" />
         <Rule Name="Setting" />
@@ -47,7 +47,7 @@
       </Rules>
     </AttributeInfo>
     <!-- 7 -->
-    <AttributeInfo DefaultValue="" Description="OpenStack management network VLAN ID. This network will be used by OpenStack components for internal communication. This can be empty it means, untagged network is used for management." IsReadOnly="false" Name="OpenStack Management VLAN" Type="String">
+    <AttributeInfo DefaultValue="" Description="OpenStack management network VLAN ID. This network will be used by OpenStack components for internal communication. This can be empty it means, untagged network is used for management." IsReadOnly="false" Name="OpenStack Management VLAN ID" Type="String">
       <Rules>
         <Rule Name="Configuration" />
         <Rule Name="Setting" />
@@ -61,37 +61,61 @@
       </Rules>
     </AttributeInfo>
 
+    <!-- 9 -->
+    <AttributeInfo DefaultValue="" Description="IP Subnet for OpenStack Management (not used by cloudshell)" IsReadOnly="false" Name="OpenStack Management Subnet CIDR" Type="String">
+      <Rules>
+        <Rule Name="Configuration" />
+        <Rule Name="Setting" />
+      </Rules>
+    </AttributeInfo>
+
+    <!-- 10 -->
+    <AttributeInfo DefaultValue="" Description="IP Subnet for QualiX ane Quali EC" IsReadOnly="false" Name="Quali Management Subnet CIDR" Type="String">
+      <Rules>
+        <Rule Name="Configuration" />
+        <Rule Name="Setting" />
+      </Rules>
+    </AttributeInfo>
+
+    <!-- 11 -->
+    <AttributeInfo DefaultValue="" Description="Floating IP Pool. (not used by cloudshell)" IsReadOnly="false" Name="Floating IP Pool" Type="String">
+      <Rules>
+        <Rule Name="Configuration" />
+        <Rule Name="Setting" />
+      </Rules>
+    </AttributeInfo>
+
     <!-- attributes used in deployed app -->
     <!-- 1 -->
-    <AttributeInfo DefaultValue="" Description="OpenStack Region to be used for deployment." IsReadOnly="false" Name="Region" Type="String">
+    <AttributeInfo DefaultValue="" Description="Cloud Provider" IsReadOnly="false" Name="Cloud Provider" Type="String">
       <Rules>
         <Rule Name="Configuration" />
         <Rule Name="Setting" />
       </Rules>
     </AttributeInfo>
     <!-- 2 -->
-    <AttributeInfo DefaultValue="" Description="Image name to be used for deployment." IsReadOnly="false" Name="Image Name" Type="String">
+    <AttributeInfo DefaultValue="" Description="Availability Zone." IsReadOnly="false" Name="Availability Zone" Type="String">
       <Rules>
         <Rule Name="Configuration" />
         <Rule Name="Setting" />
       </Rules>
     </AttributeInfo>
     <!-- 3 -->
-    <AttributeInfo DefaultValue="" Description="Flavor of the compute Instance" IsReadOnly="false" Name="Instance Flavor" Type="String">
+    <AttributeInfo DefaultValue="" Description="Image name to be used for deployment." IsReadOnly="false" Name="Image Name" Type="String">
       <Rules>
         <Rule Name="Configuration" />
         <Rule Name="Setting" />
       </Rules>
     </AttributeInfo>
     <!-- 4 -->
-    <AttributeInfo DefaultValue="false" Description="Should the Floating IP be Added to the instance." IsReadOnly="true" Name="Add Floating IP" Type="Boolean">
+    <AttributeInfo DefaultValue="" Description="Flavor of the compute Instance" IsReadOnly="false" Name="Instance Flavor" Type="String">
       <Rules>
         <Rule Name="Configuration" />
         <Rule Name="Setting" />
       </Rules>
     </AttributeInfo>
     <!-- 5 -->
-    <AttributeInfo DefaultValue="" Description="Floating IP of the instance." IsReadOnly="true" Name="Floating IP" Type="String">
+    <AttributeInfo DefaultValue="false" Description="Should the Floating IP be Added to the instance." IsReadOnly="true" Name="Add Floating IP" Type="Boolean">
       <Rules>
         <Rule Name="Configuration" />
         <Rule Name="Setting" />
@@ -105,14 +129,14 @@
         </Rules>
     </AttributeInfo>
     <!-- 7 -->
-    <AttributeInfo DefaultValue="false" Description="Enables the automatic execution of the Autoload command during reservation Setup.." IsReadOnly="false" Name="Autoload"  Type="Boolean">
+    <AttributeInfo DefaultValue="false" Description="Enables the automatic deletion of an app during reservation Teardown." IsReadOnly="false" Name="Auto Delete"  Type="Boolean">
         <Rules>
             <Rule Name="Configuration" />
             <Rule Name="Setting" />
         </Rules>
     </AttributeInfo>
     <!-- 8 -->
-    <AttributeInfo DefaultValue="false" Description="Enables the automatic deletion of an app during reservation Teardown." IsReadOnly="false" Name="Auto Delete"  Type="Boolean">
+    <AttributeInfo DefaultValue="false" Description="Enables the automatic execution of the Autoload command during reservation Setup.." IsReadOnly="false" Name="Autoload"  Type="Boolean">
         <Rules>
             <Rule Name="Configuration" />
             <Rule Name="Setting" />
@@ -145,10 +169,13 @@
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Controller URL" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
-            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Domain Name" UserInput="true">
+            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="OpenStack Domain Name" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
-            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Project Name" UserInput="true">
+            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="OpenStack Project Name" UserInput="true">
+              <AllowedValues />
+            </AttachedAttribute>
+            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="OpenStack Region" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="OpenStack User Name" UserInput="true">
@@ -157,10 +184,19 @@
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="OpenStack User Password" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
-            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="OpenStack Management VLAN" UserInput="true">
+            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="OpenStack Management VLAN ID" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Quali Management VLAN ID" UserInput="true">
+              <AllowedValues />
+            </AttachedAttribute>
+            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="OpenStack Management Subnet CIDR" UserInput="true">
+              <AllowedValues />
+            </AttachedAttribute>
+            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Quali Management Subnet CIDR" UserInput="true">
+              <AllowedValues />
+            </AttachedAttribute>
+            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Floating IP Pool" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
           </AttachedAttributes>
@@ -229,7 +265,7 @@
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Cloud Provider" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
-            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Region" UserInput="true">
+            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Availability Zone" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Image Name" UserInput="true">
@@ -241,16 +277,13 @@
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Add Floating IP" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
-            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Floating IP" UserInput="false">
-              <AllowedValues />
-            </AttachedAttribute>
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Auto Power Off" UserInput="false">
               <AllowedValues />
             </AttachedAttribute>
-            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Autoload" UserInput="false">
+            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Auto Delete" UserInput="false">
               <AllowedValues />
             </AttachedAttribute>
-            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Auto Delete" UserInput="false">
+            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Autoload" UserInput="false">
               <AllowedValues />
             </AttachedAttribute>
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Inbound Ports" UserInput="true">
