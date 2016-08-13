@@ -42,7 +42,7 @@ class InstanceWaiter(object):
         if state not in self.INSTANCE_STATES:
             raise ValueError('Unsupported Instance State {0}'.format(state))
 
-        while time.time() - start_time >= self.timeout:
+        while time.time() - start_time <= self.timeout:
             instance.get()
             if instance.status == state:
                 return instance

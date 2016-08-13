@@ -33,9 +33,10 @@ class DeployOperation(object):
         logger.info("Inside Deploy Operation.")
         # First create instance
         instance = self.instance_service.create_instance(openstack_session=os_session,
-                                                        name=name, reservation=reservation,
-                                                        deploy_req_model=deploy_req_model,
-                                                        logger=logger)
+                                                         name=name,
+                                                         reservation=reservation,
+                                                         deploy_req_model=deploy_req_model,
+                                                         logger=logger)
 
         # Get security groups For inbound/outbound ports
         # sgs = self.instance_service.get_security_groups(os_session,
@@ -47,10 +48,10 @@ class DeployOperation(object):
         # Populate all instance data
         logger.info("Deploy Operation Done. Instance Created: {0}:{1}".format(
             instance.name,
-            instance.uuid
+            instance.id
         ))
 
         # FIXME: generate DeployResultModel and return
         return DeployResultModel(vm_name=instance.name,
-                                 vm_uuid=instance.uuid,
+                                 vm_uuid=instance.id,
                                  cloud_provider_name=deploy_req_model.cloud_provider), None

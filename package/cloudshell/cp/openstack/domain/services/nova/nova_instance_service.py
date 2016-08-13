@@ -40,9 +40,15 @@ class NovaInstanceService(object):
         logger.info("Creating OpenStack Instance for Image: {0}, Flavor: {1}".format(deploy_req_model.img_name,
                                                                                      deploy_req_model.instance_flavor))
         # FIXME: Add other arguments as kwargs
+        img_obj = client.images.find(name=deploy_req_model.img_name)
+        flavor_obj = client.flavors.find(name=deploy_req_model.instance_flavor)
+        # Quali Network - FIXME: Remove hard coded (get it from network service)
+        qnet_obj = client.networks.find(label='quali-network')
+        qnet_dict = {'net-id':qnet_obj.id}
         instance = client.servers.create(name=name,
-                                         image=deploy_req_model.img_name,
-                                         flavor=deploy_req_model.instance_flavor)
+                                         image=img_obj,
+                                         flavor=flavor_obj,
+                                         nics=[qnet_dict])
 
         if not instance:
             return None
@@ -50,7 +56,6 @@ class NovaInstanceService(object):
         # instance_attrrs = instance.get
         # FIXME : Wait for the server to be ready
         self.instance_waiter.wait(instance, state=self.instance_waiter.ACTIVE)
-
         return instance
 
     def terminate_instance(self, openstack_session, instance):
