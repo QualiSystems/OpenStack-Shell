@@ -16,7 +16,7 @@ class NovaInstanceService(object):
         # can be called without a proper client object
 
     def create_instance(self, openstack_session, name, reservation,
-                        deploy_req_model):
+                        deploy_req_model, logger):
         """
         :param openstack_session: Keystone Session
         :type openstack_session: keystoneauth1.session.Session
@@ -25,19 +25,24 @@ class NovaInstanceService(object):
         :param reservation: Reservation Model
         :type reservation: FIXME
         :param deploy_req_model: Details of the Image to be deployed
-        :type deploy_req_model: FIXME
+        :type deploy_req_model: cloudshell.cp.openstack.models.deploy_os_nova_image_instance_model.DeployOSNovaImageInstanceResourceModel
+        :param logger:
+        :type logger:
         :return novaclient.Client.servers.Server:
         """
 
         if not openstack_session or not name or not reservation or \
                 not deploy_req_model:
-            return None, None
+            return None
 
         client = novaclient.Client(self.API_VERSION, session=openstack_session)
 
+        logger.info("Creating OpenStack Instance for Image: {0}, Flavor: {1}".format(deploy_req_model.img_name,
+                                                                                     deploy_req_model.instance_flavor))
         # FIXME: Add other arguments as kwargs
-        instance = client.servers.create(name, deploy_req_model.image_name,
-                                      deploy_req_model.instance_flavor)
+        instance = client.servers.create(name=name,
+                                         image=deploy_req_model.img_name,
+                                         flavor=deploy_req_model.instance_flavor)
 
         if not instance:
             return None

@@ -16,8 +16,7 @@ class OpenStackResourceModel:
         self.os_floating_ip_pool = ''
 
     def __str__(self):
-        desc = 'OpenStack Resource: controller_url: {0}, domain: {1}, project_name : {2}, '
-        'os_user_name : {3}'.format(
+        desc = "OpenStack Resource: controller_url: {0}, domain: {1}, project_name : {2}, os_user_name : {3}".format(
             self.controller_url,
             self.os_domain_name,
             self.os_project_name,

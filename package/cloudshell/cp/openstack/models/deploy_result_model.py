@@ -7,7 +7,7 @@ class DeployResultModel(object):
 
         self.vm_name = vm_name
         self.vm_uuid = vm_uuid
-        self.cloud_provider = cloud_provider_name,
+        self.cloud_provider_resource_name = cloud_provider_name
         #self.autoload = autoload
         #self.auto_delete = autodelete
         #self.wait_for_ip = wait_for_ip
