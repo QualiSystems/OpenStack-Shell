@@ -121,6 +121,7 @@ class OpenStackShell(object):
                         # Raise an exception that instance creation failed
                         raise Exception("Failed to Deploy App: Instance creation failed {0}".format(error))
 
+                    logger.info("Deploying: App: 2 {0}".format(app_name))
                     return self.command_result_parser.set_command_result(deployed_data)
     ## Deploy Operations End
 
