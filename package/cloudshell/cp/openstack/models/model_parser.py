@@ -5,8 +5,9 @@ static methods that return a "Model" from input Dict/Json like data.
 
 from cloudshell.cp.openstack.models.deploy_os_nova_image_instance_resource_model \
         import DeployOSNovaImageInstanceResourceModel
-from cloudshell.cp.openstack.models.openstack_resource_model \
-                                    import OpenStackResourceModel
+from cloudshell.cp.openstack.models.openstack_resource_model import OpenStackResourceModel
+from cloudshell.cp.openstack.common.deploy_data_holder import DeployDataHolder
+import jsonpickle
 
 class OpenStackShellModelParser(object):
     def __init__(self):
@@ -26,16 +27,28 @@ class OpenStackShellModelParser(object):
         os_res_model.os_mgmt_vlan_id = attrs['Quali Management VLAN ID']
         os_res_model.os_mgmt_vlan_id = attrs['OpenStack Management Subnet CIDR']
         os_res_model.os_mgmt_vlan_id = attrs['Quali Management Subnet CIDR']
-        os_res_model.os_mgmt_vlan_id = attrs['OpenStack Floating IP Pool']
+        os_res_model.os_mgmt_vlan_id = attrs['Floating IP Pool']
         return os_res_model
 
     @staticmethod
-    def get_deploy_req_model_from_deploy_req(deploy_req):
+    def deploy_res_model_appname_from_deploy_req(deploy_req):
+        data = jsonpickle.decode(deploy_req)
+        data_holder = DeployDataHolder(data)
         deploy_res_model = DeployOSNovaImageInstanceResourceModel()
-        deploy_res_model.cloud_provider = deploy_req.image.cloud_provider
-        # deploy_res_model.cp_avail_zone = deploy_req.image.availability_zone
-        # TODO : Add other attributes
-        return deploy_res_model
+        deploy_res_model.cloud_provider = data_holder.image.cloud_provider
+        deploy_res_model.cp_avail_zone = data_holder.image.cp_avail_zone
+        deploy_res_model.img_name = data_holder.image.img_name
+        deploy_res_model.instance_flavor = data_holder.image.instance_flavor
+        deploy_res_model.add_floating_ip = data_holder.image.add_floating_ip
+        deploy_res_model.auto_power_off = data_holder.image.auto_power_off
+        deploy_res_model.auto_delete = data_holder.image.auto_delete
+        deploy_res_model.autoload = data_holder.image.autoload
+        deploy_res_model.inbound_ports = data_holder.image.inbound_ports
+        deploy_res_model.outbound_ports = data_holder.image.outbound_ports
+
+        app_name = data_holder.app_name
+
+        return deploy_res_model, app_name
 
     @staticmethod
     def get_deploy_resource_model_from_context_resource(resource):

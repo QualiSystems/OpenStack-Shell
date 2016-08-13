@@ -11,11 +11,11 @@
             </AutoLoad>
             <Attributes>
               <Attribute Name="Controller URL" Value=""/>
-              <Attribute Name="Domain Name" Value=""/>
-              <Attribute Name="Project Name" Value=""/>
+              <Attribute Name="OpenStack Domain Name" Value=""/>
+              <Attribute Name="OpenStack Project Name" Value=""/>
               <Attribute Name="OpenStack User Name" Value=""/>
               <Attribute Name="OpenStack User Password" Value=""/>
-              <Attribute Name="OpenStack Management VLAN" Value="100"/>
+              <Attribute Name="OpenStack Management VLAN ID" Value="100"/>
               <Attribute Name="Quali Management VLAN ID" Value="110"/>
             </Attributes>
         </ResourceTemplate>

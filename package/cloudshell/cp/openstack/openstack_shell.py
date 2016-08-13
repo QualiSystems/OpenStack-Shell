@@ -82,7 +82,7 @@ class OpenStackShell(object):
         Nova instance
         :param command_context:
         :type command_context:
-        :param deploy_request: Specification of for the instance to be dployed
+        :param deploy_request: Specification of for the instance to be deployed
         :return :
         :rtype :
         """
@@ -98,15 +98,16 @@ class OpenStackShell(object):
                     # So this does not do an API call to 'authenticate' on 'Every Command '
                     os_session = self.os_session_provider.get_openstack_session(cs_session, resource_model, logger)
 
-                    logger.info("Deploying app {0}".format(deploy_request.app_name))
-                    # Get App name 'to be passed to instance creation'
-                    app_name = deploy_request.app_name
+                    logger.info("Deploying: DeployRequest: {0}".format(deploy_request))
 
                     # Get reservation
                     reservation_model = ReservationModel.create_reservation_model_from_context_reservation(
                                                                                             command_context.reservation)
                     # From deploy_request obtain DeployOSNovaImageInstanceResourceModel
-                    deploy_req_model = self.model_parser.get_deploy_req_model_from_deploy_req(deploy_request)
+                    deploy_req_model, app_name = self.model_parser.deploy_res_model_appname_from_deploy_req(
+                                                                                                        deploy_request)
+
+                    logger.info("Deploying: App: {0}".format(app_name))
 
                     # Use the authenticated session and deploy_req_model to get instance
                     # FIXME: Add, error - can be used in 'what' of Exception
