@@ -110,16 +110,15 @@ class OpenStackShell(object):
                     logger.info("Deploying: App: {0}".format(app_name))
 
                     # Use the authenticated session and deploy_req_model to get instance
-                    # FIXME: Add, error - can be used in 'what' of Exception
-                    deployed_data, error = self.deploy_operation.deploy(os_session=os_session,
-                                                                        name=app_name,
-                                                                        reservation=reservation_model,
-                                                                        deploy_req_model=deploy_req_model,
-                                                                        logger=logger)
+                    deployed_data = self.deploy_operation.deploy(os_session=os_session,
+                                                                 name=app_name,
+                                                                 reservation=reservation_model,
+                                                                 deploy_req_model=deploy_req_model,
+                                                                 logger=logger)
 
                     if not deployed_data:
                         # Raise an exception that instance creation failed
-                        raise Exception("Failed to Deploy App: Instance creation failed {0}".format(error))
+                        raise Exception("Failed to Deploy App: Instance creation failed.")
 
                     logger.info("Deploying: App: 2 {0}".format(app_name))
                     return self.command_result_parser.set_command_result(deployed_data)
@@ -138,12 +137,16 @@ class OpenStackShell(object):
         with LoggingSessionContext(command_context) as logger:
             with ErrorHandlingContext(logger):
                 with CloudShellSessionContext(command_context) as cs_session:
-                    # resource_model = self.model_parser.get_resource_model_from_context(command_context.resource)
-
+                    resource_model = self.model_parser.get_resource_model_from_context(command_context.resource)
+                    context_remote = command_context.remote_endpoints[0]
+                    logger.debug(context_remote)
+                    deployed_app_resource = self.model_parser.deployed_app_resource_from_context_remote(context_remote)
                     # FIXME: Add details
-                    self.hidden_operation.delete_instance()
+                    # self.hidden_operation.delete_instance(deployed_app_resource)
 
-    ## Hidden Operations End
+    ## Hidden End
+
+
 
     ## Connectivity Operations Begin
     def refresh_ip(self, command_context):

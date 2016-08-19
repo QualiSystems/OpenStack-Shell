@@ -69,3 +69,8 @@ class OpenStackShellModelParser(object):
     @staticmethod
     def parse_boolean(value):
         return value.lower() in ['1', 'true']
+
+    @staticmethod
+    def deployed_app_resource_from_context_remote(context_remote):
+        deployed_app_json = context_remote.app_context.deployed_app_json
+        return DeployDataHolder(deployed_app_json)

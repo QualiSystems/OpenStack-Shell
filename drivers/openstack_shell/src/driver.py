@@ -42,7 +42,7 @@ class OpenStackShellDriver(ResourceDriverInterface):
         pass
 
     def destroy_vm_only(self, context, ports):
-        return str(jsonpickle.encode(True, unpicklable=False))
+        return self.os_shell.delete_instance(context)
 
     def remote_refresh_ip(self, context, ports, cancellation_context):
         pass

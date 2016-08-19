@@ -42,16 +42,25 @@ class DeployOperation(object):
         # sgs = self.instance_service.get_security_groups(os_session,
         #                                instance)
 
-        # Get Private IP
+        # Actually cannot come here and instance is None. If the previous statement raised an Exception let it go
+        # uncaught - so this goes all the way to the UI.
         if instance == None:
-            return None, "Error in creating instance"
+            return None
         # Populate all instance data
+        # unique name
+        server_uuid = instance.id
+        uuid_substr = server_uuid.split("-")[0]
+        unique_name = "{0}-{1}".format(instance.name, uuid_substr)
+        instance.update(name=unique_name)
+
+        # Reload FIXME: This might be inefficient to get() just to get name
+        instance.get()
         logger.info("Deploy Operation Done. Instance Created: {0}:{1}".format(
             instance.name,
             instance.id
         ))
 
         # FIXME: generate DeployResultModel and return
-        return DeployResultModel(vm_name=instance.name,
+        return DeployResultModel(vm_name=unique_name,
                                  vm_uuid=instance.id,
-                                 cloud_provider_name=deploy_req_model.cloud_provider), None
+                                 cloud_provider_name=deploy_req_model.cloud_provider)
