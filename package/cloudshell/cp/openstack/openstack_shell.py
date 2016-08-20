@@ -141,8 +141,13 @@ class OpenStackShell(object):
                     context_remote = command_context.remote_endpoints[0]
                     logger.debug(context_remote)
                     deployed_app_resource = self.model_parser.deployed_app_resource_from_context_remote(context_remote)
+                    logger.info(deployed_app_resource)
+
+                    os_session = self.os_session_provider.get_openstack_session(cs_session, resource_model, logger)
                     # FIXME: Add details
-                    # self.hidden_operation.delete_instance(deployed_app_resource)
+                    self.hidden_operation.delete_instance(openstack_session=os_session,
+                                                          deployed_app_resource=deployed_app_resource,
+                                                          logger=logger)
 
     ## Hidden End
 
@@ -160,9 +165,17 @@ class OpenStackShell(object):
         with LoggingSessionContext(command_context) as logger:
             with ErrorHandlingContext(logger):
                 with CloudShellSessionContext(command_context) as cs_session:
+                    resource_model = self.model_parser.get_resource_model_from_context(command_context.resource)
+                    context_remote = command_context.remote_endpoints[0]
+                    logger.debug(context_remote)
+                    deployed_app_resource = self.model_parser.deployed_app_resource_from_context_remote(context_remote)
+                    logger.info(deployed_app_resource)
 
-                    # FIXME: Add details
-                    self.connectivity_operation.refresh_ip()
+                    os_session = self.os_session_provider.get_openstack_session(cs_session, resource_model, logger)
+                    self.connectivity_operation.refresh_ip(openstack_session=os_session,
+                                                           cloudshell_session=cs_session,
+                                                           deployed_app_resource=deployed_app_resource,
+                                                           logger=logger)
 
     ## Connectivity Operations Begin
 

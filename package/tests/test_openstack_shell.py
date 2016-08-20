@@ -56,7 +56,8 @@ class TestOpenStackShell(TestCase):
 
                     deploy_result = DeployResultModel(vm_name=app_name,
                                                       vm_uuid='1234-56',
-                                                      cloud_provider_name=deploy_res_mock.cloud_provider)
+                                                      cloud_provider_name=deploy_res_mock.cloud_provider,
+                                                      deployed_app_ip="10.1.1.1")
 
                     self.os_shell_api.deploy_operation.deploy = Mock(return_value=deploy_result)
 
@@ -67,6 +68,7 @@ class TestOpenStackShell(TestCase):
                     self.assertEqual(decoded_res['vm_name'], app_name)
                     self.assertEqual(decoded_res['vm_uuid'], deploy_result.vm_uuid)
                     self.assertEqual(decoded_res['cloud_provider_resource_name'], deploy_res_mock.cloud_provider)
+                    self.assertEqual(decoded_res['deployed_app_ip'], deploy_result.deployed_app_ip)
 
     def test_delete_instance(self):
         self.assertTrue(True)

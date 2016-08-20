@@ -60,7 +60,9 @@ class DeployOperation(object):
             instance.id
         ))
 
+        private_ip_address = self.instance_service.get_private_ip(instance)
         # FIXME: generate DeployResultModel and return
         return DeployResultModel(vm_name=unique_name,
                                  vm_uuid=instance.id,
-                                 cloud_provider_name=deploy_req_model.cloud_provider)
+                                 cloud_provider_name=deploy_req_model.cloud_provider,
+                                 deployed_app_ip=private_ip_address)

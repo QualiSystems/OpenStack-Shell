@@ -1,5 +1,5 @@
 class DeployResultModel(object):
-    def __init__(self, vm_name, vm_uuid, cloud_provider_name):
+    def __init__(self, vm_name, vm_uuid, cloud_provider_name, deployed_app_ip):
                     #autoload, auto_delete, wait_for_ip, auto_power_off,
                     #inbound_ports, outbound_ports,
                     #deployed_app_attributes,
@@ -15,5 +15,5 @@ class DeployResultModel(object):
         #self.inbound_ports = inbound_ports
         #self.outbound_ports = outbound_ports
         #self.deployed_app_attributes = deployed_app_attributes
-        #self.deployed_app_ip = deployed_app_ip
+        self.deployed_app_ip = deployed_app_ip
         #self.floating_ip = floating_ip

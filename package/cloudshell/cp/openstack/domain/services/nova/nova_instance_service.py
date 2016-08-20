@@ -58,19 +58,24 @@ class NovaInstanceService(object):
         self.instance_waiter.wait(instance, state=self.instance_waiter.ACTIVE)
         return instance
 
-    def terminate_instance(self, openstack_session, instance):
+    def terminate_instance(self, openstack_session, instance_id, logger):
         """
         :param openstack_session:
         :type openstack_session:
-        :param instance: Instance to be terminated
-        :type instance: novalcient.Client.servers.Server
-        :return novaclient.Client.servers.Server:
+        :param instance_id: Instance ID to be terminated
+        :type instance_id: str
+        :param logger:
+        :type logger:
+        :return Boolean:
         """
-        client = novaclient.Client(self.API_VERSION, session=openstack_session)
-        client.servers.delete(instance)
-        return self.instance_waiter.wait(instance,
-                                        state=self.instance_waiter.DELETED)
+        logger.info("Deleting instance with instance ID {0}".format(instance_id))
 
+        client = novaclient.Client(self.API_VERSION, session=openstack_session)
+
+        instance = client.servers.find(id=instance_id)
+        client.servers.delete(instance)
+        self.instance_waiter.wait(instance, state=self.instance_waiter.DELETED)
+        return True
 
     def get_security_groups(self, openstack_session, instance):
         """
@@ -97,3 +102,22 @@ class NovaInstanceService(object):
         :return dict: Dictionary of Security Groups attached to instance.
         """
         pass
+
+    def get_private_ip(self, instance):
+        """
+
+        :param instance: novaclient.Client.servers.Server
+        :return : Instance IP
+        :rtype str:
+        """
+        if not instance:
+            return ""
+
+        ip = ""
+        for net_name, net_ips in instance.networks:
+            if net_name == 'quali-network':
+                ip = net_ips[0] if net_ips else ""
+                break
+
+        return ip
+
