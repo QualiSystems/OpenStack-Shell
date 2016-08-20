@@ -19,7 +19,7 @@ class HiddenOperation(object):
         :type logger:
         :return:
         """
-        instance_id = deployed_app_resource.vmdetails.uuid
+        instance_id = deployed_app_resource.vmdetails.uid
         self.instance_service.terminate_instance(openstack_session=openstack_session,
                                                  instance_id=instance_id,
                                                  logger=logger)

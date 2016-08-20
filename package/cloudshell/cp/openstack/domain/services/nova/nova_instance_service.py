@@ -2,7 +2,7 @@
 Implements InstanceService class, that allows one to
 \'start/stop/delete/terminate\' OpenStack instances.
 """
-
+import uuid
 from novaclient import client as novaclient
 
 class NovaInstanceService(object):
@@ -45,6 +45,9 @@ class NovaInstanceService(object):
         # Quali Network - FIXME: Remove hard coded (get it from network service)
         qnet_obj = client.networks.find(label='quali-network')
         qnet_dict = {'net-id':qnet_obj.id}
+
+        uniq = str(uuid.uuid4()).split("-")[0]
+        name = name + "-" + uniq
         instance = client.servers.create(name=name,
                                          image=img_obj,
                                          flavor=flavor_obj,
@@ -72,10 +75,12 @@ class NovaInstanceService(object):
 
         client = novaclient.Client(self.API_VERSION, session=openstack_session)
 
+        # FIXME : handle case when instance is already deleted and hence can't be found
         instance = client.servers.find(id=instance_id)
         client.servers.delete(instance)
-        self.instance_waiter.wait(instance, state=self.instance_waiter.DELETED)
-        return True
+
+        # self.instance_waiter.wait(instance, state=self.instance_waiter.DELETED)
+        return #True
 
     def get_security_groups(self, openstack_session, instance):
         """
@@ -114,7 +119,7 @@ class NovaInstanceService(object):
             return ""
 
         ip = ""
-        for net_name, net_ips in instance.networks:
+        for net_name, net_ips in instance.networks.iteritems():
             if net_name == 'quali-network':
                 ip = net_ips[0] if net_ips else ""
                 break

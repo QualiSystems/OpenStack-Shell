@@ -46,15 +46,10 @@ class DeployOperation(object):
         # uncaught - so this goes all the way to the UI.
         if instance == None:
             return None
+
         # Populate all instance data
         # unique name
-        server_uuid = instance.id
-        uuid_substr = server_uuid.split("-")[0]
-        unique_name = "{0}-{1}".format(instance.name, uuid_substr)
-        instance.update(name=unique_name)
 
-        # Reload FIXME: This might be inefficient to get() just to get name
-        instance.get()
         logger.info("Deploy Operation Done. Instance Created: {0}:{1}".format(
             instance.name,
             instance.id
@@ -62,7 +57,7 @@ class DeployOperation(object):
 
         private_ip_address = self.instance_service.get_private_ip(instance)
         # FIXME: generate DeployResultModel and return
-        return DeployResultModel(vm_name=unique_name,
+        return DeployResultModel(vm_name=instance.name,
                                  vm_uuid=instance.id,
                                  cloud_provider_name=deploy_req_model.cloud_provider,
                                  deployed_app_ip=private_ip_address)
