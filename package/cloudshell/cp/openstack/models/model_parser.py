@@ -66,6 +66,7 @@ class OpenStackShellModelParser(object):
         deploy_resource_model.outbound_ports = attrs['Outbound Ports']
         return deploy_resource_model
 
+
     @staticmethod
     def parse_boolean(value):
         return value.lower() in ['1', 'true']
