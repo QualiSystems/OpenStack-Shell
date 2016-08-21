@@ -74,10 +74,13 @@ class NovaInstanceService(object):
         logger.info("Deleting instance with instance ID {0}".format(instance_id))
 
         client = novaclient.Client(self.API_VERSION, session=openstack_session)
-
-        # FIXME : handle case when instance is already deleted and hence can't be found
-        instance = client.servers.find(id=instance_id)
-        client.servers.delete(instance)
+        instance = self.get_instance_from_instance_id(openstack_session=openstack_session,
+                                                      instance_id=instance_id,
+                                                      client=client)
+        if instance is None:
+            logger.info("Instance with Instance ID {0} does not exist. Already Deleted?".format(instance_id))
+        else:
+            client.servers.delete(instance)
 
         # self.instance_waiter.wait(instance, state=self.instance_waiter.DELETED)
         return #True
@@ -126,3 +129,25 @@ class NovaInstanceService(object):
 
         return ip
 
+    def get_instance_from_instance_id(self, openstack_session, instance_id, client=None):
+        """
+        Returns an instance, given instance_id for the openstack_session. Optionally takes novaclient Object
+
+        :param openstack_session:
+        :type openstack_session:
+        :param instance_id:
+        :type instance_id:
+        :param client: client (optional)
+        :type client: client (optional)
+        :return instance:
+        """
+        if client is None:
+            client = novaclient.Client(self.API_VERSION, session=openstack_session)
+        try:
+            instance = client.servers.find(id=instance_id)
+            return instance
+        except novaclient.exceptions.NotFound:
+            logger.info("Instance with instance ID {0} Not Found".format(instance_id))
+            return None
+        except Exception:
+            raise

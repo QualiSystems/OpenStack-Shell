@@ -22,8 +22,6 @@ from cloudshell.cp.openstack.command.operations.hidden_operation import HiddenOp
 # Command Result Parser
 from cloudshell.cp.openstack.command.command_result_parser import OpenStackShellCommandResultParser
 
-# Instance Services
-
 from cloudshell.cp.openstack.domain.services.session_providers.os_session_provider \
                                             import OpenStackSessionProvider
 
@@ -45,8 +43,8 @@ class OpenStackShell(object):
         self.model_parser = OpenStackShellModelParser()
         self.command_result_parser = OpenStackShellCommandResultParser()
 
-    ### Below all operations are implemented as public methods
-    ## Power Operations Begin
+# ## Below all operations are implemented as public methods
+# Power Operations Begin
     def power_on(self, command_context):
         """
         Powers On the instance.
@@ -73,9 +71,10 @@ class OpenStackShell(object):
                 with CloudShellSessionContext(command_context) as cs_session:
                     # FIXME: Add details
                     self.power_operation.power_off()
-    ## Power Operations Begin
 
-    ## Deploy Operations Begin
+# Power Operations End
+
+# Deploy Operations Begin
     def deploy_instance_from_image(self, command_context, deploy_request):
         """
         Deploys an image with specification provided by deploy_request on a
@@ -122,9 +121,10 @@ class OpenStackShell(object):
 
                     logger.info("Deploying: App: 2 {0}".format(app_name))
                     return self.command_result_parser.set_command_result(deployed_data)
-    ## Deploy Operations End
 
-    ## Hidden Operations Begin
+# Deploy Operations End
+
+# Hidden Operations Begin
     def delete_instance(self, command_context):
         """
         Deletes the Nova instance and associated block devices if delete_true
@@ -137,11 +137,14 @@ class OpenStackShell(object):
         with LoggingSessionContext(command_context) as logger:
             with ErrorHandlingContext(logger):
                 with CloudShellSessionContext(command_context) as cs_session:
+
                     resource_model = self.model_parser.get_resource_model_from_context(command_context.resource)
+
                     context_remote = command_context.remote_endpoints[0]
-                    logger.debug(context_remote)
+                    if context_remote is None:
+                        raise ValueError("Cannot get remote_endpoint for command context: {0}".format(command_context))
+
                     deployed_app_resource = self.model_parser.deployed_app_resource_from_context_remote(context_remote)
-                    logger.info(deployed_app_resource)
 
                     os_session = self.os_session_provider.get_openstack_session(cs_session, resource_model, logger)
                     # FIXME: Add details
@@ -149,11 +152,9 @@ class OpenStackShell(object):
                                                           deployed_app_resource=deployed_app_resource,
                                                           logger=logger)
 
-    ## Hidden End
+# Hidden Operations End
 
-
-
-    ## Connectivity Operations Begin
+# Connectivity Operations Begin
     def refresh_ip(self, command_context):
         """
         Refresh IP
@@ -166,18 +167,23 @@ class OpenStackShell(object):
             with ErrorHandlingContext(logger):
                 with CloudShellSessionContext(command_context) as cs_session:
                     resource_model = self.model_parser.get_resource_model_from_context(command_context.resource)
+
                     context_remote = command_context.remote_endpoints[0]
-                    logger.debug(context_remote)
+                    if context_remote is None:
+                        raise ValueError("Cannot get remote_endpoint for command context: {0}".format(command_context))
+
                     deployed_app_resource = self.model_parser.deployed_app_resource_from_context_remote(context_remote)
+                    deployed_app_private_ip = context_remote.address
+                    deployed_app_fullname = context_remote.fullname
+
                     logger.info(deployed_app_resource)
 
                     os_session = self.os_session_provider.get_openstack_session(cs_session, resource_model, logger)
                     self.connectivity_operation.refresh_ip(openstack_session=os_session,
                                                            cloudshell_session=cs_session,
                                                            deployed_app_resource=deployed_app_resource,
+                                                           private_ip=deployed_app_private_ip,
+                                                           resource_fullname=deployed_app_fullname,
                                                            logger=logger)
 
-    ## Connectivity Operations Begin
-
-
-    ## All private methods End
+# Connectivity Operations End

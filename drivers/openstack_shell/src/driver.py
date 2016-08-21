@@ -45,4 +45,5 @@ class OpenStackShellDriver(ResourceDriverInterface):
         return self.os_shell.delete_instance(context)
 
     def remote_refresh_ip(self, context, ports, cancellation_context):
-        pass
+        return self.os_shell.refresh_ip(context)
+
