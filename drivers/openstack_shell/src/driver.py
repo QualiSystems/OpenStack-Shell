@@ -33,10 +33,10 @@ class OpenStackShellDriver(ResourceDriverInterface):
         #                            unpicklable=False))
 
     def PowerOn(self, context, ports):
-        return str(jsonpickle.encode(True, unpicklable=False))
+        return self.os_shell.power_on(context)
 
     def PowerOff(self, context, ports):
-        return str(jsonpickle.encode(True, unpicklable=False))
+        return self.os_shell.power_off(context)
 
     def PowerCycle(self, context, ports, delay):
         pass

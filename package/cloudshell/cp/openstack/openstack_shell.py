@@ -57,7 +57,23 @@ class OpenStackShell(object):
             with ErrorHandlingContext(logger):
                 with CloudShellSessionContext(command_context) as cs_session:
                     # FIXME: Add details
-                    self.power_operation.power_on()
+                    resource_model = self.model_parser.get_resource_model_from_context(command_context.resource)
+
+                    context_remote = command_context.remote_endpoints[0]
+                    if context_remote is None:
+                        raise ValueError("Cannot get remote_endpoint for command context: {0}".format(command_context))
+
+                    deployed_app_resource = self.model_parser.deployed_app_resource_from_context_remote(context_remote)
+                    deployed_app_fullname = context_remote.fullname
+
+                    logger.info(deployed_app_resource)
+
+                    os_session = self.os_session_provider.get_openstack_session(cs_session, resource_model, logger)
+                    self.power_operation.power_on(openstack_session=os_session,
+                                                  cloudshell_session=cs_session,
+                                                  deployed_app_resource=deployed_app_resource,
+                                                  resource_fullname=deployed_app_fullname,
+                                                  logger=logger)
 
     def power_off(self, command_context):
         """
@@ -69,8 +85,23 @@ class OpenStackShell(object):
         with LoggingSessionContext(command_context) as logger:
             with ErrorHandlingContext(logger):
                 with CloudShellSessionContext(command_context) as cs_session:
-                    # FIXME: Add details
-                    self.power_operation.power_off()
+                    resource_model = self.model_parser.get_resource_model_from_context(command_context.resource)
+
+                    context_remote = command_context.remote_endpoints[0]
+                    if context_remote is None:
+                        raise ValueError("Cannot get remote_endpoint for command context: {0}".format(command_context))
+
+                    deployed_app_resource = self.model_parser.deployed_app_resource_from_context_remote(context_remote)
+                    deployed_app_fullname = context_remote.fullname
+
+                    logger.info(deployed_app_resource)
+
+                    os_session = self.os_session_provider.get_openstack_session(cs_session, resource_model, logger)
+                    self.power_operation.power_off(openstack_session=os_session,
+                                                  cloudshell_session=cs_session,
+                                                  deployed_app_resource=deployed_app_resource,
+                                                  resource_fullname=deployed_app_fullname,
+                                                  logger=logger)
 
 # Power Operations End
 

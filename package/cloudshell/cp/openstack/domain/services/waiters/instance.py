@@ -16,8 +16,10 @@ class InstanceWaiter(object):
     BUILDING = u'BUILDING'
     STOPPED = u'STOPPED'
     DELETED = u'DELETED'
+    SHUTOFF = u'SHUTOFF'
 
-    INSTANCE_STATES = [ BUILDING, ACTIVE, STOPPED, DELETED, ERROR]
+    INSTANCE_STATES = [ACTIVE, ERROR, BUILDING, STOPPED, DELETED, SHUTOFF]
+
     def __init__(self, delay=2, timeout=10):
         """
         :param delay: Time in seconds between each poll
