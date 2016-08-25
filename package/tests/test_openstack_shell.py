@@ -1,8 +1,8 @@
 from unittest import TestCase
 import jsonpickle
-from mock import Mock, patch
+from mock import Mock, patch, MagicMock
 
-from cloudshell.cp.openstack.openstack_shell import OpenStackShell
+from cloudshell.cp.openstack.openstack_shell import OpenStackShell, LoggingSessionContext
 from cloudshell.cp.openstack.models.openstack_resource_model import OpenStackResourceModel
 from cloudshell.cp.openstack.models.deploy_os_nova_image_instance_resource_model import DeployOSNovaImageInstanceResourceModel
 from cloudshell.cp.openstack.models.deploy_result_model import DeployResultModel
@@ -31,17 +31,47 @@ class TestOpenStackShell(TestCase):
         self.os_shell_api.os_session_provider.get_openstack_session = Mock(return_value=Mock())
 
     def test_power_on(self):
-        self.assertTrue(True)
+        """
+
+        :return:
+        """
+        mock_logger = Mock()
+        with patch('cloudshell.cp.openstack.openstack_shell.LoggingSessionContext', autospec=True):
+            with patch('cloudshell.cp.openstack.openstack_shell.ErrorHandlingContext'):
+                with patch('cloudshell.cp.openstack.openstack_shell.CloudShellSessionContext'):
+                    mock_resource_value = Mock()
+                    self.os_shell_api.model_parser.deployed_app_resource_from_context_remote = Mock(
+                        return_value=mock_resource_value)
+                    mock_context_remote = Mock()
+                    mock_context_remote.full_name = 'test full name'
+
+                    self.command_context.remote_endpoints = [mock_context_remote]
+
+                    self.os_shell_api.power_operation.power_on = Mock(return_value=True)
+                    self.os_shell_api.power_on(self.command_context)
 
     def test_power_off(self):
-        self.assertTrue(True)
+        with patch('cloudshell.cp.openstack.openstack_shell.LoggingSessionContext', autospec=True):
+            with patch('cloudshell.cp.openstack.openstack_shell.ErrorHandlingContext'):
+                with patch('cloudshell.cp.openstack.openstack_shell.CloudShellSessionContext'):
+                    mock_resource_value = Mock()
+                    self.os_shell_api.model_parser.deployed_app_resource_from_context_remote = Mock(
+                        return_value=mock_resource_value)
+                    mock_context_remote = Mock()
+                    mock_context_remote.full_name = 'test full name'
+
+                    self.command_context.remote_endpoints = [mock_context_remote]
+
+                    self.os_shell_api.power_operation.power_on = Mock(return_value=True)
+                    self.os_shell_api.power_on(self.command_context)
 
     def test_deploy_instance_returns_deploy_result(self):
         """
         Tests deploy_instance method with deploy_result assertions.
         :return:
         """
-        with patch('cloudshell.cp.openstack.openstack_shell.LoggingSessionContext'):
+        mock_logger = Mock()
+        with patch('cloudshell.cp.openstack.openstack_shell.LoggingSessionContext', autospec=True):
             with patch('cloudshell.cp.openstack.openstack_shell.ErrorHandlingContext'):
                 with patch('cloudshell.cp.openstack.openstack_shell.CloudShellSessionContext'):
                     app_name = 'test_deploy_appname'
@@ -71,9 +101,28 @@ class TestOpenStackShell(TestCase):
                     self.assertEqual(decoded_res['deployed_app_ip'], deploy_result.deployed_app_ip)
 
     def test_delete_instance(self):
-        self.assertTrue(True)
+        """
+
+        :return:
+        """
+        mock_logger = Mock()
+        with patch('cloudshell.cp.openstack.openstack_shell.LoggingSessionContext', autospec=True):
+            with patch('cloudshell.cp.openstack.openstack_shell.ErrorHandlingContext'):
+                with patch('cloudshell.cp.openstack.openstack_shell.CloudShellSessionContext'):
+                    mock_resource_value = Mock()
+                    self.os_shell_api.model_parser.deployed_app_resource_from_context_remote = Mock(return_value=mock_resource_value)
+                    mock_context_remote = Mock()
+                    mock_context_remote.full_name = 'test full name'
+
+                    self.command_context.remote_endpoints = [mock_context_remote]
+
+                    self.os_shell_api.hidden_operation.delete_instance = Mock(return_value=True)
+                    self.os_shell_api.delete_instance(self.command_context)
+
+                    #self.os_shell_api.hidden_operation.delete_instance.assert_called_with(
+                    #    os_session=self.os_shell_api.os_session_provider.get_openstack_session(),
+                    #    deployed_app_resource=mock_resource_value,
+                    #    logger=mock_logger)
 
     def test_refresh_ip(self):
         self.assertTrue(True)
-
-
