@@ -23,4 +23,3 @@ class HiddenOperation(object):
         self.instance_service.terminate_instance(openstack_session=openstack_session,
                                                  instance_id=instance_id,
                                                  logger=logger)
-        pass

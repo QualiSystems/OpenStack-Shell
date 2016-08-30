@@ -23,7 +23,8 @@ from cloudshell.cp.openstack.command.operations.hidden_operation import HiddenOp
 from cloudshell.cp.openstack.command.command_result_parser import OpenStackShellCommandResultParser
 
 from cloudshell.cp.openstack.domain.services.session_providers.os_session_provider \
-                                            import OpenStackSessionProvider
+    import OpenStackSessionProvider
+
 
 class OpenStackShell(object):
     """
@@ -31,6 +32,7 @@ class OpenStackShell(object):
     this class implement the functionality as required by Shell Driver, which
     provides wrapper over this class.
     """
+
     def __init__(self):
         self.os_session_provider = OpenStackSessionProvider()
         self.cs_driver_helper = CloudshellDriverHelper()
@@ -43,8 +45,8 @@ class OpenStackShell(object):
         self.model_parser = OpenStackShellModelParser()
         self.command_result_parser = OpenStackShellCommandResultParser()
 
-# ## Below all operations are implemented as public methods
-# Power Operations Begin
+    # ## Below all operations are implemented as public methods
+    # Power Operations Begin
     def power_on(self, command_context):
         """
         Powers On the instance.
@@ -98,14 +100,15 @@ class OpenStackShell(object):
 
                     os_session = self.os_session_provider.get_openstack_session(cs_session, resource_model, logger)
                     self.power_operation.power_off(openstack_session=os_session,
-                                                  cloudshell_session=cs_session,
-                                                  deployed_app_resource=deployed_app_resource,
-                                                  resource_fullname=deployed_app_fullname,
-                                                  logger=logger)
+                                                   cloudshell_session=cs_session,
+                                                   deployed_app_resource=deployed_app_resource,
+                                                   resource_fullname=deployed_app_fullname,
+                                                   logger=logger)
 
-# Power Operations End
+                # Power Operations End
 
-# Deploy Operations Begin
+                # Deploy Operations Begin
+
     def deploy_instance_from_image(self, command_context, deploy_request):
         """
         Deploys an image with specification provided by deploy_request on a
@@ -132,10 +135,10 @@ class OpenStackShell(object):
 
                     # Get reservation
                     reservation_model = ReservationModel.create_reservation_model_from_context_reservation(
-                                                                                            command_context.reservation)
+                            command_context.reservation)
                     # From deploy_request obtain DeployOSNovaImageInstanceResourceModel
                     deploy_req_model, app_name = self.model_parser.deploy_res_model_appname_from_deploy_req(
-                                                                                                        deploy_request)
+                            deploy_request)
 
                     logger.info("Deploying: App: {0}".format(app_name))
 
@@ -153,9 +156,10 @@ class OpenStackShell(object):
                     logger.info("Deploying: App: 2 {0}".format(app_name))
                     return self.command_result_parser.set_command_result(deployed_data)
 
-# Deploy Operations End
+                # Deploy Operations End
 
-# Hidden Operations Begin
+                # Hidden Operations Begin
+
     def delete_instance(self, command_context):
         """
         Deletes the Nova instance and associated block devices if delete_true
@@ -168,7 +172,6 @@ class OpenStackShell(object):
         with LoggingSessionContext(command_context) as logger:
             with ErrorHandlingContext(logger):
                 with CloudShellSessionContext(command_context) as cs_session:
-
                     resource_model = self.model_parser.get_resource_model_from_context(command_context.resource)
 
                     context_remote = command_context.remote_endpoints[0]
@@ -183,9 +186,10 @@ class OpenStackShell(object):
                                                           deployed_app_resource=deployed_app_resource,
                                                           logger=logger)
 
-# Hidden Operations End
+                # Hidden Operations End
 
-# Connectivity Operations Begin
+                # Connectivity Operations Begin
+
     def refresh_ip(self, command_context):
         """
         Refresh IP

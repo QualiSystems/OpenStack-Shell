@@ -4,11 +4,12 @@ from mock import Mock, patch
 from cloudshell.cp.openstack.domain.services.nova.nova_instance_service import NovaInstanceService
 import cloudshell.cp.openstack.domain.services.nova.nova_instance_service as test_nova_instance_service
 
+
 class TestNovaInstanceService(TestCase):
     def setUp(self):
-        self.instance_service = NovaInstanceService(instance_waiter=Mock())
-
-        self.instance_service.instance_waiter.wait = Mock()
+        instance_waiter = Mock()
+        instance_waiter.wait = Mock()
+        self.instance_service = NovaInstanceService(instance_waiter=instance_waiter)
         self.mock_logger = Mock()
         self.openstack_session = Mock()
 
@@ -32,22 +33,25 @@ class TestNovaInstanceService(TestCase):
 
         mock_netobj = Mock()
         mock_client2.networks.find = Mock(return_type=mock_netobj)
+        mock_client2.servers = Mock()
+        mocked_inst = Mock()
+        mock_client2.servers.create = Mock(return_value=mocked_inst)
         mock_qnet_dict = {'qnet-id': mock_netobj}
         result = self.instance_service.create_instance(openstack_session=self.openstack_session,
-                                                           name=test_name,
-                                                           reservation=Mock(),
-                                                           deploy_req_model=Mock(),
-                                                           logger=self.mock_logger)
+                                                       name=test_name,
+                                                       reservation=Mock(),
+                                                       deploy_req_model=Mock(),
+                                                       logger=self.mock_logger)
 
-        self.assertTrue(mock_client2.servers.create.called)
+        mock_client2.servers.create.assert_called()
         # FIXME : Assert called_with
-        self.assertTrue(result)
+        self.assertEquals(result, mocked_inst)
 
     def test_instance_terminate_openstack_session_none(self):
         with self.assertRaises(ValueError) as context:
             self.instance_service.terminate_instance(openstack_session=None,
                                                      instance_id='1234',
-                                                     logger = self.mock_logger)
+                                                     logger=self.mock_logger)
             self.assertTrue(context)
 
     def test_instance_terminate_success(self):
@@ -58,7 +62,7 @@ class TestNovaInstanceService(TestCase):
         test_instance_id = '1234-56'
         self.instance_service.get_instance_from_instance_id = Mock(return_value=mock_instance)
         self.instance_service.terminate_instance(openstack_session=self.openstack_session,
-                                                     instance_id=test_instance_id,
-                                                     logger=self.mock_logger)
+                                                 instance_id=test_instance_id,
+                                                 logger=self.mock_logger)
 
-        self.assertTrue(mock_client2.servers.delete.called)
+        mock_client2.servers.delete.assert_called_with(mock_instance)
