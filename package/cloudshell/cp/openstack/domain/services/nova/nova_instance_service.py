@@ -53,9 +53,6 @@ class NovaInstanceService(object):
                                          flavor=flavor_obj,
                                          nics=[qnet_dict])
 
-        if not instance:
-            return None
-
         # instance_attrrs = instance.get
         # FIXME : Wait for the server to be ready
         self.instance_waiter.wait(instance, state=self.instance_waiter.ACTIVE)
@@ -85,9 +82,6 @@ class NovaInstanceService(object):
         else:
             client.servers.delete(instance)
 
-        # self.instance_waiter.wait(instance, state=self.instance_waiter.DELETED)
-        return #True
-
     def instance_power_on(self, openstack_session, instance_id, logger):
         """
         call instance.start() for the instance for a given instance_id
@@ -108,7 +102,7 @@ class NovaInstanceService(object):
         if instance is None:
             logger.info("Instance with Instance ID {0} does not exist. Already Deleted?".format(instance_id))
         else:
-            instance.get()
+
             if instance.status != self.instance_waiter.ACTIVE:
                 instance.start()
                 self.instance_waiter.wait(instance, self.instance_waiter.ACTIVE)
@@ -133,7 +127,7 @@ class NovaInstanceService(object):
         if instance is None:
             logger.info("Instance with Instance ID {0} does not exist. Already Deleted?".format(instance_id))
         else:
-            instance.get()
+
             if instance.status != self.instance_waiter.SHUTOFF:
                 instance.stop()
                 self.instance_waiter.wait(instance, self.instance_waiter.SHUTOFF)

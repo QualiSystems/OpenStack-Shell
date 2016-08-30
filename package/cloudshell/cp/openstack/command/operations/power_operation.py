@@ -1,5 +1,6 @@
 from cloudshell.cp.openstack.domain.services.nova.nova_instance_service import NovaInstanceService
 from cloudshell.cp.openstack.domain.services.waiters.instance import InstanceWaiter
+from cloudshell.shell.core.session.logging_session import LoggingSessionContext
 
 class PowerOperation(object):
     def __init__(self):
@@ -19,9 +20,9 @@ class PowerOperation(object):
         :param deployed_app_resource:
         :type deployed_app_resource:
         :param resource_fullname:
-        :type resource_fullname:
+        :type str:
         :param logger:
-        :type logger:
+        :type logging.Logger:
         :return:
         """
 
