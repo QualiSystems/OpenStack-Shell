@@ -73,6 +73,9 @@ class NovaInstanceService(object):
         """
         logger.info("Deleting instance with instance ID {0}".format(instance_id))
 
+        if not openstack_session or not instance_id or not logger:
+            raise ValueError("Any of openstack_session, instance_id can be None")
+
         client = novaclient.Client(self.API_VERSION, session=openstack_session)
         instance = self.get_instance_from_instance_id(openstack_session=openstack_session,
                                                       instance_id=instance_id,
