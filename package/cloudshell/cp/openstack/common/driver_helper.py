@@ -1,5 +1,5 @@
 from cloudshell.api.cloudshell_api import CloudShellAPISession
-
+import uuid
 
 class CloudshellDriverHelper(object):
     def __init__(self):
@@ -19,3 +19,7 @@ class CloudshellDriverHelper(object):
                                   username=None,
                                   password=None,
                                   domain=reservation_domain)
+
+    @staticmethod
+    def get_uuid():
+        return str(uuid.uuid4()).split("-")[0]

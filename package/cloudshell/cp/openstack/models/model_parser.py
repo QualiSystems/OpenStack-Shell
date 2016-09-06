@@ -24,10 +24,10 @@ class OpenStackShellModelParser(object):
         os_res_model.os_user_name = attrs['OpenStack User Name']
         os_res_model.os_user_password = attrs['OpenStack User Password']
         os_res_model.os_mgmt_vlan_id = attrs['OpenStack Management VLAN ID']
-        os_res_model.os_mgmt_vlan_id = attrs['Quali Management VLAN ID']
-        os_res_model.os_mgmt_vlan_id = attrs['OpenStack Management Subnet CIDR']
-        os_res_model.os_mgmt_vlan_id = attrs['Quali Management Subnet CIDR']
-        os_res_model.os_mgmt_vlan_id = attrs['Floating IP Pool']
+        os_res_model.qs_mgmt_vlan_id = attrs['Quali Management VLAN ID']
+        os_res_model.os_mgmt_subnet_cidr = attrs['OpenStack Management Subnet CIDR']
+        os_res_model.qs_mgmt_subnet_cidr = attrs['Quali Management Subnet CIDR']
+        os_res_model.os_floating_ip_pool = attrs['Floating IP Pool']
         return os_res_model
 
     @staticmethod

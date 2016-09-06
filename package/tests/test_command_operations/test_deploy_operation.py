@@ -1,6 +1,5 @@
 from unittest import TestCase
 from mock import Mock
-import jsonpickle
 
 from cloudshell.cp.openstack.command.operations.deploy_operation import DeployOperation
 from cloudshell.cp.openstack.models.deploy_result_model import DeployResultModel

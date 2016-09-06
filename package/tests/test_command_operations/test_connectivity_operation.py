@@ -30,7 +30,8 @@ class TestConnectivityOperation(TestCase):
 
         self.conn_operation.instance_service.get_instance_from_instance_id.assert_called_with(
                 openstack_session=self.openstack_session,
-                instance_id=self.test_uid)
+                instance_id=self.test_uid,
+                logger=self.mock_logger)
 
         self.assertFalse(self.cloudshell_session.UpdateResourceAddress.called)
 
@@ -47,7 +48,8 @@ class TestConnectivityOperation(TestCase):
 
         self.conn_operation.instance_service.get_instance_from_instance_id.assert_called_with(
             openstack_session=self.openstack_session,
-            instance_id=self.test_uid)
+            instance_id=self.test_uid,
+            logger=self.mock_logger)
 
         self.cloudshell_session.UpdateResourceAddress.assert_called
 
@@ -67,6 +69,7 @@ class TestConnectivityOperation(TestCase):
 
         self.conn_operation.instance_service.get_instance_from_instance_id.assert_called_with(
             openstack_session=self.openstack_session,
-            instance_id=self.test_uid)
+            instance_id=self.test_uid,
+            logger=self.mock_logger)
 
         self.assertFalse(self.cloudshell_session.SetAttributeValue.called)

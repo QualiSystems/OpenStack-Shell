@@ -2,7 +2,6 @@ from cloudshell.shell.core.driver_context import AutoLoadDetails
 from cloudshell.shell.core.resource_driver_interface import ResourceDriverInterface
 
 from cloudshell.cp.openstack.openstack_shell import OpenStackShell
-import jsonpickle
 
 
 class OpenStackShellDriver(ResourceDriverInterface):

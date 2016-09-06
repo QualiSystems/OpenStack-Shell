@@ -27,7 +27,8 @@ class ConnectivityOperation(object):
 
         instance_id = deployed_app_resource.vmdetails.uid
         instance = self.instance_service.get_instance_from_instance_id(openstack_session=openstack_session,
-                                                                       instance_id=instance_id)
+                                                                       instance_id=instance_id,
+                                                                       logger=logger)
         if instance is None:
             raise ValueError("Instance with InstanceID {0} not found".format(instance_id))
 

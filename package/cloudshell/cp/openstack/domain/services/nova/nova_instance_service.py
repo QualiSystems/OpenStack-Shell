@@ -2,8 +2,8 @@
 Implements InstanceService class, that allows one to
 \'start/stop/delete/terminate\' OpenStack instances.
 """
-import uuid
 from novaclient import client as novaclient
+from cloudshell.cp.openstack.common.driver_helper import CloudshellDriverHelper
 
 class NovaInstanceService(object):
     """Implements management of Compute Instances."""
@@ -41,7 +41,7 @@ class NovaInstanceService(object):
         qnet_obj = client.networks.find(label='quali-network')
         qnet_dict = {'net-id':qnet_obj.id}
 
-        uniq = str(uuid.uuid4()).split("-")[0]
+        uniq = CloudshellDriverHelper.get_uuid() #str(uuid.uuid4()).split("-")[0]
         name = name + "-" + uniq
         instance = client.servers.create(name=name,
                                          image=img_obj,
@@ -68,6 +68,7 @@ class NovaInstanceService(object):
         client = novaclient.Client(self.API_VERSION, session=openstack_session)
         instance = self.get_instance_from_instance_id(openstack_session=openstack_session,
                                                       instance_id=instance_id,
+                                                      logger=logger,
                                                       client=client)
         if instance is None:
             logger.info("Instance with Instance ID {0} does not exist. Already Deleted?".format(instance_id))
@@ -86,6 +87,7 @@ class NovaInstanceService(object):
         client = novaclient.Client(self.API_VERSION, session=openstack_session)
         instance = self.get_instance_from_instance_id(openstack_session=openstack_session,
                                                       instance_id=instance_id,
+                                                      logger=logger,
                                                       client=client)
 
         if instance is None:
@@ -108,6 +110,7 @@ class NovaInstanceService(object):
         client = novaclient.Client(self.API_VERSION, session=openstack_session)
         instance = self.get_instance_from_instance_id(openstack_session=openstack_session,
                                                       instance_id=instance_id,
+                                                      logger=logger,
                                                       client=client)
 
         if instance is None:
@@ -157,12 +160,13 @@ class NovaInstanceService(object):
 
         return ip
 
-    def get_instance_from_instance_id(self, openstack_session, instance_id, client=None):
+    def get_instance_from_instance_id(self, openstack_session, instance_id, logger, client=None):
         """
         Returns an instance, given instance_id for the openstack_session. Optionally takes novaclient Object
 
         :param keystoneauth1.session.Sesssion openstack_session:
         :param str instance_id:
+        :param LoggingSessionContext logger:
         :param novaclient.Client client: client (optional)
         :rtype novaclient.Client.servers.Server instance:
         """

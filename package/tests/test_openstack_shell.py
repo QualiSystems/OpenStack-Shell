@@ -1,12 +1,11 @@
 from unittest import TestCase
 import jsonpickle
-from mock import Mock, patch, MagicMock
+from mock import Mock, patch
 
 from cloudshell.cp.openstack.openstack_shell import OpenStackShell
 from cloudshell.cp.openstack.models.openstack_resource_model import OpenStackResourceModel
 from cloudshell.cp.openstack.models.deploy_os_nova_image_instance_resource_model import DeployOSNovaImageInstanceResourceModel
 from cloudshell.cp.openstack.models.deploy_result_model import DeployResultModel
-from cloudshell.cp.openstack.models.reservation_model import ReservationModel
 
 class TestOpenStackShell(TestCase):
 
