@@ -18,17 +18,12 @@ class NovaInstanceService(object):
     def create_instance(self, openstack_session, name, reservation,
                         deploy_req_model, logger):
         """
-        :param openstack_session: Keystone Session
-        :type openstack_session: keystoneauth1.session.Session
-        :param name: Name of Instance
-        :type name: str
-        :param reservation: Reservation Model
-        :type reservation: FIXME
-        :param deploy_req_model: Details of the Image to be deployed
-        :type deploy_req_model: cloudshell.cp.openstack.models.deploy_os_nova_image_instance_model.DeployOSNovaImageInstanceResourceModel
-        :param logger:
-        :type logger:
-        :return novaclient.Client.servers.Server:
+        :param keystoneauth1.session.Session openstack_session: Keystone Session
+        :param str name: Name of Instance
+        :param ReservationModel reservation: Reservation Model
+        :param DeployOSNovaImageInstanceResourceModel deploy_req_model: Details of the Image to be deployed
+        :param LoggingSessionContext logger:
+        :rtype novaclient.Client.servers.Server:
         """
 
         if not openstack_session or not name or not reservation or \
@@ -60,13 +55,10 @@ class NovaInstanceService(object):
 
     def terminate_instance(self, openstack_session, instance_id, logger):
         """
-        :param openstack_session:
-        :type openstack_session:
-        :param instance_id: Instance ID to be terminated
-        :type instance_id: str
-        :param logger:
-        :type logger:
-        :return Boolean:
+        :param keystoneauth1.session.Session openstack_session:
+        :param str instance_id: Instance ID to be terminated
+        :param LoggingSessionContext logger:
+        :rtype Boolean:
         """
         logger.info("Deleting instance with instance ID {0}".format(instance_id))
 
@@ -86,13 +78,10 @@ class NovaInstanceService(object):
         """
         call instance.start() for the instance for a given instance_id
 
-        :param openstack_session:
-        :param openstack_session:
-        :param instance_id:
-        :param instance_id:
-        :param logger:
-        :param logger:
-        :return:
+        :param keystoneauth1.session.Session openstack_session:
+        :param str instance_id:
+        :param LoggingSessionContext logger:
+        :rtype None:
         """
         client = novaclient.Client(self.API_VERSION, session=openstack_session)
         instance = self.get_instance_from_instance_id(openstack_session=openstack_session,
@@ -111,13 +100,10 @@ class NovaInstanceService(object):
         """
         call instance.stop() for the instance for a given instance_id
 
-        :param openstack_session:
-        :param openstack_session:
-        :param instance_id:
-        :param instance_id:
-        :param logger:
-        :param logger:
-        :return:
+        :param keystoneauth1.session.Session openstack_session:
+        :param str instance_id:
+        :param LoggingSessionContext logger:
+        :rtype None:
         """
         client = novaclient.Client(self.API_VERSION, session=openstack_session)
         instance = self.get_instance_from_instance_id(openstack_session=openstack_session,
@@ -134,36 +120,31 @@ class NovaInstanceService(object):
 
     def get_security_groups(self, openstack_session, instance):
         """
-        :param openstack_session:
-        :type openstack_session:
-        :param instance:
-        :type instance: novaclient.Client.servers.Server
-        :return dict: Dictionary of Security Groups attached to instance.
+        :param keystoneauth1.session.Session openstack_session:
+        :param novaclient.Client.servers.Server instance:
+        :rtype dict: Dictionary of Security Groups attached to instance.
         """
         pass
 
     def get_interfaces(self, instance):
         """
-        :param instance:
-        :type instance: novaclient.Client.servers.Server
-        :return dict: Dictionary of Interfaces attached (gives IP addrsses)
+        :param novaclient.Client.servers.Server instance:
+        :rtype dict: Dictionary of Interfaces attached (gives IP addrsses)
         """
         pass
 
     def assign_floating_ip(self, instance):
         """
-        :param instance:
-        :type instance: novaclient.Client.servers.Server
-        :return dict: Dictionary of Security Groups attached to instance.
+        :param novaclient.Client.servers.Server instance:
+        :rtype dict: Dictionary of Security Groups attached to instance.
         """
         pass
 
     def get_private_ip(self, instance):
         """
 
-        :param instance: novaclient.Client.servers.Server
-        :return : Instance IP
-        :rtype str:
+        :param novaclient.Client.servers.Server instance:
+        :rtype str: Instance IP
         """
         if not instance:
             return ""
@@ -180,13 +161,10 @@ class NovaInstanceService(object):
         """
         Returns an instance, given instance_id for the openstack_session. Optionally takes novaclient Object
 
-        :param openstack_session:
-        :type openstack_session:
-        :param instance_id:
-        :type instance_id:
-        :param client: client (optional)
-        :type client: client (optional)
-        :return instance:
+        :param keystoneauth1.session.Sesssion openstack_session:
+        :param str instance_id:
+        :param novaclient.Client client: client (optional)
+        :rtype novaclient.Client.servers.Server instance:
         """
         if client is None:
             client = novaclient.Client(self.API_VERSION, session=openstack_session)

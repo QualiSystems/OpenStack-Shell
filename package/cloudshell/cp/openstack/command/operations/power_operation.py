@@ -13,17 +13,12 @@ class PowerOperation(object):
         """
         Powers on a given instance from the deployed_app_resource
 
-        :param openstack_session:
-        :type openstack_session:
-        :param cloudshell_session:
-        :type cloudshell_session:
-        :param deployed_app_resource:
-        :type deployed_app_resource:
-        :param resource_fullname:
-        :type str:
-        :param logger:
-        :type logging.Logger:
-        :return:
+        :param keystoneauth1.session.Session openstack_session:
+        :param CloudShellSessionContext cloudshell_session:
+        :param DeployDataHolder deployed_app_resource:
+        :param str resource_fullname:
+        :param LoggingSessionContext logger:
+        :rtype None:
         """
 
         instance_id = deployed_app_resource.vmdetails.uid
@@ -43,17 +38,12 @@ class PowerOperation(object):
         """
         Powers down a given instance (obtained from deployed_app_resource.vmdetails.uid
 
-        :param openstack_session:
-        :type openstack_session:
-        :param cloudshell_session:
-        :type cloudshell_session:
-        :param deployed_app_resource:
-        :type deployed_app_resource:
-        :param resource_fullname:
-        :type resource_fullname:
-        :param logger:
-        :type logger:
-        :return:
+        :param keystoneauth1.session.Session openstack_session:
+        :param CloudShellSessionContext cloudshell_session:
+        :param DeployDataHolder deployed_app_resource:
+        :param str resource_fullname:
+        :param LoggingSessionContext logger:
+        :rtype None:
         """
 
         # FIXME : add details

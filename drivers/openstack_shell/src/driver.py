@@ -1,3 +1,4 @@
+from cloudshell.shell.core.driver_context import AutoLoadDetails
 from cloudshell.shell.core.resource_driver_interface import ResourceDriverInterface
 
 from cloudshell.cp.openstack.openstack_shell import OpenStackShell
@@ -20,11 +21,8 @@ class OpenStackShellDriver(ResourceDriverInterface):
 
     def deploy_from_image(self, context, request):
         """
-        :param context:
-        :type context:
-        :param request:
-        :type request:
-        :return:
+        :param cloudshell.shell.core.context.ResourceCommandContext context:
+        :param DeployDataHolder request:
         :rtype  : str
         """
         return self.os_shell.deploy_instance_from_image(context, request)
@@ -47,3 +45,5 @@ class OpenStackShellDriver(ResourceDriverInterface):
     def remote_refresh_ip(self, context, ports, cancellation_context):
         return self.os_shell.refresh_ip(context)
 
+    def get_inventory(self, context):
+        return AutoLoadDetails([], [])

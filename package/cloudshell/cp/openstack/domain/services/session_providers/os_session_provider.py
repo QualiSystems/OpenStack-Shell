@@ -42,7 +42,6 @@ class OpenStackSessionProvider(object):
         logger.debug("Getting OpenStack Session:")
         logger.debug(os_res_model)
         username = os_res_model.os_user_name
-        # FIXME : should this have to be decrypted?
         password = cs_session.DecryptPassword(os_res_model.os_user_password).Value
         project_name = os_res_model.os_project_name
         auth_url = os_res_model.controller_url
@@ -58,4 +57,3 @@ class OpenStackSessionProvider(object):
                                             project_domain_id=proj_domain_id)
 
         return keystone_session.Session(auth=auth)
-

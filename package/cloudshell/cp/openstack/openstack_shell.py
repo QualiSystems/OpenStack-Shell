@@ -50,9 +50,8 @@ class OpenStackShell(object):
     def power_on(self, command_context):
         """
         Powers On the instance.
-        :param command_context:
-        :type command_context:
-        :return None
+        :param cloudshell.shell.core.context.ResourceRemoteCommandContext command_context:
+        :rtype None:
         """
 
         with LoggingSessionContext(command_context) as logger:
@@ -80,9 +79,8 @@ class OpenStackShell(object):
     def power_off(self, command_context):
         """
         Powers off the instance.
-        :param command_context:
-        :type command_context:
-        :return None:
+        :param cloudshell.shell.core.context.ResourceRemoteCommandContext command_context:
+        :rtype None:
         """
         with LoggingSessionContext(command_context) as logger:
             with ErrorHandlingContext(logger):
@@ -105,19 +103,17 @@ class OpenStackShell(object):
                                                    resource_fullname=deployed_app_fullname,
                                                    logger=logger)
 
-                # Power Operations End
+    # Power Operations End
 
-                # Deploy Operations Begin
+    # Deploy Operations Begin
 
     def deploy_instance_from_image(self, command_context, deploy_request):
         """
         Deploys an image with specification provided by deploy_request on a
         Nova instance
-        :param command_context:
-        :type command_context:
-        :param deploy_request: Specification of for the instance to be deployed
-        :return :
-        :rtype :
+        :param cloudshell.shell.core.context.ResourceCommandContext command_context:
+        :param DeployDataHolder deploy_request: Specification of for the instance to be deployed
+        :rtype str:
         """
 
         with LoggingSessionContext(command_context) as logger:
@@ -156,18 +152,16 @@ class OpenStackShell(object):
                     logger.info("Deploying: App: 2 {0}".format(app_name))
                     return self.command_result_parser.set_command_result(deployed_data)
 
-                # Deploy Operations End
+    # Deploy Operations End
 
-                # Hidden Operations Begin
+    # Hidden Operations Begin
 
     def delete_instance(self, command_context):
         """
         Deletes the Nova instance and associated block devices if delete_true
         is specified
-        :param command_context:
-        :type command_context:
-        :return :
-        :rtype :
+        :param cloudshell.shell.core.context.ResourceRemoteCommandContext command_context:
+        :rtype None:
         """
         with LoggingSessionContext(command_context) as logger:
             with ErrorHandlingContext(logger):
@@ -186,17 +180,15 @@ class OpenStackShell(object):
                                                           deployed_app_resource=deployed_app_resource,
                                                           logger=logger)
 
-                # Hidden Operations End
+    # Hidden Operations End
 
-                # Connectivity Operations Begin
+    # Connectivity Operations Begin
 
     def refresh_ip(self, command_context):
         """
         Refresh IP
-        :param command_context:
-        :type command_context:
-        :return :
-        :rtype :
+        :param cloudshell.shell.core.context.ResourceRemoteCommandContext command_context:
+        :rtype None:
         """
         with LoggingSessionContext(command_context) as logger:
             with ErrorHandlingContext(logger):
@@ -221,4 +213,4 @@ class OpenStackShell(object):
                                                            resource_fullname=deployed_app_fullname,
                                                            logger=logger)
 
-# Connectivity Operations End
+    # Connectivity Operations End

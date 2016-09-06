@@ -11,13 +11,10 @@ class HiddenOperation(object):
         """
         Deletes the resource instance. Calls the instance_service method to terminate_instance
 
-        :param openstack_session:
-        :type openstack_session:
-        :param deployed_app_resource:
-        :type deployed_app_resource:
-        :param logger:
-        :type logger:
-        :return:
+        :param keystoneauth1.session.Session openstack_session:
+        :param DeployDataHolder deployed_app_resource:
+        :param LoggingSessionContext logger:
+        :rtype None:
         """
         instance_id = deployed_app_resource.vmdetails.uid
         self.instance_service.terminate_instance(openstack_session=openstack_session,

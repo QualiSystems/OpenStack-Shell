@@ -26,10 +26,9 @@ class DeployOSNovaImageInstanceDriver(ResourceDriverInterface):
 
     def Deploy(self, context, Name=None):
         """
-        :param context: reservation context
-        :type context:
-        :param Name:
-        :type Name: str
+        :param cloudshell.shell.core.context.ResourceCommandContext context:
+        :param str Name:
+        :rtype str:
         """
         with LoggingSessionContext(context) as logger:
             with CloudShellSessionContext(context) as session:
@@ -43,7 +42,7 @@ class DeployOSNovaImageInstanceDriver(ResourceDriverInterface):
 
                 deploy_service_res_model = OSModelParser.get_deploy_resource_model_from_context_resource(context.resource)
                 # FIXME: hacky right now
-                deploy_service_res_model.cloud_provider = 'OpenStack'
+                # deploy_service_res_model.cloud_provider = 'OpenStack'
 
                 app_name = jsonpickle.decode(context.resource.app_context.app_request_json)['name']
 

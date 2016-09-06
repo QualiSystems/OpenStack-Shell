@@ -13,19 +13,13 @@ class ConnectivityOperation(object):
                    logger):
         """
 
-        :param openstack_session:
-        :type openstack_session:
-        :param cloudshell_session:
-        :type cloudshell_session:
+        :param keystoneauth1.session.Session openstack_session:
+        :param CloudShellSessionContext cloudshell_session:
         :param deployed_app_resource:
-        :type deployed_app_resource:
-        :param private_ip:
-        :type private_ip:
-        :param resource_fullname:
-        :type resource_fullname:
-        :param logger:
-        :type logger:
-        :return:
+        :param str private_ip:
+        :param str resource_fullname:
+        :param LoggingSessionContext logger:
+        :rtype None:
         """
         logger.info(deployed_app_resource.attributes)
         logger.info(private_ip)
@@ -43,4 +37,3 @@ class ConnectivityOperation(object):
 
         # FIXME : hardcoded public IP right now. Get it from floating IP later.
         cloudshell_session.SetAttributeValue(resource_fullname, ConnectivityOperation.public_ip, "192.168.1.1")
-

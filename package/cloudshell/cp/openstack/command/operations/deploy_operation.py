@@ -17,18 +17,12 @@ class DeployOperation(object):
     def deploy(self, os_session, name, reservation, deploy_req_model, logger):
         """
         Performs actual deploy operation.
-        :param os_session:
-        :type os_session:
-        :param name: Name of the instance to be deployed
-        :type name: str
-        :param reservation:
-        :type reservation: str
-        :param deploy_req_model:
-        :type deploy_req_model:
-        :param logger:
-        :type logger:
-        :return :
-        :rtype DeployResultModel
+        :param keystoneauth1.session.Session os_session:
+        :param str name: Name of the instance to be deployed
+        :param ReservationModel reservation:
+        :param DeployDataHolder deploy_req_model:
+        :param LoggingSessionContext logger:
+        :rtype DeployResultModel:
         """
         logger.info("Inside Deploy Operation.")
         # First create instance
