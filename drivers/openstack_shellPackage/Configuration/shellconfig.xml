@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ShellsConfiguration
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://schemas.qualisystems.com/ResourceManagement/ShellsConfigurationSchema.xsd">
+    <ResourceTemplates>
+        <ResourceTemplate Name="OpenStack" Model="OpenStack" Driver="OpenStack Shell Driver">
+            <Description>Template for creating OpenStack cloud Provider Resource</Description>
+            <AutoLoad Enable="true">
+                <Description>Checks that the inputs are valid for the target OpenStack</Description>
+            </AutoLoad>
+            <Attributes>
+              <Attribute Name="Controller URL" Value=""/>
+              <Attribute Name="OpenStack Domain Name" Value=""/>
+              <Attribute Name="OpenStack Project Name" Value=""/>
+              <Attribute Name="OpenStack User Name" Value=""/>
+              <Attribute Name="OpenStack User Password" Value=""/>
+              <Attribute Name="OpenStack Management VLAN ID" Value="100"/>
+              <Attribute Name="Quali Management VLAN ID" Value="110"/>
+            </Attributes>
+        </ResourceTemplate>
+    </ResourceTemplates>
+</ShellsConfiguration>
