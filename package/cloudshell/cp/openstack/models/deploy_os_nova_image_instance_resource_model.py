@@ -8,8 +8,6 @@ class DeployOSNovaImageInstanceResourceModel(object):
         self.img_name = ''
         self.instance_flavor = ''
         self.add_floating_ip = False
-        self.auto_power_off = False
         self.autoload = False
-        self.auto_delete = False
         self.outbound_ports = ''
         self.inbound_ports = ''

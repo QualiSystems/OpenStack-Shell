@@ -142,6 +142,7 @@ class OpenStackShell(object):
                     deployed_data = self.deploy_operation.deploy(os_session=os_session,
                                                                  name=app_name,
                                                                  reservation=reservation_model,
+                                                                 cp_resource_model=resource_model,
                                                                  deploy_req_model=deploy_req_model,
                                                                  logger=logger)
 

@@ -16,11 +16,12 @@ class NovaInstanceService(object):
         # can be called without a proper client object
 
     def create_instance(self, openstack_session, name, reservation,
-                        deploy_req_model, logger):
+                        cp_resource_model, deploy_req_model, logger):
         """
         :param keystoneauth1.session.Session openstack_session: Keystone Session
         :param str name: Name of Instance
         :param ReservationModel reservation: Reservation Model
+        :param OpenStackResourceModel cp_resource_model:
         :param DeployOSNovaImageInstanceResourceModel deploy_req_model: Details of the Image to be deployed
         :param LoggingSessionContext logger:
         :rtype novaclient.Client.servers.Server:
@@ -37,9 +38,9 @@ class NovaInstanceService(object):
         # FIXME: Add other arguments as kwargs
         img_obj = client.images.find(name=deploy_req_model.img_name)
         flavor_obj = client.flavors.find(name=deploy_req_model.instance_flavor)
-        # Quali Network - FIXME: Remove hard coded (get it from network service)
-        qnet_obj = client.networks.find(label='quali-network')
-        qnet_dict = {'net-id':qnet_obj.id}
+
+        # Quali Network - Quali Network UUID is a OpenStack Resource Model attribute
+        qnet_dict = {'net-id': cp_resource_model.qs_mgmt_os_net_uuid}
 
         uniq = CloudshellDriverHelper.get_uuid() #str(uuid.uuid4()).split("-")[0]
         name = name + "-" + uniq

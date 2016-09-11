@@ -14,13 +14,14 @@ class DeployOperation(object):
         self.instance_waiter = InstanceWaiter()
         self.instance_service = NovaInstanceService(self.instance_waiter)
 
-    def deploy(self, os_session, name, reservation, deploy_req_model, logger):
+    def deploy(self, os_session, name, reservation, cp_resource_model, deploy_req_model, logger):
         """
         Performs actual deploy operation.
         :param keystoneauth1.session.Session os_session:
         :param str name: Name of the instance to be deployed
         :param ReservationModel reservation:
         :param DeployDataHolder deploy_req_model:
+        :param XXX cp_resource_model:
         :param LoggingSessionContext logger:
         :rtype DeployResultModel:
         """
@@ -29,6 +30,7 @@ class DeployOperation(object):
         instance = self.instance_service.create_instance(openstack_session=os_session,
                                                          name=name,
                                                          reservation=reservation,
+                                                         cp_resource_model=cp_resource_model,
                                                          deploy_req_model=deploy_req_model,
                                                          logger=logger)
 
