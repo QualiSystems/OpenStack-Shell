@@ -19,6 +19,7 @@ class TestNovaInstanceService(TestCase):
         result = self.instance_service.create_instance(openstack_session=None,
                                                        name=test_name,
                                                        reservation=Mock(),
+                                                       cp_resource_model=Mock(),
                                                        deploy_req_model=Mock(),
                                                        logger=self.mock_logger)
         self.assertEqual(result, None)
@@ -35,17 +36,18 @@ class TestNovaInstanceService(TestCase):
         mock_flavor = Mock()
         mock_client2.images.find = Mock(return_value=mock_image)
         mock_client2.flavors.find = Mock(return_value=mock_flavor)
-        mock_netobj = Mock()
-        mock_netobj.id = '1234'
-        mock_client2.networks.find = Mock(return_value=mock_netobj)
+
+        mock_cp_resource_model = Mock()
+        mock_cp_resource_model.qs_mgmt_os_net_uuid = '1234'
 
         mock_client2.servers = Mock()
         mocked_inst = Mock()
         mock_client2.servers.create = Mock(return_value=mocked_inst)
-        mock_qnet_dict = {'net-id': mock_netobj.id}
+        mock_qnet_dict = {'net-id': mock_cp_resource_model.qs_mgmt_os_net_uuid}
         result = self.instance_service.create_instance(openstack_session=self.openstack_session,
                                                        name=test_name,
                                                        reservation=Mock(),
+                                                       cp_resource_model=mock_cp_resource_model,
                                                        deploy_req_model=Mock(),
                                                        logger=self.mock_logger)
 
