@@ -34,7 +34,7 @@ class OpenStackShellModelParser(object):
         deploy_res_model = DeployOSNovaImageInstanceResourceModel()
         deploy_res_model.cloud_provider = data_holder.image.cloud_provider
         deploy_res_model.cp_avail_zone = data_holder.image.cp_avail_zone
-        deploy_res_model.img_name = data_holder.image.img_name
+        deploy_res_model.img_uuid = data_holder.image.img_uuid
         deploy_res_model.instance_flavor = data_holder.image.instance_flavor
         deploy_res_model.add_floating_ip = data_holder.image.add_floating_ip
         deploy_res_model.autoload = data_holder.image.autoload
@@ -51,7 +51,7 @@ class OpenStackShellModelParser(object):
         deploy_resource_model = DeployOSNovaImageInstanceResourceModel()
         deploy_resource_model.cloud_provider = attrs['Cloud Provider']
         deploy_resource_model.cp_avail_zone = attrs['Availability Zone']
-        deploy_resource_model.img_name = attrs['Image Name']
+        deploy_resource_model.img_uuid = attrs['Image UUID']
         deploy_resource_model.instance_flavor = attrs['Instance Flavor']
         deploy_resource_model.add_floating_ip = OpenStackShellModelParser.parse_boolean(attrs['Add Floating IP'])
         deploy_resource_model.autoload = OpenStackShellModelParser.parse_boolean(attrs['Autoload'])

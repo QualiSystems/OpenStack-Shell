@@ -33,10 +33,10 @@ class NovaInstanceService(object):
 
         client = novaclient.Client(self.API_VERSION, session=openstack_session)
 
-        logger.info("Creating OpenStack Instance for Image: {0}, Flavor: {1}".format(deploy_req_model.img_name,
+        logger.info("Creating OpenStack Instance for Image: {0}, Flavor: {1}".format(deploy_req_model.img_uuid,
                                                                                      deploy_req_model.instance_flavor))
         # FIXME: Add other arguments as kwargs
-        img_obj = client.images.find(name=deploy_req_model.img_name)
+        img_obj = client.images.find(id=deploy_req_model.img_uuid)
         flavor_obj = client.flavors.find(name=deploy_req_model.instance_flavor)
 
         # Quali Network - Quali Network UUID is a OpenStack Resource Model attribute
