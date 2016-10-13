@@ -127,3 +127,31 @@ class TestNovaInstanceService(TestCase):
                                                             logger=self.mock_logger,
                                                             client=mock_client2)
         self.assertEqual(result, mock_instance)
+
+    def test_get_instance_from_instance_id_not_found_on_nova(self):
+        """Check that function will return None if instance with given id will not be found on the Nova server"""
+        mock_client = Mock()
+        test_nova_instance_service.novaclient.Client = Mock(return_value=mock_client)
+
+        mock_client.servers.find = Mock(side_effect=test_nova_instance_service.novaclient.exceptions.NotFound(""))
+
+        test_instance_id = '1234'
+        result = self.instance_service.get_instance_from_instance_id(openstack_session=self.openstack_session,
+                                                                     instance_id=test_instance_id,
+                                                                     logger=self.mock_logger,
+                                                                     client=mock_client)
+        self.assertEqual(result, None)
+
+    def test_get_instance_from_instance_id_reraise_exception(self):
+        """Check that function will re-raise exception if such occurs during retrieving instance from Nova server"""
+        mock_client = Mock()
+        test_nova_instance_service.novaclient.Client = Mock(return_value=mock_client)
+
+        mock_client.servers.find = Mock(side_effect=Exception())
+        test_instance_id = '1234'
+
+        with self.assertRaises(Exception):
+            self.instance_service.get_instance_from_instance_id(openstack_session=self.openstack_session,
+                                                                instance_id=test_instance_id,
+                                                                logger=self.mock_logger,
+                                                                client=mock_client)
