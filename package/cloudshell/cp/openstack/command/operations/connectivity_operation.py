@@ -80,7 +80,7 @@ class ConnectivityOperation(object):
 
             deployed_app_res_name = action.actionTarget.fullName
 
-            for cust_attr in action.customAttributes :
+            for cust_attr in action.customActionAttributes :
                 if cust_attr.attributeName == 'VM_UUID':
                     vm_uuid = cust_attr.attributeValue
                     resource_info = (deployed_app_res_name, vm_uuid, actionid)
@@ -173,12 +173,13 @@ class ConnectivityOperation(object):
 
                         else:
                             action_result = ConnectivityActionResultModel()
-                            action_result.success = True
+                            action_result.success = "True"
                             action_result.actionId = val[2]
-                            action_result.errorMessage = \
+                            action_result.errorMessage = ""
+                            action_result.infoMessage = \
                                 "Successfully Attached NIC on Network {0} to Instance {1}".format(net_id, val[0])
-                            action_result.infoMessage = None
                             action_result.updatedInterface = result
+                            action_result.type = 'setVlan'
 
                             #result = {"success": "Success",
                             #          "actionId": val[2],

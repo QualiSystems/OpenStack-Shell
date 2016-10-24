@@ -199,7 +199,7 @@ class NovaInstanceService(object):
 
         try:
             res = instance.interface_attach(net_id=net_id, port_id=None, fixed_ip=None)
-            iface_mac = res.to_dict.get('mac_addr')
+            iface_mac = res.to_dict().get('mac_addr')
             return iface_mac
         except Exception as e:
             logger.info("Exception: {0} during interface attach".format(e))
