@@ -180,3 +180,28 @@ class NovaInstanceService(object):
             return None
         except Exception:
             raise
+
+    def attach_nic_to_net(self, openstack_session, instance_id, net_id, logger):
+        """
+
+        :param openstack_session:
+        :param instance_id:
+        :param net_id:
+        :param logger:
+        :return:
+        """
+
+        instance = self.get_instance_from_instance_id(openstack_session=openstack_session,
+                                                      instance_id=instance_id,
+                                                      logger=logger)
+        if instance is None :
+            return None
+
+        try:
+            res = instance.interface_attach(net_id=net_id, port_id=None, fixed_ip=None)
+            iface_mac = res.to_dict.get('mac_addr')
+            return iface_mac
+        except Exception as e:
+            logger.info("Exception: {0} during interface attach".format(e))
+
+        return None

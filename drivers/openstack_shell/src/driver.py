@@ -29,6 +29,9 @@ class OpenStackShellDriver(ResourceDriverInterface):
         #                           "cloud_provider_resource_name" : "openstack"},
         #                            unpicklable=False))
 
+    def ApplyConnectivityChanges(self, context, request):
+        return self.os_shell.apply_connectivity(context, request)
+
     def PowerOn(self, context, ports):
         return self.os_shell.power_on(context)
 

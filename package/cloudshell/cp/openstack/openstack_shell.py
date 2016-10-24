@@ -82,6 +82,7 @@ class OpenStackShell(object):
         :param cloudshell.shell.core.context.ResourceRemoteCommandContext command_context:
         :rtype None:
         """
+
         with LoggingSessionContext(command_context) as logger:
             with ErrorHandlingContext(logger):
                 with CloudShellSessionContext(command_context) as cs_session:
@@ -212,5 +213,20 @@ class OpenStackShell(object):
                                                            private_ip=deployed_app_private_ip,
                                                            resource_fullname=deployed_app_fullname,
                                                            logger=logger)
+
+    def apply_connectivity(self, command_context, connectivity_request):
+        with LoggingSessionContext(command_context) as logger:
+            with ErrorHandlingContext(logger):
+                with CloudShellSessionContext(command_context) as cs_session:
+                    resource_model = self.model_parser.get_resource_model_from_context(command_context.resource)
+
+                    logger.debug(resource_model)
+                    os_session = self.os_session_provider.get_openstack_session(cs_session, resource_model, logger)
+                    connectivity_result = self.connectivity_operation.apply_connectivity(openstack_session=os_session,
+                                                                            resource_model=resource_model,
+                                                                            conn_request=connectivity_request,
+                                                                            logger=logger)
+
+                    return self.command_result_parser.set_command_result(connectivity_result)
 
     # Connectivity Operations End
