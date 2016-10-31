@@ -17,6 +17,7 @@
               <Attribute Name="OpenStack User Password" Value=""/>
               <Attribute Name="OpenStack Management VLAN ID" Value="100"/>
               <Attribute Name="Quali Management VLAN ID" Value="110"/>
+              <Attribute Name="Reserved Networks" Value="" />
             </Attributes>
         </ResourceTemplate>
     </ResourceTemplates>

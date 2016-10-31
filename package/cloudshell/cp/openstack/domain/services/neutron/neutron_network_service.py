@@ -53,7 +53,7 @@ class NeutronNetworkService(object):
 
         client = neutron_client.Client(session=openstack_session)
 
-        cidr = self._get_unused_cidr(cp_resource_model.reserved_networks)
+        cidr = self._get_unused_cidr(cp_resvd_cidrs=cp_resource_model.reserved_networks, logger=logger)
         if cidr is None:
             logger.error("Cannot allocate new subnet. All subnets exhausted")
             return None
@@ -71,7 +71,7 @@ class NeutronNetworkService(object):
 
         return new_subnet
 
-    def _get_unused_cidr(self, cp_resvd_cidrs):
+    def _get_unused_cidr(self, cp_resvd_cidrs, logger):
         """
 
         :param cp_resvd_cidrs:
@@ -91,9 +91,12 @@ class NeutronNetworkService(object):
                 return cidr
         else:
             candidate_prefixes = {'10': '10.0', '192.168': '192.168', '172': '172.0'}
-
-            possible_prefixes = filter(lambda x: any(map(lambda y: y.startswith(x), cp_resvd_cidrs)),
+            cp_resvd_cidrs = cp_resvd_cidrs.split(",")
+            logger.error(cp_resvd_cidrs)
+            possible_prefixes = filter(lambda x: any(map(lambda y: not y.strip().startswith(x), cp_resvd_cidrs)),
                                        candidate_prefixes.keys())
+
+            logger.info(possible_prefixes)
             if not possible_prefixes:
                 return None
             else:
