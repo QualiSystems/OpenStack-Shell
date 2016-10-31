@@ -48,11 +48,11 @@ class ConnectivityOperation(object):
         # FIXME : hardcoded public IP right now. Get it from floating IP later.
         cloudshell_session.SetAttributeValue(resource_fullname, ConnectivityOperation.public_ip, "192.168.1.1")
 
-    def apply_connectivity(self, openstack_session, resource_model, conn_request, logger):
+    def apply_connectivity(self, openstack_session, cp_resource_model, conn_request, logger):
         """
         Implements Apply connectivity - parses the conn_requests and creates
         :param openstack_session:
-        :param resource_model:
+        :param cp_resource_model:
         :param conn_request:
         :return:
         """
@@ -68,6 +68,7 @@ class ConnectivityOperation(object):
 
         set_vlan_actions_dict = {}
         remove_vlan_actions_dict = {}
+
         # TODO : implement remove actions dict
         for action in actions:
             if action.type == 'setVlan':
@@ -92,7 +93,7 @@ class ConnectivityOperation(object):
         results = []
         if set_vlan_actions_dict :
             result = self._do_set_vlan_actions(openstack_session=openstack_session,
-                                               resource_model=resource_model,
+                                               cp_resource_model=cp_resource_model,
                                                vlan_actions=set_vlan_actions_dict,
                                                logger=logger)
 
@@ -100,7 +101,7 @@ class ConnectivityOperation(object):
 
         if remove_vlan_actions_dict:
             result = self._do_remove_vlan_actions(openstack_session=openstack_session,
-                                                  resource_model=resource_model,
+                                                  cp_resource_model=cp_resource_model,
                                                   vlan_actions=set_vlan_actions_dict,
                                                   logger=logger)
             results += result
@@ -113,11 +114,11 @@ class ConnectivityOperation(object):
 
         return driver_response_root
 
-    def _do_set_vlan_actions(self, openstack_session, resource_model, vlan_actions, logger):
+    def _do_set_vlan_actions(self, openstack_session, cp_resource_model, vlan_actions, logger):
         """
 
         :param openstack_session:
-        :param resource_model:
+        :param cp_resource_model:
         :param vlan_actions:
         :return:
         """
@@ -126,7 +127,6 @@ class ConnectivityOperation(object):
         results = []
 
         for k, values in vlan_actions.iteritems():
-
             net = self.network_service.create_network_with_vlanid(openstack_session=openstack_session,
                                                                   vlanid=int(k),
                                                                   logger=logger)
@@ -137,11 +137,15 @@ class ConnectivityOperation(object):
                                                  failure_text="Failed to Create Network with VLAN ID {0}".format(k))
             else:
                 net_id = net['id']
-                # Create subnet : We just use hard coded CIDR for now. They wil be all isolated
-                # thanks to VLANs
-                subnet = self.network_service.attach_subnet_to_net(openstack_session=openstack_session,
-                                                                   net_id=net_id,
-                                                                   logger=logger)
+
+                subnet = net['subnets']
+                if not subnet:
+                    subnet = self.network_service.attach_subnet_to_net(openstack_session=openstack_session,
+                                                                       cp_resource_model=cp_resource_model,
+                                                                       net_id=net_id,
+                                                                       logger=logger)
+                else:
+                    subnet = subnet[0]
                 if not subnet:
                     # FIXME: create error for action
                     results = self._set_fail_results(values=values,
@@ -162,15 +166,6 @@ class ConnectivityOperation(object):
                                 "Failed to Attach NIC on Network {0} to Instance {1}".format(net_id, val[0])
                             action_result.infoMessage = None
                             action_result.updatedInterface = None
-                            #
-                            #result = {"success": "False",
-                            #          "actionId": val[2],
-                            #          "infoMessage" : "",
-                            #          "errorMessage": ,
-                            #         "type": "setVlan",
-                            #          "updatedInterface" : ""
-                            #          }
-
                         else:
                             action_result = ConnectivityActionResultModel()
                             action_result.success = "True"
@@ -180,23 +175,15 @@ class ConnectivityOperation(object):
                                 "Successfully Attached NIC on Network {0} to Instance {1}".format(net_id, val[0])
                             action_result.updatedInterface = result
                             action_result.type = 'setVlan'
-
-                            #result = {"success": "Success",
-                            #          "actionId": val[2],
-                            #          "infoMessage" : "Successfully Attached NIC on Network {0} to Instance {1}".format(net_id, val[0]),
-                            #         "errorMessage": "",
-                            #          "type": "setVlan",
-                            #          "updatedInterface": result
-                            #          }
                         attach_results.append(action_result)
                     results = attach_results
         return results
 
-    def _do_remove_vlan_actions(self, openstack_session, resource_model, vlan_actions, logger):
+    def _do_remove_vlan_actions(self, openstack_session, cp_resource_model, vlan_actions, logger):
         """
         Function implementing Remove VLANs in apply_connectivity
         :param openstack_session:
-        :param resource_model:
+        :param cp_resource_model:
         :param vlan_actions:
         :param logger:
         :return:
@@ -221,13 +208,5 @@ class ConnectivityOperation(object):
             action_result.errorMessage = failure_text
             action_result.type = action_type
             action_result.updatedInterface = None
-
-            #result = {"success": "Success",
-            #          "actionId": value[2],
-            #          "infoMessage" : "",
-            #          "errorMessage": failure_text,
-            #          "type": action_type,
-            #          "updatedInterface": ""
-            #          }
             results.append(action_result)
         return results

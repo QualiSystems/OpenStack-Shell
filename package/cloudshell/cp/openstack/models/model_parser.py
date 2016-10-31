@@ -28,6 +28,7 @@ class OpenStackShellModelParser(object):
         os_res_model.os_mgmt_subnet_cidr = attrs['OpenStack Management Subnet CIDR']
         os_res_model.qs_mgmt_subnet_cidr = attrs['Quali Management Subnet CIDR']
         os_res_model.os_floating_ip_pool = attrs['Floating IP Pool']
+        os_res_model.reserved_networks = attrs['Reserved Networks']
         return os_res_model
 
     @staticmethod
