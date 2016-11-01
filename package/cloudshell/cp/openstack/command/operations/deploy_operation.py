@@ -21,7 +21,7 @@ class DeployOperation(object):
         :param str name: Name of the instance to be deployed
         :param ReservationModel reservation:
         :param DeployDataHolder deploy_req_model:
-        :param XXX cp_resource_model:
+        :param OpenStackResourceModel cp_resource_model:
         :param LoggingSessionContext logger:
         :rtype DeployResultModel:
         """
