@@ -9,10 +9,7 @@ class OpenStackResourceModel:
         self.os_region = ''
         self.os_user_name = ''
         self.os_user_password = ''
-        self.os_mgmt_vlan_id = ''
-        self.qs_mgmt_vlan_id = ''
-        self.os_mgmt_subnet_cidr = ''
-        self.qs_mgmt_subnet_cidr = ''
+        self.qs_mgmt_os_net_uuid = ''
         self.os_floating_ip_pool = ''
 
     def __str__(self):

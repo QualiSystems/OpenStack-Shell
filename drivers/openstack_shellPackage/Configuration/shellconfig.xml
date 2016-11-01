@@ -8,15 +8,14 @@
             <Description>Template for creating OpenStack cloud Provider Resource</Description>
             <AutoLoad Enable="true">
                 <Description>Checks that the inputs are valid for the target OpenStack</Description>
-            </AutoLoad>
+             </AutoLoad>
             <Attributes>
-              <Attribute Name="Controller URL" Value=""/>
-              <Attribute Name="OpenStack Domain Name" Value=""/>
+              <Attribute Name="Controller URL" Value="http://[controller-ip]:5000/v3"/>
+              <Attribute Name="OpenStack Domain Name" Value="default"/>
               <Attribute Name="OpenStack Project Name" Value=""/>
               <Attribute Name="OpenStack User Name" Value=""/>
               <Attribute Name="OpenStack User Password" Value=""/>
-              <Attribute Name="OpenStack Management VLAN ID" Value="100"/>
-              <Attribute Name="Quali Management VLAN ID" Value="110"/>
+              <Attribute Name="Quali Management Network UUID" Value=""/>
             </Attributes>
         </ResourceTemplate>
     </ResourceTemplates>
