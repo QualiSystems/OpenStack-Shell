@@ -51,10 +51,10 @@ class ConnectivityOperation(object):
     def apply_connectivity(self, openstack_session, cp_resource_model, conn_request, logger):
         """
         Implements Apply connectivity - parses the conn_requests and creates
-        :param openstack_session:
-        :param cp_resource_model:
-        :param conn_request:
-        :return:
+        :param keystoneauth1.session.Session openstack_session:
+        :param OpenStackResourceModel cp_resource_model:
+        :param str conn_request: Connectivty Request JSON
+        :return DriverResponseRoot:
         """
 
         conn_req_deploy_data = DeployDataHolder(jsonpickle.decode(conn_request))
@@ -117,10 +117,11 @@ class ConnectivityOperation(object):
     def _do_set_vlan_actions(self, openstack_session, cp_resource_model, vlan_actions, logger):
         """
 
-        :param openstack_session:
-        :param cp_resource_model:
-        :param vlan_actions:
-        :return:
+        :param keystoneauth1.session.Session openstack_session:
+        :param OpenStackResourceModel cp_resource_model:
+        :param dict vlan_actions:
+        :param LoggingSessionContext logger:
+        :return ConnectivityActionResult List :
         """
 
         # For each VLAN ID (create VLAN network)
@@ -182,10 +183,10 @@ class ConnectivityOperation(object):
     def _do_remove_vlan_actions(self, openstack_session, cp_resource_model, vlan_actions, logger):
         """
         Function implementing Remove VLANs in apply_connectivity
-        :param openstack_session:
-        :param cp_resource_model:
-        :param vlan_actions:
-        :param logger:
+        :param keystoneauth1.session.Session openstack_session:
+        :param OpenStckResourceModel cp_resource_model:
+        :param dict vlan_actions:
+        :param LoggingSessionContext logger:
         :return:
         """
         logger.info("_do_remove_vlan_actions called.")
@@ -193,11 +194,12 @@ class ConnectivityOperation(object):
 
     def _set_fail_results(self, values, failure_text, action_type, logger=None):
         """
-        For all connections (obtained from values, set the failed results text, useful in generating output
-        :param values:
-        :param failure_text:
+        For all connections (obtained from values), set the failed results text, useful in generating output
+        :param tuple values:
+        :param str failure_text:
+        :param str action_type
         :param logger:
-        :return:
+        :return ConnectivityActionResultModel List:
         """
         results = []
         for value in values:

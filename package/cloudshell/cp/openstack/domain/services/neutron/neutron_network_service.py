@@ -7,7 +7,6 @@ class NeutronNetworkService(object):
     """
 
     def __init__(self):
-        pass
         self.cidr_base = None
         self.cidr_subnet_num = 0
         self.allocated_subnets = []
@@ -15,9 +14,10 @@ class NeutronNetworkService(object):
     def create_network_with_vlanid(self, openstack_session, vlanid, logger):
         """
 
-        :param openstack_session:
-        :param vlanid:
-        :return:
+        :param keystoneauth1.session.Session openstack_session:
+        :param int vlanid:
+        :param LoggingSessionContext logger:
+        :return dict :
         """
 
         client = neutron_client.Client(session=openstack_session)
@@ -44,11 +44,12 @@ class NeutronNetworkService(object):
 
     def attach_subnet_to_net(self, openstack_session, cp_resource_model, net_id, logger):
         """
+        Atttach a subnet to the network with given net_id.
 
-        :param openstack_session:
-        :param cp_resource_model:
-        :param net_id:
-        :return:
+        :param keystoneauth1.session.Session openstack_session:
+        :param OpenStackResourceModel cp_resource_model:
+        :param str net_id: UUID string
+        :return dict:
         """
 
         client = neutron_client.Client(session=openstack_session)
@@ -73,9 +74,9 @@ class NeutronNetworkService(object):
 
     def _get_unused_cidr(self, cp_resvd_cidrs, logger):
         """
-
-        :param cp_resvd_cidrs:
-        :return:
+        Gets unused CIDR that excludes the reserved CIDRs
+        :param str cp_resvd_cidrs:
+        :return str:
         """
 
         # Algorithm below is a very simplistic one where we choose one of the three prefixes and then use

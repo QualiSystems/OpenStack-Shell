@@ -215,6 +215,12 @@ class OpenStackShell(object):
                                                            logger=logger)
 
     def apply_connectivity(self, command_context, connectivity_request):
+        """
+
+        :param cloudshell.shell.core.context.ResourceRemoteCommandContext command_context:
+        :param str connectivity_request: Connectivity Request JSON string
+        :return:
+        """
         with LoggingSessionContext(command_context) as logger:
             with ErrorHandlingContext(logger):
                 with CloudShellSessionContext(command_context) as cs_session:
