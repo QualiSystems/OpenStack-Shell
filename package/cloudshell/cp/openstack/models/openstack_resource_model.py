@@ -11,6 +11,7 @@ class OpenStackResourceModel:
         self.os_user_password = ''
         self.qs_mgmt_os_net_uuid = ''
         self.os_floating_ip_pool = ''
+        self.reserved_networks = ''
 
     def __str__(self):
         desc = "OpenStack Resource: controller_url: {0}, domain: {1}, project_name : {2}, os_user_name : {3}".format(

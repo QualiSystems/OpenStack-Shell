@@ -63,6 +63,14 @@
       </Rules>
     </AttributeInfo>
 
+    <!-- 12 -->
+    <AttributeInfo DefaultValue="" Description="Reserved Networks: A Comman separated List of CIDRs that are not to be used by the Subnet CIDR during App connectivity" IsReadOnly="false" Name="Reserved Networks" Type="String">
+      <Rules>
+        <Rule Name="Configuration" />
+        <Rule Name="Setting" />
+      </Rules>
+    </AttributeInfo>
+
     <!-- attributes used in deployed app -->
     <!-- 1 -->
     <AttributeInfo DefaultValue="" Description="Cloud Provider" IsReadOnly="false" Name="Cloud Provider" Type="String">
@@ -149,6 +157,9 @@
               <AllowedValues />
             </AttachedAttribute>
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="OpenStack User Name" UserInput="true">
+              <AllowedValues />
+            </AttachedAttribute>
+            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Reserved Networks" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Floating IP Pool" UserInput="true">

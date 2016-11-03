@@ -15,6 +15,7 @@
               <Attribute Name="OpenStack Project Name" Value=""/>
               <Attribute Name="OpenStack User Name" Value=""/>
               <Attribute Name="OpenStack User Password" Value=""/>
+              <Attribute Name="Reserved Networks" Value="" />
               <Attribute Name="Quali Management Network UUID" Value=""/>
             </Attributes>
         </ResourceTemplate>
