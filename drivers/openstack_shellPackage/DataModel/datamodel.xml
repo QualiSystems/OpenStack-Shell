@@ -5,7 +5,7 @@
       <Rules/>
     </AttributeInfo>
     <!-- 1 -->
-    <AttributeInfo DefaultValue="" Description="Public Endpoint of the Keystone Controller URL for the OpenStack deployment." IsReadOnly="false" Name="Controller URL" Type="String">
+    <AttributeInfo DefaultValue="http://controller:5000/v3" Description="Public Endpoint of the Keystone Controller URL for the OpenStack deployment. Typically this will be of the form http://controler-ip:5000/v3" IsReadOnly="false" Name="Controller URL" Type="String">
       <Rules>
         <Rule Name="Configuration" />
         <Rule Name="Setting" />
@@ -26,7 +26,7 @@
       </Rules>
     </AttributeInfo>
     <!-- 4 -->
-    <AttributeInfo DefaultValue="" Description="In a multi-region deployment name of the region where resources will be deployed" IsReadOnly="false" Name="OpenStack Region" Type="String">
+     <AttributeInfo DefaultValue="" Description="In a multi-region deployment name of the region where resources will be deployed. Leave blank for single region." IsReadOnly="false" Name="OpenStack Region" Type="String">
       <Rules>
         <Rule Name="Configuration" />
         <Rule Name="Setting" />
@@ -46,31 +46,9 @@
         <Rule Name="Setting" />
       </Rules>
     </AttributeInfo>
+
     <!-- 7 -->
-    <AttributeInfo DefaultValue="" Description="OpenStack management network VLAN ID. This network will be used by OpenStack components for internal communication. This can be empty it means, untagged network is used for management." IsReadOnly="false" Name="OpenStack Management VLAN ID" Type="String">
-      <Rules>
-        <Rule Name="Configuration" />
-        <Rule Name="Setting" />
-      </Rules>
-    </AttributeInfo>
-    <!-- 8 -->
-    <AttributeInfo DefaultValue="" Description="Quali Management VLAN ID. This network will be used for running QualiX and Execution Servers" IsReadOnly="false" Name="Quali Management VLAN ID" Type="String">
-      <Rules>
-        <Rule Name="Configuration" />
-        <Rule Name="Setting" />
-      </Rules>
-    </AttributeInfo>
-
-    <!-- 9 -->
-    <AttributeInfo DefaultValue="" Description="IP Subnet for OpenStack Management (not used by cloudshell)" IsReadOnly="false" Name="OpenStack Management Subnet CIDR" Type="String">
-      <Rules>
-        <Rule Name="Configuration" />
-        <Rule Name="Setting" />
-      </Rules>
-    </AttributeInfo>
-
-    <!-- 10 -->
-    <AttributeInfo DefaultValue="" Description="IP Subnet for QualiX ane Quali EC" IsReadOnly="false" Name="Quali Management Subnet CIDR" Type="String">
+    <AttributeInfo DefaultValue="" Description="Network ID of Quali Management Network." IsReadOnly="false" Name="Quali Management Network UUID" Type="String">
       <Rules>
         <Rule Name="Configuration" />
         <Rule Name="Setting" />
@@ -109,14 +87,14 @@
       </Rules>
     </AttributeInfo>
     <!-- 3 -->
-    <AttributeInfo DefaultValue="" Description="Image name to be used for deployment." IsReadOnly="false" Name="Image Name" Type="String">
+    <AttributeInfo DefaultValue="" Description="UUID of the image to be used for deployment. Check Horizon UI for Image ID" IsReadOnly="false" Name="Image UUID" Type="String">
       <Rules>
         <Rule Name="Configuration" />
         <Rule Name="Setting" />
       </Rules>
     </AttributeInfo>
     <!-- 4 -->
-    <AttributeInfo DefaultValue="" Description="Flavor of the compute Instance" IsReadOnly="false" Name="Instance Flavor" Type="String">
+    <AttributeInfo DefaultValue="" Description="Flavor of the compute Instance. Check Horizon UI for supported flavors" IsReadOnly="false" Name="Instance Flavor" Type="String">
       <Rules>
         <Rule Name="Configuration" />
         <Rule Name="Setting" />
@@ -128,20 +106,6 @@
         <Rule Name="Configuration" />
         <Rule Name="Setting" />
       </Rules>
-    </AttributeInfo>
-    <!-- 6 -->
-    <AttributeInfo DefaultValue="false" Description="Enables the automatic power off of an app during reservation Teardown." IsReadOnly="false" Name="Auto Power Off"  Type="Boolean">
-        <Rules>
-            <Rule Name="Configuration" />
-            <Rule Name="Setting" />
-        </Rules>
-    </AttributeInfo>
-    <!-- 7 -->
-    <AttributeInfo DefaultValue="false" Description="Enables the automatic deletion of an app during reservation Teardown." IsReadOnly="false" Name="Auto Delete"  Type="Boolean">
-        <Rules>
-            <Rule Name="Configuration" />
-            <Rule Name="Setting" />
-        </Rules>
     </AttributeInfo>
     <!-- 8 -->
     <AttributeInfo DefaultValue="false" Description="Enables the automatic execution of the Autoload command during reservation Setup.." IsReadOnly="false" Name="Autoload"  Type="Boolean">
@@ -183,25 +147,16 @@
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="OpenStack Project Name" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
-            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="OpenStack Region" UserInput="true">
+            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Quali Management Network UUID" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
-            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="OpenStack User Name" UserInput="true">
+            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="OpenStack Region" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="OpenStack User Password" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
-            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="OpenStack Management VLAN ID" UserInput="true">
-              <AllowedValues />
-            </AttachedAttribute>
-            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Quali Management VLAN ID" UserInput="true">
-              <AllowedValues />
-            </AttachedAttribute>
-            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="OpenStack Management Subnet CIDR" UserInput="true">
-              <AllowedValues />
-            </AttachedAttribute>
-            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Quali Management Subnet CIDR" UserInput="true">
+            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="OpenStack User Name" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Reserved Networks" UserInput="true">
@@ -279,19 +234,13 @@
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Availability Zone" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
-            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Image Name" UserInput="true">
+            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Image UUID" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Instance Flavor" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Add Floating IP" UserInput="true">
-              <AllowedValues />
-            </AttachedAttribute>
-            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Auto Power Off" UserInput="false">
-              <AllowedValues />
-            </AttachedAttribute>
-            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Auto Delete" UserInput="false">
               <AllowedValues />
             </AttachedAttribute>
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Autoload" UserInput="false">
@@ -305,8 +254,6 @@
             </AttachedAttribute>
           </AttachedAttributes>
           <AttributeValues>
-            <AttributeValue Name="Auto Power Off" Value="true"/>
-            <AttributeValue Name="Auto Delete" Value="true"/>
             <AttributeValue Name="Autoload" Value="true"/>
           </AttributeValues>
           <ParentModels />
