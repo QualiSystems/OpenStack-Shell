@@ -82,6 +82,7 @@ class NeutronNetworkService(object):
         # Algorithm below is a very simplistic one where we choose one of the three prefixes and then use
         # /24 networks starting with that prefix. This algorithm will break if all three 10.X, 192.168.X and 172.X
         # networks are used in a given On Prem Network.
+        # FIXME: Get subnets from openstack and not simply.
         if self.cidr_base is not None:
             cidr = ".".join([self.cidr_base, str(self.cidr_subnet_num), "0/24"])
             if self.cidr_subnet_num not in self.allocated_subnets:

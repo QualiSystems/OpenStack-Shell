@@ -61,7 +61,7 @@ class ConnectivityOperation(object):
 
         # Now collect following dict
         # Key: (vlanID)
-        # value: List of (Resource_Name, VM_UUID, connectionID)
+        # value: List of (Resource_Name, VM_UUID, actionID)
         # For each item, create network, and assign a nic on that network
 
         actions = conn_req_deploy_data.driverRequest.actions
@@ -69,10 +69,13 @@ class ConnectivityOperation(object):
         set_vlan_actions_dict = {}
         remove_vlan_actions_dict = {}
 
+        # Add more description
         # TODO : implement remove actions dict
         for action in actions:
+            # FIXME: Move this "ifs into a separate function
             if action.type == 'setVlan':
                 curr_dict = set_vlan_actions_dict
+            # FIXME: Check whether this is 'removeVlan'
             else:
                 curr_dict = remove_vlan_actions_dict
 
@@ -84,6 +87,7 @@ class ConnectivityOperation(object):
             for cust_attr in action.customActionAttributes :
                 if cust_attr.attributeName == 'VM_UUID':
                     vm_uuid = cust_attr.attributeValue
+                    # FIXME : changed this to object for later readability
                     resource_info = (deployed_app_res_name, vm_uuid, actionid)
             if action_vlanid in curr_dict.keys():
                 curr_dict[action_vlanid].append(resource_info)
@@ -91,7 +95,7 @@ class ConnectivityOperation(object):
                 curr_dict[action_vlanid] = [resource_info]
 
         results = []
-        if set_vlan_actions_dict :
+        if set_vlan_actions_dict:
             result = self._do_set_vlan_actions(openstack_session=openstack_session,
                                                cp_resource_model=cp_resource_model,
                                                vlan_actions=set_vlan_actions_dict,
@@ -128,6 +132,8 @@ class ConnectivityOperation(object):
         results = []
 
         for k, values in vlan_actions.iteritems():
+            # FIXME: results getting overwritten
+            # FIXME: update the nethod name
             net = self.network_service.create_network_with_vlanid(openstack_session=openstack_session,
                                                                   vlanid=int(k),
                                                                   logger=logger)
@@ -141,6 +147,7 @@ class ConnectivityOperation(object):
 
                 subnet = net['subnets']
                 if not subnet:
+                    # FIXME: Rename this function to create_and_attach
                     subnet = self.network_service.attach_subnet_to_net(openstack_session=openstack_session,
                                                                        cp_resource_model=cp_resource_model,
                                                                        net_id=net_id,
@@ -154,6 +161,7 @@ class ConnectivityOperation(object):
                                                      failure_text="Failed to attach Subnet to Network {0}".format(net_id))
                 else:
                     attach_results = []
+                    # FIXME: let's move this
                     for val in values:
 
                         instance_id = val[1]

@@ -224,6 +224,7 @@ class OpenStackShell(object):
         with LoggingSessionContext(command_context) as logger:
             with ErrorHandlingContext(logger):
                 with CloudShellSessionContext(command_context) as cs_session:
+                    # FIXME: When implementing a context manager create all clients inside the contextManager.
                     logger.info(connectivity_request)
                     cp_resource_model = self.model_parser.get_resource_model_from_context(command_context.resource)
 
