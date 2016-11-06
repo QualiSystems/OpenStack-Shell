@@ -11,7 +11,7 @@ class NeutronNetworkService(object):
         self.cidr_subnet_num = 0
         self.allocated_subnets = []
 
-    def create_network_with_vlanid(self, openstack_session, vlanid, logger):
+    def create_or_get_network_with_vlanid(self, openstack_session, vlanid, logger):
         """
 
         :param keystoneauth1.session.Session openstack_session:

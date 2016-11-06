@@ -72,27 +72,22 @@ class ConnectivityOperation(object):
         # Add more description
         # TODO : implement remove actions dict
         for action in actions:
-            # FIXME: Move this "ifs into a separate function
-            if action.type == 'setVlan':
-                curr_dict = set_vlan_actions_dict
-            # FIXME: Check whether this is 'removeVlan'
-            else:
-                curr_dict = remove_vlan_actions_dict
+
+            curr_dict = self._get_curr_actions_dict(action_type=action.type,
+                                                    set_vlan_actions_dict=set_vlan_actions_dict,
+                                                    remove_vlan_actions_dict=remove_vlan_actions_dict)
+            if not curr_dict:
+                raise ValueError("Unknown action: Action not one of 'setVlan' or 'removeVlan'.")
+
+            actionid = action.actionId
+            deployed_app_res_name = action.actionTarget.fullName
+            action_resource_info = self._get_action_resource_info(deployed_app_res_name, actionid, action.customActionAttributes)
 
             action_vlanid = action.connectionParams.vlanId
-            actionid = action.actionId
-
-            deployed_app_res_name = action.actionTarget.fullName
-
-            for cust_attr in action.customActionAttributes :
-                if cust_attr.attributeName == 'VM_UUID':
-                    vm_uuid = cust_attr.attributeValue
-                    # FIXME : changed this to object for later readability
-                    resource_info = (deployed_app_res_name, vm_uuid, actionid)
             if action_vlanid in curr_dict.keys():
-                curr_dict[action_vlanid].append(resource_info)
+                curr_dict[action_vlanid].append(action_resource_info)
             else:
-                curr_dict[action_vlanid] = [resource_info]
+                curr_dict[action_vlanid] = [action_resource_info]
 
         results = []
         if set_vlan_actions_dict:
@@ -100,7 +95,6 @@ class ConnectivityOperation(object):
                                                cp_resource_model=cp_resource_model,
                                                vlan_actions=set_vlan_actions_dict,
                                                logger=logger)
-
             results += result
 
         if remove_vlan_actions_dict:
@@ -132,21 +126,20 @@ class ConnectivityOperation(object):
         results = []
 
         for k, values in vlan_actions.iteritems():
-            # FIXME: results getting overwritten
-            # FIXME: update the nethod name
-            net = self.network_service.create_network_with_vlanid(openstack_session=openstack_session,
+            net = self.network_service.create_or_get_network_with_vlanid(openstack_session=openstack_session,
                                                                   vlanid=int(k),
                                                                   logger=logger)
             if not net:
-                # FIXME : create error for the action
-                results = self._set_fail_results(values=values,
+                fail_results = self._set_fail_results(values=values,
                                                  action_type='setVlan',
                                                  failure_text="Failed to Create Network with VLAN ID {0}".format(k))
+                results += fail_results
             else:
                 net_id = net['id']
 
                 subnet = net['subnets']
                 if not subnet:
+                    # FIXME: serialize this
                     # FIXME: Rename this function to create_and_attach
                     subnet = self.network_service.attach_subnet_to_net(openstack_session=openstack_session,
                                                                        cp_resource_model=cp_resource_model,
@@ -155,37 +148,19 @@ class ConnectivityOperation(object):
                 else:
                     subnet = subnet[0]
                 if not subnet:
-                    # FIXME: create error for action
-                    results = self._set_fail_results(values=values,
-                                                     action_type='setVlan',
-                                                     failure_text="Failed to attach Subnet to Network {0}".format(net_id))
+                    fail_results = self._set_fail_results(values=values,
+                                                          action_type='setVlan',
+                                                          failure_text="Failed to attach Subnet to Network {0}".format(net_id))
+                    results += fail_results
                 else:
                     attach_results = []
-                    # FIXME: let's move this
                     for val in values:
-
-                        instance_id = val[1]
-                        # returns MAC Address of the attached port - which is reflected in updated Port
-                        result = self.instance_service.attach_nic_to_net(openstack_session, instance_id, net_id, logger)
-                        if not result:
-                            action_result = ConnectivityActionResultModel()
-                            action_result.success = False
-                            action_result.actionId = val[2]
-                            action_result.errorMessage = \
-                                "Failed to Attach NIC on Network {0} to Instance {1}".format(net_id, val[0])
-                            action_result.infoMessage = None
-                            action_result.updatedInterface = None
-                        else:
-                            action_result = ConnectivityActionResultModel()
-                            action_result.success = "True"
-                            action_result.actionId = val[2]
-                            action_result.errorMessage = ""
-                            action_result.infoMessage = \
-                                "Successfully Attached NIC on Network {0} to Instance {1}".format(net_id, val[0])
-                            action_result.updatedInterface = result
-                            action_result.type = 'setVlan'
+                        action_result = self._attach_nic_to_instance_action_result(openstack_session=openstack_session,
+                                                                                   action_resource_info=val,
+                                                                                   net_id=net_id,
+                                                                                   logger=logger)
                         attach_results.append(action_result)
-                    results = attach_results
+                    results += attach_results
         return results
 
     def _do_remove_vlan_actions(self, openstack_session, cp_resource_model, vlan_actions, logger):
@@ -220,3 +195,77 @@ class ConnectivityOperation(object):
             action_result.updatedInterface = None
             results.append(action_result)
         return results
+
+    def _get_curr_actions_dict(self, action_type, set_vlan_action_dict=None, remove_vlan_action_dict=None):
+        """
+
+        :param str action_type:
+        :param dict set_vlan_action_dict:
+        :param dict remove_vlan_action_dict:
+        :return:
+        """
+        if action_type == 'setVlan' and set_vlan_action_dict:
+            return set_vlan_action_dict
+
+        elif action_type == 'removeVlan' and remove_vlan_action_dict:
+            return remove_vlan_action_dict
+
+        return None
+
+    def _get_action_resource_info(self, deployed_app_resource_name, actionid, custom_action_attributes):
+        """
+
+        :param str deployed_app_resource_name:
+        :param str actionid:
+        :param action.customActionAttributes custom_action_attributes: customActionAttributes obtained from JSON
+        :return ActionResourceInfo:
+        """
+        vm_uuid = None
+        for cust_attr in custom_action_attributes:
+            if cust_attr.attributeName == 'VM_UUID':
+                vm_uuid = cust_attr.attributeValue
+
+        return ActionResourceInfo(deployed_app_resource_name=deployed_app_resource_name,
+                                  actionid=actionid,
+                                  vm_uuid=vm_uuid)
+
+    def _attach_nic_to_instance_action_result(self, openstack_session, action_resource_info, net_id, logger):
+        """
+
+        :param openstack_session:
+        :param ActionResourceInfo action_resource_info:
+        :param str net_id:
+        :param LoggingSessionContext logger:
+        :return ConnectivityActionResultModel:
+        """
+        action_result = ConnectivityActionResultModel()
+
+        instance_id = action_resource_info.vm_uuid
+        result = self.instance_service.attach_nic_to_net(openstack_session, instance_id, net_id, logger)
+        if not result:
+            action_result.success = "False"
+            action_result.actionId = action_resource_info.actionid
+            action_result.errorMessage = "Failed to Attach NIC on Network {0} to Instance {1}".format(
+                                                                        net_id,
+                                                                        action_resource_info.deployed_app_resource_name)
+            action_result.infoMessage = ""
+            action_result.updatedInterface = ""
+        else:
+            action_result.success = "True"
+            action_result.actionId = action_resource_info.actionid
+            action_result.errorMessage = ""
+            action_result.infoMessage = "Successfully Attached NIC on Network {0} to Instance {1}".format(
+                                                                        net_id,
+                                                                        action_resource_info.deployed_app_resource_name)
+            action_result.updatedInterface = result
+            action_result.type = 'setVlan'
+
+        return action_result
+
+# FIXME : Move this out to a different place
+class ActionResourceInfo:
+
+    def __init__(self, deployed_app_resource_name, actionid, vm_uuid):
+        self.deployed_app_resource = deployed_app_resource_name
+        self.vm_uuid = vm_uuid
+        self.actionid = actionid
