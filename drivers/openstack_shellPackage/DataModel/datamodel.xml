@@ -128,6 +128,18 @@
          <Rule Name="Setting" />
       </Rules>
     </AttributeInfo>
+    <!-- Attributes used by Generic App Model -->
+    <AttributeInfo DefaultValue="" IsReadOnly="false" Name="User" Type="String">
+        <Rules>
+          <Rule Name="Configuration" />
+        </Rules>
+    </AttributeInfo>
+    <AttributeInfo DefaultValue="" IsReadOnly="false" Name="Password" Type="Password">
+      <Rules>
+        <Rule Name="Configuration" />
+      </Rules>
+    </AttributeInfo>
+
   </Attributes>
 
   <!-- information about Resource Families -->
