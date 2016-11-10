@@ -74,14 +74,14 @@ class ConnectivityOperation(object):
         for action in actions:
 
             curr_dict = self._get_curr_actions_dict(action_type=action.type,
-                                                    set_vlan_actions_dict=set_vlan_actions_dict,
-                                                    remove_vlan_actions_dict=remove_vlan_actions_dict)
-            if not curr_dict:
+                                                    set_vlan_action_dict=set_vlan_actions_dict,
+                                                    remove_vlan_action_dict=remove_vlan_actions_dict)
+            if curr_dict is None:
                 raise ValueError("Unknown action: Action not one of 'setVlan' or 'removeVlan'.")
 
             actionid = action.actionId
             deployed_app_res_name = action.actionTarget.fullName
-            action_resource_info = self._get_action_resource_info(deployed_app_res_name, actionid, action.customActionAttributes)
+            action_resource_info = self._get_action_resource_info(deployed_app_res_name, actionid, action)
 
             action_vlanid = action.connectionParams.vlanId
             if action_vlanid in curr_dict.keys():
@@ -100,7 +100,7 @@ class ConnectivityOperation(object):
         if remove_vlan_actions_dict:
             result = self._do_remove_vlan_actions(openstack_session=openstack_session,
                                                   cp_resource_model=cp_resource_model,
-                                                  vlan_actions=set_vlan_actions_dict,
+                                                  vlan_actions=remove_vlan_actions_dict,
                                                   logger=logger)
             results += result
 
@@ -131,8 +131,8 @@ class ConnectivityOperation(object):
                                                                   logger=logger)
             if not net:
                 fail_results = self._set_fail_results(values=values,
-                                                 action_type='setVlan',
-                                                 failure_text="Failed to Create Network with VLAN ID {0}".format(k))
+                                                      action_type='setVlan',
+                                                      failure_text="Failed to Create Network with VLAN ID {0}".format(k))
                 results += fail_results
             else:
                 net_id = net['id']
@@ -172,15 +172,42 @@ class ConnectivityOperation(object):
         :param LoggingSessionContext logger:
         :return:
         """
-        logger.info("_do_remove_vlan_actions called.")
-        return []
+
+        results = []
+
+        for k, values in vlan_actions.iteritems():
+            net = self.network_service.get_network_with_vlanid(openstack_session=openstack_session,
+                                                               vlanid=int(k), logger=logger)
+            if not net:
+                fail_results = self._set_fail_results(values=values,
+                                                      action_type='removeVlan',
+                                                      failure_text="Failed to get Network with VLAN ID {0}".format(k))
+                results += fail_results
+            else:
+                net_id = net['id']
+
+                remove_results = []
+                for val in values:
+                    action_result = self._detach_nic_from_instance_action_result(openstack_session=openstack_session,
+                                                                                 action_resource_info=val,
+                                                                                 net_id=net_id,
+                                                                                 logger=logger)
+                    remove_results.append(action_result)
+                
+                results += remove_results
+				
+                # We should just remove subnet(s) and net from Openstack now (If any exception that gets logged)
+                self.network_service.remove_subnet_and_net(openstack_session=openstack_session,
+                                                           network=net, logger=logger)
+
+        return results
 
     def _set_fail_results(self, values, failure_text, action_type, logger=None):
         """
         For all connections (obtained from values), set the failed results text, useful in generating output
         :param tuple values:
         :param str failure_text:
-        :param str action_type
+        :param str action_type:
         :param logger:
         :return ConnectivityActionResultModel List:
         """
@@ -204,35 +231,53 @@ class ConnectivityOperation(object):
         :param dict remove_vlan_action_dict:
         :return:
         """
-        if action_type == 'setVlan' and set_vlan_action_dict:
+        if action_type == 'setVlan' and set_vlan_action_dict is not None:
             return set_vlan_action_dict
 
-        elif action_type == 'removeVlan' and remove_vlan_action_dict:
+        elif action_type == 'removeVlan' and remove_vlan_action_dict is not None:
             return remove_vlan_action_dict
 
         return None
 
-    def _get_action_resource_info(self, deployed_app_resource_name, actionid, custom_action_attributes):
+    def _get_action_resource_info(self, deployed_app_resource_name, actionid, action):
         """
 
         :param str deployed_app_resource_name:
         :param str actionid:
-        :param action.customActionAttributes custom_action_attributes: customActionAttributes obtained from JSON
+        :param action: action obtained from JSON
         :return ActionResourceInfo:
+
         """
+
+        custom_action_attributes = action.customActionAttributes
         vm_uuid = None
+
         for cust_attr in custom_action_attributes:
             if cust_attr.attributeName == 'VM_UUID':
                 vm_uuid = cust_attr.attributeValue
 
+        connector_attributes = action.connectorAttributes
+
+        # in removeVlan
+        iface_ip = None
+        iface_port_id = None
+        iface_mac = None
+        if connector_attributes:
+            for conn_attribute in connector_attributes:
+                if conn_attribute.attributeName == 'Interface':
+                    iface_ip, iface_port_id, iface_mac = conn_attribute.attributeValue.split("/")
+
         return ActionResourceInfo(deployed_app_resource_name=deployed_app_resource_name,
                                   actionid=actionid,
-                                  vm_uuid=vm_uuid)
+                                  vm_uuid=vm_uuid,
+                                  interface_ip=iface_ip,
+                                  interface_port_id=iface_port_id,
+                                  interface_mac=iface_mac)
 
     def _attach_nic_to_instance_action_result(self, openstack_session, action_resource_info, net_id, logger):
         """
 
-        :param openstack_session:
+        :param keystoneauth1.session.Session openstack_session:
         :param ActionResourceInfo action_resource_info:
         :param str net_id:
         :param LoggingSessionContext logger:
@@ -250,6 +295,7 @@ class ConnectivityOperation(object):
                                                                         action_resource_info.deployed_app_resource_name)
             action_result.infoMessage = ""
             action_result.updatedInterface = ""
+            action_result.type = 'setVlan'
         else:
             action_result.success = "True"
             action_result.actionId = action_resource_info.actionid
@@ -262,10 +308,52 @@ class ConnectivityOperation(object):
 
         return action_result
 
+
+    def _detach_nic_from_instance_action_result(self, openstack_session, action_resource_info, net_id, logger):
+        """
+
+        :param keystoneauth1.session.Session openstack_session:
+        :param ActionResourceInfo action_resource_info:
+        :param str net_id:
+        :param LoggingSessionContext logger:
+        :return ConnectivityActionResultModel:
+        """
+        action_result = ConnectivityActionResultModel()
+
+        port_id = action_resource_info.interface_port_id
+        vm_uuid = action_resource_info.vm_uuid
+
+        result = self.instance_service.detach_nic_from_instance(openstack_session=openstack_session,
+                                                                instance_id=vm_uuid, port_id=port_id, logger=logger)
+        if not result:
+            action_result.success = "False"
+            action_result.actionId = action_resource_info.actionid
+            action_result.errorMessage = "Failed to Detach NIC {0} from Instance {1}".format(
+                port_id,
+                action_resource_info.deployed_app_resource_name)
+            action_result.infoMessage = ""
+            action_result.updatedInterface = ""
+            action_result.type = 'removeVlan'
+        else:
+            action_result.success = "True"
+            action_result.actionId = action_resource_info.actionid
+            action_result.errorMessage = ""
+            action_result.infoMessage = "Successfully detached NIC {0} from Instance {1}".format(
+                port_id,
+                action_resource_info.deployed_app_resource_name)
+            action_result.updatedInterface = result
+            action_result.type = 'removeVlan'
+
+        return action_result
+
+
 # FIXME : Move this out to a different place
 class ActionResourceInfo:
 
-    def __init__(self, deployed_app_resource_name, actionid, vm_uuid):
-        self.deployed_app_resource = deployed_app_resource_name
+    def __init__(self, deployed_app_resource_name, actionid, vm_uuid, interface_ip, interface_port_id, interface_mac):
+        self.deployed_app_resource_name = deployed_app_resource_name
         self.vm_uuid = vm_uuid
         self.actionid = actionid
+        self.iface_ip = interface_ip
+        self.interface_port_id = interface_port_id
+        self.interface_mac = interface_mac

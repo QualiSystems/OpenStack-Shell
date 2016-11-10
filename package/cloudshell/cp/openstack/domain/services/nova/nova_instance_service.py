@@ -5,6 +5,8 @@ Implements InstanceService class, that allows one to
 from novaclient import client as novaclient
 from cloudshell.cp.openstack.common.driver_helper import CloudshellDriverHelper
 
+import traceback
+
 class NovaInstanceService(object):
     """Implements management of Compute Instances."""
     API_VERSION = '2.0'
@@ -209,3 +211,32 @@ class NovaInstanceService(object):
             logger.info("Exception: {0} during interface attach".format(e))
 
         return None
+
+    def detach_nic_from_instance(self, openstack_session, instance_id, port_id, logger):
+        """
+
+        :param keystoneauth1.session.Session openstack_session:
+        :param str instance_id:
+        :param str port_id:
+        :param LoggingSesssionContext logger:
+        :return bool: Success or Failure
+        """
+		
+
+        logger.info("Detaching port {0} from Instance {1}".format(port_id, instance_id))
+		
+        instance = self.get_instance_from_instance_id(openstack_session=openstack_session,
+                                                      instance_id=instance_id,
+                                                      logger=logger)
+        logger.info("Returned instance {0}".format(instance))
+        if instance is None:
+            return False
+
+        try:
+            instance.interface_detach(port_id)
+
+            return True
+
+        except Exception as e:
+            logger.error(traceback.format_exc())
+            return False
