@@ -98,9 +98,12 @@ class NeutronNetworkService(object):
         :return:
         """
 
+        # FIXME: What happens if multiple threads call this?
         client = neutron_client.Client(session=openstack_session)
 
         try:
+            #  FIXME: This whole block should be synchronized.
+
             for subnet in network['subnets']:
                 client.delete_subnet(subnet)
 
