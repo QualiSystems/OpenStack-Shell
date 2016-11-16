@@ -128,6 +128,7 @@
          <Rule Name="Setting" />
       </Rules>
     </AttributeInfo>
+
     <!-- Attributes used by Generic App Model -->
     <AttributeInfo DefaultValue="" IsReadOnly="false" Name="User" Type="String">
         <Rules>
@@ -138,6 +139,12 @@
       <Rules>
         <Rule Name="Configuration" />
       </Rules>
+    </AttributeInfo>
+    <AttributeInfo Name="Public IP" DefaultValue="" Description="" IsReadOnly="false" Type="String">
+        <Rules>
+            <Rule Name="Configuration" />
+            <Rule Name="Setting" />
+        </Rules>
     </AttributeInfo>
 
   </Attributes>
@@ -198,7 +205,7 @@
           <AttachedAttributes>
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Password"/>
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="User"/>
-            <!--AttachedAttribute IsLocal="true" IsOverridable="true" Name="Public IP"/-->
+            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Public IP"/>
           </AttachedAttributes>
           <AttributeValues>
           </AttributeValues>

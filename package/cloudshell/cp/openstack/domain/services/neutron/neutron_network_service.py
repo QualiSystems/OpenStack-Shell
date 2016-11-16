@@ -1,6 +1,8 @@
 from neutronclient.v2_0 import client as neutron_client
 from neutronclient.common.exceptions import Conflict as NetCreateConflict
 
+import traceback
+
 class NeutronNetworkService(object):
     """
     A wrapper class around Neutron API
@@ -11,7 +13,7 @@ class NeutronNetworkService(object):
         self.cidr_subnet_num = 0
         self.allocated_subnets = []
 
-    def create_network_with_vlanid(self, openstack_session, vlanid, logger):
+    def create_or_get_network_with_vlanid(self, openstack_session, vlanid, logger):
         """
 
         :param keystoneauth1.session.Session openstack_session:
@@ -28,8 +30,6 @@ class NeutronNetworkService(object):
                               'provider:segmentation_id': vlanid,
                               'name': nw_name,
                               'admin_state_up': True}
-
-        # FIXME : If an exception is raised - we just raise it all the way back? For now yes
         try:
             new_net = client.create_network({'network': create_nw_json})
             new_net = new_net['network']
@@ -37,10 +37,27 @@ class NeutronNetworkService(object):
             new_net = client.list_networks(**{'provider:segmentation_id':vlanid})
             new_net = new_net['networks'][0]
         except Exception as e:
-            logger.error("Exception {0} Occurred while creating network".format(e))
+            logger.error(traceback.format_exc())
             return None
 
         return new_net
+
+    def get_network_with_vlanid(self, openstack_session, vlanid, logger):
+        """
+
+        :param keystoneauth1.session.Session openstack_session:
+        :param int vlanid:
+        :param LoggingSessionContext logger:
+        :return:
+        """
+
+        client = neutron_client.Client(session=openstack_session)
+
+        net = client.list_networks(**{'provider:segmentation_id': vlanid})
+        if net['networks']:
+            return net['networks'][0]
+        else:
+            return None
 
     def attach_subnet_to_net(self, openstack_session, cp_resource_model, net_id, logger):
         """
@@ -67,10 +84,33 @@ class NeutronNetworkService(object):
             new_subnet = client.create_subnet({'subnet':create_subnet_json})
             new_subnet = new_subnet['subnet']
         except Exception as e:
-            logger.error("Exception {0} Occurred while creating network".format(e))
+            logger.error(traceback.format_exc())
             return None
 
         return new_subnet
+
+    def remove_subnet_and_net(self, openstack_session, network, logger):
+        """
+
+        :param keystoneauth1.session.Session openstack_session:
+        :param dict network:
+        :param LoggingSessionContext logger:
+        :return:
+        """
+
+        # FIXME: What happens if multiple threads call this?
+        client = neutron_client.Client(session=openstack_session)
+
+        try:
+            #  FIXME: This whole block should be synchronized.
+
+            for subnet in network['subnets']:
+                client.delete_subnet(subnet)
+
+            client.delete_network(network['id'])
+
+        except Exception as e:
+            logger.error(traceback.format_exc())
 
     def _get_unused_cidr(self, cp_resvd_cidrs, logger):
         """
