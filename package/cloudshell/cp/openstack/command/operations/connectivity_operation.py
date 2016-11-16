@@ -195,8 +195,9 @@ class ConnectivityOperation(object):
                     remove_results.append(action_result)
                 
                 results += remove_results
-				
+
                 # We should just remove subnet(s) and net from Openstack now (If any exception that gets logged)
+                # FIXME: Add synchronization here, when moved to a domain service.
                 self.network_service.remove_subnet_and_net(openstack_session=openstack_session,
                                                            network=net, logger=logger)
 

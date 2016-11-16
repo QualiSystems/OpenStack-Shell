@@ -184,6 +184,9 @@ class NovaInstanceService(object):
         except Exception:
             raise
 
+    # FIXME: Both the methods should return some kind of an object
+    # result: Success/Failure
+    # Error Message: To be displayed.
     def attach_nic_to_net(self, openstack_session, instance_id, net_id, logger):
         """
 
@@ -205,6 +208,7 @@ class NovaInstanceService(object):
             iface_mac = res.to_dict().get('mac_addr')
             iface_portid = res.to_dict().get('port_id')
             iface_ip = res.to_dict().get('fixed_ips')[0]['ip_address']
+            # FIXME: return a json string (easier to access subsequently)
             result = "/".join([iface_ip, iface_portid, iface_mac])
             return result
         except Exception as e:
@@ -221,10 +225,9 @@ class NovaInstanceService(object):
         :param LoggingSesssionContext logger:
         :return bool: Success or Failure
         """
-		
+
 
         logger.info("Detaching port {0} from Instance {1}".format(port_id, instance_id))
-		
         instance = self.get_instance_from_instance_id(openstack_session=openstack_session,
                                                       instance_id=instance_id,
                                                       logger=logger)
