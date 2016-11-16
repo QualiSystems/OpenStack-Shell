@@ -41,19 +41,19 @@ class TestPowerOperation(TestCase):
 
         self.power_operation.instance_service.instance_power_on = Mock(side_effect=Exception('foo'))
 
-        self.power_operation.power_on(openstack_session=self.openstack_session,
-                                      cloudshell_session=self.cloudshell_session,
-                                      deployed_app_resource=deployed_app_resource,
-                                      resource_fullname=resource_fullname,
-                                      logger=mock_logger)
-
+        with self.assertRaises(Exception) as context:
+            self.power_operation.power_on(openstack_session=self.openstack_session,
+                                          cloudshell_session=self.cloudshell_session,
+                                          deployed_app_resource=deployed_app_resource,
+                                          resource_fullname=resource_fullname,
+                                          logger=mock_logger)
+            self.assertTrue(context)
 
         self.power_operation.instance_service.instance_power_on.assert_called_with(openstack_session=self.openstack_session,
                                                                                    instance_id=deployed_app_resource.vmdetails.uid,
                                                                                    logger=mock_logger)
         self.cloudshell_session.SetResourceLiveStatus.assert_called_with(resource_fullname, "Error", "foo")
         self.assertTrue(mock_logger.debug.called)
-        self.assertRaises(Exception)
 
     def test_power_off_instance_not_powered(self):
         deployed_app_resource = Mock()
@@ -84,16 +84,17 @@ class TestPowerOperation(TestCase):
 
         self.power_operation.instance_service.instance_power_off = Mock(side_effect=Exception('foo'))
 
-        self.power_operation.power_off(openstack_session=self.openstack_session,
-                                      cloudshell_session=self.cloudshell_session,
-                                      deployed_app_resource=deployed_app_resource,
-                                      resource_fullname=resource_fullname,
-                                      logger=mock_logger)
+        with self.assertRaises(Exception) as context:
+            self.power_operation.power_off(openstack_session=self.openstack_session,
+                                          cloudshell_session=self.cloudshell_session,
+                                          deployed_app_resource=deployed_app_resource,
+                                          resource_fullname=resource_fullname,
+                                          logger=mock_logger)
+            self.assertTrue(context)
 
         self.power_operation.instance_service.instance_power_off.assert_called_with(openstack_session=self.openstack_session,
                                                                                    instance_id=deployed_app_resource.vmdetails.uid,
                                                                                    logger=mock_logger)
         self.cloudshell_session.SetResourceLiveStatus.assert_called_with(resource_fullname, "Error", "foo")
         self.assertTrue(mock_logger.debug.called)
-        self.assertRaises(Exception)
 
