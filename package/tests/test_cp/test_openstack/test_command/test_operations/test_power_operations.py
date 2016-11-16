@@ -53,7 +53,7 @@ class TestPowerOperation(TestCase):
                                                                                    instance_id=deployed_app_resource.vmdetails.uid,
                                                                                    logger=mock_logger)
         self.cloudshell_session.SetResourceLiveStatus.assert_called_with(resource_fullname, "Error", "foo")
-        self.assertTrue(mock_logger.debug.called)
+        self.assertTrue(mock_logger.error.called)
 
     def test_power_off_instance_not_powered(self):
         deployed_app_resource = Mock()
@@ -96,5 +96,5 @@ class TestPowerOperation(TestCase):
                                                                                    instance_id=deployed_app_resource.vmdetails.uid,
                                                                                    logger=mock_logger)
         self.cloudshell_session.SetResourceLiveStatus.assert_called_with(resource_fullname, "Error", "foo")
-        self.assertTrue(mock_logger.debug.called)
+        self.assertTrue(mock_logger.error.called)
 
