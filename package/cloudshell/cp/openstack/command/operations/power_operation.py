@@ -28,9 +28,9 @@ class PowerOperation(object):
                                                     logger=logger)
             cloudshell_session.SetResourceLiveStatus(resource_fullname, "Online", "Active")
         except Exception as e:
-            # We ignore errors
-            cloudshell_session.SetResourceLiveStatus(resource_fullname, "Error", "Error")
+            cloudshell_session.SetResourceLiveStatus(resource_fullname, "Error", e.message)
             logger.debug("Exception {0} occurred, while trying to power on instance".format(e.message))
+            raise # reraise the exception
 
     def power_off(self, openstack_session, cloudshell_session,
                  deployed_app_resource, resource_fullname,
@@ -54,6 +54,6 @@ class PowerOperation(object):
                                                     logger=logger)
             cloudshell_session.SetResourceLiveStatus(resource_fullname, "Offline", "Powered Off")
         except Exception as e:
-            # We ignore errors
-            cloudshell_session.SetResourceLiveStatus(resource_fullname, "Error", "Error")
+            cloudshell_session.SetResourceLiveStatus(resource_fullname, "Error", e.message)
             logger.debug("Exception {0} occurred, while trying to power off instance".format(e.message))
+            raise  # Reraise the exception
