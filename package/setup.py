@@ -17,7 +17,7 @@ setup(
         description=("A repository for projects providing out of the box capabilities within CloudShell to define OpenStack "
                      "instances in CloudShell and leverage OpenStack (Liberty and above) capabilities to deploy and connect "
                      "apps in CloudShell sandboxes."),
-        packages=find_packages(),
+        packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
         test_suite='nose.collector',
         test_requires=required_for_tests,
         package_data={'': ['*.txt']},
