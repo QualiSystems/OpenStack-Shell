@@ -1,6 +1,8 @@
 from cloudshell.cp.openstack.domain.services.nova.nova_instance_service import NovaInstanceService
 from cloudshell.cp.openstack.domain.services.waiters.instance import InstanceWaiter
 from cloudshell.shell.core.session.logging_session import LoggingSessionContext
+import traceback
+
 
 class PowerOperation(object):
     def __init__(self):
@@ -28,9 +30,9 @@ class PowerOperation(object):
                                                     logger=logger)
             cloudshell_session.SetResourceLiveStatus(resource_fullname, "Online", "Active")
         except Exception as e:
-            # We ignore errors
-            cloudshell_session.SetResourceLiveStatus(resource_fullname, "Error", "Error")
-            logger.debug("Exception {0} occurred, while trying to power on instance".format(e.message))
+            cloudshell_session.SetResourceLiveStatus(resource_fullname, "Error", e.message)
+            logger.error(traceback.format_exc())
+            raise # reraise the exception
 
     def power_off(self, openstack_session, cloudshell_session,
                  deployed_app_resource, resource_fullname,
@@ -54,6 +56,6 @@ class PowerOperation(object):
                                                     logger=logger)
             cloudshell_session.SetResourceLiveStatus(resource_fullname, "Offline", "Powered Off")
         except Exception as e:
-            # We ignore errors
-            cloudshell_session.SetResourceLiveStatus(resource_fullname, "Error", "Error")
-            logger.debug("Exception {0} occurred, while trying to power off instance".format(e.message))
+            cloudshell_session.SetResourceLiveStatus(resource_fullname, "Error", e.message)
+            logger.error(traceback.format_exc())
+            raise  # Reraise the exception

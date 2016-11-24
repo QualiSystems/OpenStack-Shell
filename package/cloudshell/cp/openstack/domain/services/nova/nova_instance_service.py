@@ -95,6 +95,7 @@ class NovaInstanceService(object):
 
         if instance is None:
             logger.info("Instance with Instance ID {0} does not exist. Already Deleted?".format(instance_id))
+            raise ValueError("Instance with Instance ID {0} does not exist. May be deleted already?".format(instance_id))
         else:
 
             if instance.status != self.instance_waiter.ACTIVE:
@@ -118,8 +119,8 @@ class NovaInstanceService(object):
 
         if instance is None:
             logger.info("Instance with Instance ID {0} does not exist. Already Deleted?".format(instance_id))
+            raise ValueError("Instance with Instance ID {0} not found. May be deleted already?".format(instance_id))
         else:
-
             if instance.status != self.instance_waiter.SHUTOFF:
                 instance.stop()
                 self.instance_waiter.wait(instance, self.instance_waiter.SHUTOFF)
