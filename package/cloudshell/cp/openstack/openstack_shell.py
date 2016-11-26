@@ -18,6 +18,7 @@ from cloudshell.cp.openstack.command.operations.power_operation import PowerOper
 from cloudshell.cp.openstack.command.operations.deploy_operation import DeployOperation
 from cloudshell.cp.openstack.command.operations.connectivity_operation import ConnectivityOperation
 from cloudshell.cp.openstack.command.operations.hidden_operation import HiddenOperation
+from cloudshell.cp.openstack.command.operations.refresh_ip_operation import RefreshIPOperation
 
 # Command Result Parser
 from cloudshell.cp.openstack.command.command_result_parser import OpenStackShellCommandResultParser
@@ -40,6 +41,7 @@ class OpenStackShell(object):
         self.power_operation = PowerOperation()
         self.deploy_operation = DeployOperation()
         self.connectivity_operation = ConnectivityOperation()
+        self.refresh_ip_operation = RefreshIPOperation()
         self.hidden_operation = HiddenOperation()
 
         self.model_parser = OpenStackShellModelParser()
@@ -208,7 +210,7 @@ class OpenStackShell(object):
                     logger.info(deployed_app_resource)
 
                     os_session = self.os_session_provider.get_openstack_session(cs_session, resource_model, logger)
-                    self.connectivity_operation.refresh_ip(openstack_session=os_session,
+                    self.refresh_ip_operation.refresh_ip(openstack_session=os_session,
                                                            cloudshell_session=cs_session,
                                                            deployed_app_resource=deployed_app_resource,
                                                            private_ip=deployed_app_private_ip,
