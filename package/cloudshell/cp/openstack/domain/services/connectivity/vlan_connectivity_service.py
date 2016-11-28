@@ -3,7 +3,7 @@ from cloudshell.cp.openstack.common.deploy_data_holder import DeployDataHolder
 
 from cloudshell.cp.openstack.models.connectivity_action_result_model import ConnectivityActionResultModel
 from cloudshell.cp.openstack.models.driver_response_model import DriverResponse, DriverResponseRoot
-
+from cloudshell.cp.openstack.models.connectivity_action_resource_info import ConnectivityActionResourceInfo
 import jsonpickle
 
 
@@ -222,7 +222,7 @@ class VLANConnectivityService(object):
         :param str deployed_app_resource_name:
         :param str actionid:
         :param action: action obtained from JSON
-        :return ActionResourceInfo:
+        :return ConnectivityActionResourceInfo:
 
         """
 
@@ -247,18 +247,18 @@ class VLANConnectivityService(object):
                     iface_port_id = attr_dict['port_id']
                     iface_mac = attr_dict['mac_address' ]
 
-        return ActionResourceInfo(deployed_app_resource_name=deployed_app_resource_name,
-                                  actionid=actionid,
-                                  vm_uuid=vm_uuid,
-                                  interface_ip=iface_ip,
-                                  interface_port_id=iface_port_id,
-                                  interface_mac=iface_mac)
+        return ConnectivityActionResourceInfo(deployed_app_resource_name=deployed_app_resource_name,
+                                              actionid=actionid,
+                                              vm_uuid=vm_uuid,
+                                              interface_ip=iface_ip,
+                                              interface_port_id=iface_port_id,
+                                              interface_mac=iface_mac)
 
     def attach_nic_to_instance_action_result(self, openstack_session, action_resource_info, net_id, logger):
         """
 
         :param keystoneauth1.session.Session openstack_session:
-        :param ActionResourceInfo action_resource_info:
+        :param ConnectivityActionResourceInfo action_resource_info:
         :param str net_id:
         :param LoggingSessionContext logger:
         :return ConnectivityActionResultModel:
@@ -292,7 +292,7 @@ class VLANConnectivityService(object):
         """
 
         :param keystoneauth1.session.Session openstack_session:
-        :param ActionResourceInfo action_resource_info:
+        :param ConnectivityActionResourceInfo action_resource_info:
         :param str net_id:
         :param LoggingSessionContext logger:
         :return ConnectivityActionResultModel:
@@ -325,13 +325,3 @@ class VLANConnectivityService(object):
 
         return action_result
 
-
-# FIXME : Move this out to a different place
-class ActionResourceInfo:
-    def __init__(self, deployed_app_resource_name, actionid, vm_uuid, interface_ip, interface_port_id, interface_mac):
-        self.deployed_app_resource_name = deployed_app_resource_name
-        self.vm_uuid = vm_uuid
-        self.actionid = actionid
-        self.iface_ip = interface_ip
-        self.interface_port_id = interface_port_id
-        self.interface_mac = interface_mac
