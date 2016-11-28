@@ -59,7 +59,7 @@ class NeutronNetworkService(object):
         else:
             return None
 
-    def attach_subnet_to_net(self, openstack_session, cp_resource_model, net_id, logger):
+    def create_and_attach_subnet_to_net(self, openstack_session, cp_resource_model, net_id, logger):
         """
         Atttach a subnet to the network with given net_id.
 

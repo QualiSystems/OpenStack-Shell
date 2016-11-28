@@ -115,12 +115,11 @@ class VLANConnectivityService(object):
 
                 subnet = net['subnets']
                 if not subnet:
-                    # FIXME: serialize this
-                    # FIXME: Rename this function to create_and_attach
-                    subnet = self.network_service.attach_subnet_to_net(openstack_session=openstack_session,
-                                                                       cp_resource_model=cp_resource_model,
-                                                                       net_id=net_id,
-                                                                       logger=logger)
+                    with self.subnet_lock:
+                        subnet = self.network_service.create_and_attach_subnet_to_net(openstack_session=openstack_session,
+                                                                                      cp_resource_model=cp_resource_model,
+                                                                                      net_id=net_id,
+                                                                                      logger=logger)
                 else:
                     subnet = subnet[0]
                 if not subnet:
@@ -133,9 +132,9 @@ class VLANConnectivityService(object):
                     attach_results = []
                     for val in values:
                         action_result = self.attach_nic_to_instance_action_result(openstack_session=openstack_session,
-                                                                                   action_resource_info=val,
-                                                                                   net_id=net_id,
-                                                                                   logger=logger)
+                                                                                  action_resource_info=val,
+                                                                                  net_id=net_id,
+                                                                                  logger=logger)
                         attach_results.append(action_result)
                     results += attach_results
         return results
@@ -243,7 +242,10 @@ class VLANConnectivityService(object):
         if connector_attributes:
             for conn_attribute in connector_attributes:
                 if conn_attribute.attributeName == 'Interface':
-                    iface_ip, iface_port_id, iface_mac = conn_attribute.attributeValue.split("/")
+                    attr_dict = json.loads(conn_attribute.attributeValue)
+                    iface_ip = attr_dict['ip_address']
+                    iface_port_id = attr_dict['port_id']
+                    iface_mac = attr_dict['mac_address' ]
 
         return ActionResourceInfo(deployed_app_resource_name=deployed_app_resource_name,
                                   actionid=actionid,

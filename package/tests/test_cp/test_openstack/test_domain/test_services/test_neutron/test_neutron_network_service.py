@@ -68,7 +68,7 @@ class TestNeutronNetworkService(TestCase):
                                                               logger=self.mock_logger)
         self.assertEqual(result, None)
 
-    def test_attach_subnet_to_net_success(self):
+    def test_create_and_attach_subnet_to_net_success(self):
 
         test_net_id = 'test-net-id'
         mock_client = Mock()
@@ -77,13 +77,13 @@ class TestNeutronNetworkService(TestCase):
 
         self.network_service._get_unused_cidr = Mock(return_value = '10.0.0.0/24')
 
-        result = self.network_service.attach_subnet_to_net(openstack_session=self.openstack_session,
-                                                           cp_resource_model=Mock(),
+        result = self.network_service.create_and_attach_subnet_to_net(openstack_session=self.openstack_session,
+                                                                       cp_resource_model=Mock(),
                                                            net_id=test_net_id,
                                                            logger=self.mock_logger)
         self.assertEqual(result, 'subnet success')
 
-    def test_attach_subnet_to_net_return_none(self):
+    def test_create_and_attach_subnet_to_net_return_none(self):
 
         test_net_id = 'test-net-id'
         mock_client = Mock()
@@ -92,8 +92,8 @@ class TestNeutronNetworkService(TestCase):
 
         self.network_service._get_unused_cidr = Mock(return_value = '10.0.0.0/24')
 
-        result = self.network_service.attach_subnet_to_net(openstack_session=self.openstack_session,
-                                                           cp_resource_model=Mock(),
-                                                           net_id=test_net_id,
-                                                           logger=self.mock_logger)
+        result = self.network_service.create_and_attach_subnet_to_net(openstack_session=self.openstack_session,
+                                                                      cp_resource_model=Mock(),
+                                                                      net_id=test_net_id,
+                                                                      logger=self.mock_logger)
         self.assertEqual(result, None)
