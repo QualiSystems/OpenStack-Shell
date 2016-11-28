@@ -157,6 +157,8 @@ class NovaInstanceService(object):
             return ""
 
         ip = ""
+
+        # FIXME: quali-network is hard-coded here.
         for net_name, net_ips in instance.networks.iteritems():
             if net_name == 'quali-network':
                 ip = net_ips[0] if net_ips else ""
