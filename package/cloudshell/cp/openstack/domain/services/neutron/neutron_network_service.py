@@ -2,6 +2,8 @@ from neutronclient.v2_0 import client as neutron_client
 from neutronclient.common.exceptions import Conflict as NetCreateConflict
 
 import traceback
+import time
+
 
 class NeutronNetworkService(object):
     """
@@ -71,7 +73,7 @@ class NeutronNetworkService(object):
 
         client = neutron_client.Client(session=openstack_session)
 
-        cidr = self._get_unused_cidr(cp_resvd_cidrs=cp_resource_model.reserved_networks, logger=logger)
+        cidr = self._get_unused_cidr(client=client, cp_resvd_cidrs=cp_resource_model.reserved_networks, logger=logger)
         if cidr is None:
             logger.error("Cannot allocate new subnet. All subnets exhausted")
             return None
@@ -104,17 +106,44 @@ class NeutronNetworkService(object):
         try:
             #  FIXME: This whole block should be synchronized.
 
-            for subnet in network['subnets']:
-                client.delete_subnet(subnet)
+            # Get a list of all ports for this network. If there's any port with device owner other than DHCP,
+            # You won't be able to delete the network or subnet. Retry it a few times (sometimes seen that when
+            # this call happens, some 'ports' are still there.
 
-            client.delete_network(network['id'])
+            retries = 3
+            network_ports = []
+            while retries > 0:
+                network_ports = client.list_ports(network_id=network['id'])['ports']
+                if len(network_ports) > 1: # Wait and retry
+                    retries -= 1
+                    time.sleep(1)
+                    continue
+                else:
+                    break
 
-        except Exception as e:
+            logger.debug("Found {0} ports".format(network_ports))
+            if len(network_ports) <= 1:
+                for subnet in network['subnets']:
+                    client.delete_subnet(subnet)
+
+                client.delete_network(network['id'])
+
+            else:
+                logger.info("Some {0} ports with Associated IP still on Network. "
+                            "Cannot delete network {1}".format(len(network_ports), network['id']))
+
+        # FIXME: We should not be simply "Logging" here, take separate actions for each Exceptions
+        # Network Not found : Ignore
+        # Valid IPs still on Network: Raise
+        # Any other: Raise to be on a safe side.
+        except Exception:
             logger.error(traceback.format_exc())
 
-    def _get_unused_cidr(self, cp_resvd_cidrs, logger):
+    def _get_unused_cidr(self, client, cp_resvd_cidrs, logger):
         """
         Gets unused CIDR that excludes the reserved CIDRs
+
+        :param neutronclient.v2_0.client:
         :param str cp_resvd_cidrs:
         :return str:
         """
@@ -122,30 +151,50 @@ class NeutronNetworkService(object):
         # Algorithm below is a very simplistic one where we choose one of the three prefixes and then use
         # /24 networks starting with that prefix. This algorithm will break if all three 10.X, 192.168.X and 172.X
         # networks are used in a given On Prem Network.
-        # FIXME: Get subnets from openstack and not simply.
-        if self.cidr_base is not None:
-            cidr = ".".join([self.cidr_base, str(self.cidr_subnet_num), "0/24"])
-            if self.cidr_subnet_num not in self.allocated_subnets:
-                self.allocated_subnets.append(self.cidr_subnet_num)
-                self.cidr_subnet_num += 1
-                if self.cidr_subnet_num == 255:
-                    self.cidr_subnet_num = 0
-                return cidr
-        else:
-            candidate_prefixes = {'10': '10.0', '192.168': '192.168', '172': '172.0'}
-            cp_resvd_cidrs = cp_resvd_cidrs.split(",")
-            logger.error(cp_resvd_cidrs)
-            possible_prefixes = filter(lambda x: any(map(lambda y: not y.strip().startswith(x), cp_resvd_cidrs)),
-                                       candidate_prefixes.keys())
 
-            logger.info(possible_prefixes)
-            if not possible_prefixes:
-                return None
-            else:
-                prefix = possible_prefixes[0]
-                self.cidr_base = candidate_prefixes[prefix]
-                cidr = ".".join([self.cidr_base, str(self.cidr_subnet_num), "0/24"])
-                self.allocated_subnets.append(self.cidr_subnet_num)
-                self.cidr_subnet_num += 1
-                return cidr
-        return None
+        logger.debug("reserved CIDRs: {0}".format(cp_resvd_cidrs))
+
+        candidate_prefixes = {'10': '10.0', '192.168': '192.168', '172': '172.0'}
+        cp_resvd_cidrs = cp_resvd_cidrs.split(",")
+        possible_prefixes = filter(lambda x: any(map(lambda y: not y.strip().startswith(x), cp_resvd_cidrs)),
+                                   candidate_prefixes.keys())
+        logger.debug("Possible Prefixes that can be used: {0}".format(possible_prefixes))
+        if not possible_prefixes:
+            return None
+
+        prefix = possible_prefixes[0]
+        subnet_prefix = candidate_prefixes[prefix]
+
+        # Get all subnets that start with 'our prefix'
+        subnets = client.list_subnets(fields=['cidr', 'id'])['subnets']
+        subnet_cidrs = map(lambda x: x.get('cidr'), subnets)
+
+        allocated_subnets = []
+        for subnet in subnets:
+            if subnet['cidr'].startswith(prefix):
+                allocated_subnets.append(subnet['cidr'])
+
+        allocated_subnets.sort()
+        logger.debug("Allocated Subnets: {0}".format(",".join(allocated_subnets)))
+
+        if not allocated_subnets:
+            subnet_num = 0
+        else:
+            last_subnet = allocated_subnets[-1]
+            subnet_num = int(last_subnet.split("/")[0].split(".")[2])
+            subnet_num += 1
+        if subnet_num == 255:
+            subnet_num = 0
+            cidr = ".".join([subnet_prefix, str(subnet_num), "0/24"])
+            while cidr in subnet_cidrs:
+                subnet_num += 1
+                cidr = ".".join([subnet_prefix, str(subnet_num), "0/24"])
+        else:
+            cidr = ".".join([subnet_prefix,str(subnet_num), "0/24"])
+
+        logger.debug("Found {0} CIDR".format(cidr))
+
+        if subnet_num == 255:
+            return None
+
+        return cidr
