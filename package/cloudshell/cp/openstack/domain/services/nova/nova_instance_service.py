@@ -231,7 +231,6 @@ class NovaInstanceService(object):
         :return bool: Success or Failure
         """
 
-
         logger.info("Detaching port {0} from Instance {1}".format(port_id, instance_id))
         instance = self.get_instance_from_instance_id(openstack_session=openstack_session,
                                                       instance_id=instance_id,

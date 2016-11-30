@@ -78,8 +78,6 @@ class TestNovaInstanceService(TestCase):
 
         mock_client2.servers.delete.assert_called_with(mock_instance)
 
-
-
     def test_instance_power_off_success(self):
         mock_client2 = Mock()
         test_nova_instance_service.novaclient.Client = Mock(return_value=mock_client2)
@@ -155,3 +153,100 @@ class TestNovaInstanceService(TestCase):
                                                                 instance_id=test_instance_id,
                                                                 logger=self.mock_logger,
                                                                 client=mock_client)
+
+    def test_attach_nic_to_net_success(self):
+        """
+
+        :return:
+        """
+
+        import jsonpickle
+
+        mock_client = Mock()
+        test_nova_instance_service.novaclient.Client = Mock(return_value=mock_client)
+
+        mock_instance = Mock()
+
+        mock_iface_attach_result = Mock()
+        mock_instance.interface_attach = Mock(return_value=mock_iface_attach_result)
+
+        expected_test_mac = 'test_mac_address'
+        expected_port_id = 'test_port_id'
+        expected_ip_address = 'test_ip_address'
+        mock_result_dict = {'mac_addr': expected_test_mac,
+                            'port_id' : expected_port_id,
+                            'fixed_ips' : [{'ip_address': expected_ip_address}]}
+        mock_iface_attach_result.to_dict = Mock(return_value=mock_result_dict)
+        self.instance_service.get_instance_from_instance_id = Mock(return_value=mock_instance)
+
+        result = self.instance_service.attach_nic_to_net(openstack_session=self.openstack_session,
+                                                         net_id='test_net_id',
+                                                         instance_id='test_instance_id',
+                                                         logger=self.mock_logger)
+        expected_result_dict = {'ip_address':expected_ip_address,
+                                'port_id': expected_port_id,
+                                'mac_address':expected_test_mac}
+
+        self.assertEqual(jsonpickle.loads(result), expected_result_dict)
+
+    def test_attach_nic_to_net_failure_no_instance(self):
+
+        mock_client = Mock()
+        test_nova_instance_service.novaclient.Client = Mock(return_value=mock_client)
+
+        self.instance_service.get_instance_from_instance_id = Mock(return_value=None)
+        result = self.instance_service.attach_nic_to_net(openstack_session=self.openstack_session,
+                                                         net_id='test_net_id',
+                                                         instance_id='test_instance_id',
+                                                         logger=self.mock_logger)
+        self.assertEqual(result, None)
+
+    def test_attach_nic_to_net_failure_exception(self):
+
+        mock_client = Mock()
+        test_nova_instance_service.novaclient.Client = Mock(return_value=mock_client)
+
+        mock_instance = Mock()
+
+        mock_instance.interface_attach = Mock(side_effect=Exception)
+
+        result = self.instance_service.attach_nic_to_net(openstack_session=self.openstack_session,
+                                                         net_id='test_net_id',
+                                                         instance_id='test_instance_id',
+                                                         logger=self.mock_logger)
+
+        self.assertEqual(result, None)
+
+    def test_detach_nic_from_net_success(self):
+
+        mock_client = Mock()
+        test_nova_instance_service.novaclient.Client = Mock(return_value=mock_client)
+
+        mock_instance = Mock()
+        self.instance_service.get_instance_from_instance_id = Mock(return_value=mock_instance)
+
+        mock_iface_detach_result = Mock()
+        mock_instance.interface_detach = Mock(return_value=mock_iface_detach_result)
+
+        result = self.instance_service.detach_nic_from_instance(openstack_session=self.openstack_session,
+                                                                instance_id='test_instance_id',
+                                                                port_id='test_port_id',
+                                                                logger=self.mock_logger)
+        mock_instance.interface_detach.assert_called_with('test_port_id')
+        self.assertEqual(result, True)
+
+    def test_detach_nic_from_net_failure(self):
+
+        mock_client = Mock()
+        test_nova_instance_service.novaclient.Client = Mock(return_value=mock_client)
+
+        mock_instance = Mock()
+        self.instance_service.get_instance_from_instance_id = Mock(return_value=mock_instance)
+
+        mock_instance.interface_detach = Mock(side_effect=Exception)
+
+        result = self.instance_service.detach_nic_from_instance(openstack_session=self.openstack_session,
+                                                                instance_id='test_instance_id',
+                                                                port_id='test_port_id',
+                                                                logger=self.mock_logger)
+        self.assertEqual(result, False)

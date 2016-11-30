@@ -173,9 +173,9 @@ class VLANConnectivityService(object):
                 results += remove_results
 
                 # We should just remove subnet(s) and net from Openstack now (If any exception that gets logged)
-                # FIXME: Add synchronization here, when moved to a domain service.
-                self.network_service.remove_subnet_and_net(openstack_session=openstack_session,
-                                                           network=net, logger=logger)
+                with self.subnet_lock:
+                    self.network_service.remove_subnet_and_net(openstack_session=openstack_session,
+                                                               network=net, logger=logger)
 
         return results
 
@@ -192,7 +192,7 @@ class VLANConnectivityService(object):
         for value in values:
             action_result = ConnectivityActionResultModel()
             action_result.success = False
-            action_result.actionId = value[2]
+            action_result.actionId = value.actionid
             action_result.infoMessage = None
             action_result.errorMessage = failure_text
             action_result.type = action_type
@@ -242,10 +242,10 @@ class VLANConnectivityService(object):
         if connector_attributes:
             for conn_attribute in connector_attributes:
                 if conn_attribute.attributeName == 'Interface':
-                    attr_dict = json.loads(conn_attribute.attributeValue)
+                    attr_dict = jsonpickle.loads(conn_attribute.attributeValue)
                     iface_ip = attr_dict['ip_address']
                     iface_port_id = attr_dict['port_id']
-                    iface_mac = attr_dict['mac_address' ]
+                    iface_mac = attr_dict['mac_address']
 
         return ConnectivityActionResourceInfo(deployed_app_resource_name=deployed_app_resource_name,
                                               actionid=actionid,
@@ -266,7 +266,8 @@ class VLANConnectivityService(object):
         action_result = ConnectivityActionResultModel()
 
         instance_id = action_resource_info.vm_uuid
-        result = self.instance_service.attach_nic_to_net(openstack_session, instance_id, net_id, logger)
+        result = self.instance_service.attach_nic_to_net(openstack_session=openstack_session,
+                                                         instance_id=instance_id, netid=net_id, logger=logger)
         if not result:
             action_result.success = "False"
             action_result.actionId = action_resource_info.actionid
@@ -324,4 +325,3 @@ class VLANConnectivityService(object):
             action_result.type = 'removeVlan'
 
         return action_result
-
