@@ -182,10 +182,10 @@ class TestOpenStackShell(TestCase):
                     mock_context_remote.address = mock_private_ip
                     self.command_context.remote_endpoints = [mock_context_remote]
 
-                    self.os_shell_api.connectivity_operation.refresh_ip = Mock(return_value=True)
+                    self.os_shell_api.refresh_ip_operation.refresh_ip = Mock(return_value=True)
                     self.os_shell_api.refresh_ip(self.command_context)
 
-                    self.os_shell_api.connectivity_operation.refresh_ip.assert_called_with(
+                    self.os_shell_api.refresh_ip_operation.refresh_ip.assert_called_with(
                         openstack_session=self.os_shell_api.os_session_provider.get_openstack_session(),
                         deployed_app_resource=mock_resource_value,
                         private_ip=mock_private_ip,
