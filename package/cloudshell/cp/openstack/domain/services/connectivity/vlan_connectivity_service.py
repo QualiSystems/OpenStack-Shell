@@ -267,7 +267,7 @@ class VLANConnectivityService(object):
 
         instance_id = action_resource_info.vm_uuid
         result = self.instance_service.attach_nic_to_net(openstack_session=openstack_session,
-                                                         instance_id=instance_id, netid=net_id, logger=logger)
+                                                         instance_id=instance_id, net_id=net_id, logger=logger)
         if not result:
             action_result.success = "False"
             action_result.actionId = action_resource_info.actionid

@@ -194,7 +194,7 @@ class TestVlanConnectivityService(TestCase):
 
         self.connectivity_service.instance_service.attach_nic_to_net.assert_called_with(openstack_session=self.os_session,
                                                                       instance_id='test-vm-uuid',
-                                                                      netid='test netid',
+                                                                      net_id='test netid',
                                                                       logger=self.mock_logger)
         self.assertEquals(result.actionId, 'test actionid')
         self.assertEqual(result.success, 'False')
@@ -217,9 +217,9 @@ class TestVlanConnectivityService(TestCase):
                                                                                 logger=self.mock_logger)
 
         self.connectivity_service.instance_service.attach_nic_to_net.assert_called_with(openstack_session=self.os_session,
-                                                                      instance_id='test-vm-uuid',
-                                                                      netid='test netid',
-                                                                      logger=self.mock_logger)
+                                                                    instance_id='test-vm-uuid',
+                                                                    net_id='test netid',
+                                                                    logger=self.mock_logger)
         self.assertEquals(result.actionId, 'test actionid')
         self.assertEqual(result.success, 'True')
 
