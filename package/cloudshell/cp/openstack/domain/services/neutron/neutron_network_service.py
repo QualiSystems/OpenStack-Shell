@@ -15,28 +15,32 @@ class NeutronNetworkService(object):
         self.cidr_subnet_num = 0
         self.allocated_subnets = []
 
-    def create_or_get_network_with_vlanid(self, openstack_session, vlanid, logger):
+    def create_or_get_network_with_segmentation_id(self, openstack_session, cp_resource_model, segmentation_id, logger):
         """
 
         :param keystoneauth1.session.Session openstack_session:
-        :param int vlanid:
+        :param OpenStackResourceModel cp_resource_model:
+        :param int segmentation_id:
         :param LoggingSessionContext logger:
         :return dict :
         """
 
         client = neutron_client.Client(session=openstack_session)
 
-        nw_name = "net_vlanid_{0}".format(vlanid)
-        create_nw_json = {'provider:physical_network': 'public',
-                              'provider:network_type': 'vlan',
-                              'provider:segmentation_id': vlanid,
+        interface_name = cp_resource_model.provider_network_interface
+        network_type = cp_resource_model.provider_network_type
+
+        nw_name = "net_segmentation_id_{0}".format(segmentation_id)
+        create_nw_json = {'provider:physical_network': interface_name,
+                              'provider:network_type': network_type,
+                              'provider:segmentation_id': segmentation_id,
                               'name': nw_name,
                               'admin_state_up': True}
         try:
             new_net = client.create_network({'network': create_nw_json})
             new_net = new_net['network']
         except NetCreateConflict:
-            new_net = client.list_networks(**{'provider:segmentation_id':vlanid})
+            new_net = client.list_networks(**{'provider:segmentation_id':segmentation_id})
             new_net = new_net['networks'][0]
         except Exception as e:
             logger.error(traceback.format_exc())
@@ -44,18 +48,18 @@ class NeutronNetworkService(object):
 
         return new_net
 
-    def get_network_with_vlanid(self, openstack_session, vlanid, logger):
+    def get_network_with_segmentation_id(self, openstack_session, segmentation_id, logger):
         """
 
         :param keystoneauth1.session.Session openstack_session:
-        :param int vlanid:
+        :param int segmentation_id:
         :param LoggingSessionContext logger:
         :return:
         """
 
         client = neutron_client.Client(session=openstack_session)
 
-        net = client.list_networks(**{'provider:segmentation_id': vlanid})
+        net = client.list_networks(**{'provider:segmentation_id': segmentation_id})
         if net['networks']:
             return net['networks'][0]
         else:

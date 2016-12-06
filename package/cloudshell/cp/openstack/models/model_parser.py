@@ -26,6 +26,8 @@ class OpenStackShellModelParser(object):
         os_res_model.qs_mgmt_os_net_uuid = attrs['Quali Management Network UUID']
         os_res_model.os_floating_ip_pool = attrs['Floating IP Pool']
         os_res_model.reserved_networks = attrs['Reserved Networks']
+        os_res_model.provider_network_type = attrs['Provider Network Type']
+        os_res_model.provider_network_interface = attrs['Provider Network Interface']
         return os_res_model
 
     @staticmethod

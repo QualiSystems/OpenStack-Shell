@@ -55,14 +55,19 @@
       </Rules>
     </AttributeInfo>
 
-    <!-- 11 -->
-    <AttributeInfo DefaultValue="" Description="Floating IP Pool. (not used by cloudshell)" IsReadOnly="false" Name="Floating IP Pool" Type="String">
+    <AttributeInfo DefaultValue="VLAN" Description="Type of the provider network deployed. Supported values are VLAN and VxLAN" IsReadOnly="false" Name="Provider Network Type" Type="String">
       <Rules>
         <Rule Name="Configuration" />
         <Rule Name="Setting" />
       </Rules>
     </AttributeInfo>
 
+    <AttributeInfo DefaultValue="" Description="Provider Network Interface Name." IsReadOnly="false" Name="Provider Network Interface" Type="String">
+      <Rules>
+        <Rule Name="Configuration" />
+        <Rule Name="Setting" />
+      </Rules>
+    </AttributeInfo>
     <!-- 12 -->
     <AttributeInfo DefaultValue="" Description="Reserved Networks: A Comman separated List of CIDRs that are not to be used by the Subnet CIDR during App connectivity" IsReadOnly="false" Name="Reserved Networks" Type="String">
       <Rules>
@@ -182,6 +187,12 @@
               <AllowedValues />
             </AttachedAttribute>
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Floating IP Pool" UserInput="true">
+              <AllowedValues />
+            </AttachedAttribute>
+            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Provider Network Type" UserInput="true">
+              <AllowedValues />
+            </AttachedAttribute>
+            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Provider Network Interface" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
           </AttachedAttributes>
