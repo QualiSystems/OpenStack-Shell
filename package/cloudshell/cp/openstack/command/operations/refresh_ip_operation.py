@@ -34,7 +34,9 @@ class RefreshIPOperation(object):
         if instance is None:
             raise ValueError("Instance with InstanceID {0} not found".format(instance_id))
 
-        private_network_name = self.instance_service.get_instance_mgmt_network_name(instance, cp_resource_model)
+        private_network_name = self.instance_service.get_instance_mgmt_network_name(instance=instance,
+                                                                                    openstack_session=openstack_session,
+                                                                                    cp_resource_model=cp_resource_model)
         if private_network_name is None:
             raise ValueError("Management network with ID for instance not found".\
                                 format(cp_resource_model.qs_mgmt_os_net_id))

@@ -51,7 +51,14 @@ class DeployOperation(object):
             instance.id
         ))
 
-        private_ip_address = self.instance_service.get_private_ip(instance)
+        private_network_name = self.instance_service.get_instance_mgmt_network_name(instance=instance,
+                                                                                    openstack_session=os_session,
+                                                                                    cp_resource_model=cp_resource_model)
+        if private_network_name is None:
+            raise ValueError("Management network with ID for instance not found". \
+                             format(cp_resource_model.qs_mgmt_os_net_id))
+
+        private_ip_address = self.instance_service.get_private_ip(instance, private_network_name)
         # FIXME: generate DeployResultModel and return
         return DeployResultModel(vm_name=instance.name,
                                  vm_uuid=instance.id,

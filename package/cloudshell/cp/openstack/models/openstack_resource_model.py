@@ -10,7 +10,6 @@ class OpenStackResourceModel:
         self.os_user_name = ''
         self.os_user_password = ''
         self.qs_mgmt_os_net_uuid = ''
-        self.os_floating_ip_pool = ''
         self.reserved_networks = ''
         self.provider_network_type = ''
         self.provider_network_interface = ''

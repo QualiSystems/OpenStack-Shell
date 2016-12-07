@@ -67,6 +67,7 @@ class TestRefreshIPOperation(TestCase):
                                                  deployed_app_resource=self.deployed_app_resource,
                                                  private_ip=self.private_ip,
                                                  resource_fullname=self.resource_fullname,
+                                                 cp_resource_model=self.cp_resource_model,
                                                  logger=self.mock_logger)
             self.assertTrue(context)
 

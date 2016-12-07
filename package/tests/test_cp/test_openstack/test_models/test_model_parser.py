@@ -34,7 +34,6 @@ class TestOpenStackShellModelParser(TestCase):
         self.assertEqual(result.os_user_name, 'test_user')
         self.assertEqual(result.os_user_password, 'test_pass')
         self.assertEqual(result.qs_mgmt_os_net_uuid, '1234-56-78')
-        self.assertEqual(result.os_floating_ip_pool, '10.0.0.100-10.0.0.101')
         self.assertEqual(result.reserved_networks, '172.22.0.0/16')
         self.assertEqual(result.provider_network_type, 'vlan')
         self.assertEqual(result.provider_network_interface, 'public')

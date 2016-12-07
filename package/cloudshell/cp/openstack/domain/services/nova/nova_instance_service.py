@@ -161,7 +161,7 @@ class NovaInstanceService(object):
         for net in client.networks.list():
             net_dict = net.to_dict()
             if net_dict['id'] == cp_resource_model.qs_mgmt_os_net_uuid:
-                return net_dict['name']
+                return net_dict['label']
 
         return None
 

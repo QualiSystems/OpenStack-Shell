@@ -180,10 +180,16 @@ class TestOpenStackShell(TestCase):
                     mock_context_remote = Mock()
                     mock_context_remote.fullname = mock_full_name
                     mock_context_remote.address = mock_private_ip
+
                     self.command_context.remote_endpoints = [mock_context_remote]
+
+                    mock_cp_resource_model = Mock()
+                    self.os_shell_api.model_parser.get_resource_model_from_context = Mock(
+                        return_value=mock_cp_resource_model)
 
                     self.os_shell_api.refresh_ip_operation.refresh_ip = Mock(return_value=True)
                     self.os_shell_api.refresh_ip(self.command_context)
+
 
                     self.os_shell_api.refresh_ip_operation.refresh_ip.assert_called_with(
                         openstack_session=self.os_shell_api.os_session_provider.get_openstack_session(),
@@ -191,5 +197,6 @@ class TestOpenStackShell(TestCase):
                         private_ip=mock_private_ip,
                         resource_fullname=mock_full_name,
                         cloudshell_session=mock_cs_session_obj,
+                        cp_resource_model=mock_cp_resource_model,
                         logger=mock_log_obj)
 

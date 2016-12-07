@@ -186,9 +186,6 @@
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Reserved Networks" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
-            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Floating IP Pool" UserInput="true">
-              <AllowedValues />
-            </AttachedAttribute>
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Provider Network Type" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
