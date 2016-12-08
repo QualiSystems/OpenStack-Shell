@@ -11,7 +11,7 @@ class OpenStackResourceModel:
         self.os_user_password = ''
         self.qs_mgmt_os_net_uuid = ''
         self.reserved_networks = ''
-        self.provider_network_type = ''
+        self.vlan_type = ''
         self.provider_network_interface = ''
 
     def __str__(self):

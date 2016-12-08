@@ -28,7 +28,7 @@ class NeutronNetworkService(object):
         client = neutron_client.Client(session=openstack_session)
 
         interface_name = cp_resource_model.provider_network_interface
-        network_type = cp_resource_model.provider_network_type
+        network_type = cp_resource_model.vlan_type.lower()
 
         nw_name = "net_segmentation_id_{0}".format(segmentation_id)
         create_nw_json = {'provider:physical_network': interface_name,
