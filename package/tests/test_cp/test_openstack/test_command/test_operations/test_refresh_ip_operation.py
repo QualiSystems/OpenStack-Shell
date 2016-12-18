@@ -16,6 +16,7 @@ class TestRefreshIPOperation(TestCase):
         self.mock_logger = Mock()
         self.resource_fullname = 'Resource Fullname'
         self.private_ip = '1.2.3.4'
+        self.cp_resource_model = Mock()
 
     def test_refresh_ip_operation_refresh_ip_normal(self):
 
@@ -26,6 +27,7 @@ class TestRefreshIPOperation(TestCase):
                                              deployed_app_resource=self.deployed_app_resource,
                                              private_ip=self.private_ip,
                                              resource_fullname=self.resource_fullname,
+                                             cp_resource_model=self.cp_resource_model,
                                              logger=self.mock_logger)
 
         self.refresh_ip_operation.instance_service.get_instance_from_instance_id.assert_called_with(
@@ -44,6 +46,7 @@ class TestRefreshIPOperation(TestCase):
                                              deployed_app_resource=self.deployed_app_resource,
                                              private_ip=self.private_ip,
                                              resource_fullname=self.resource_fullname,
+                                             cp_resource_model=self.cp_resource_model,
                                              logger=self.mock_logger)
 
         self.refresh_ip_operation.instance_service.get_instance_from_instance_id.assert_called_with(
@@ -64,6 +67,7 @@ class TestRefreshIPOperation(TestCase):
                                                  deployed_app_resource=self.deployed_app_resource,
                                                  private_ip=self.private_ip,
                                                  resource_fullname=self.resource_fullname,
+                                                 cp_resource_model=self.cp_resource_model,
                                                  logger=self.mock_logger)
             self.assertTrue(context)
 

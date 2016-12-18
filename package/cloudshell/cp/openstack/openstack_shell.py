@@ -59,7 +59,6 @@ class OpenStackShell(object):
         with LoggingSessionContext(command_context) as logger:
             with ErrorHandlingContext(logger):
                 with CloudShellSessionContext(command_context) as cs_session:
-                    # FIXME: Add details
                     resource_model = self.model_parser.get_resource_model_from_context(command_context.resource)
 
                     context_remote = command_context.remote_endpoints[0]
@@ -179,7 +178,6 @@ class OpenStackShell(object):
                     deployed_app_resource = self.model_parser.deployed_app_resource_from_context_remote(context_remote)
 
                     os_session = self.os_session_provider.get_openstack_session(cs_session, resource_model, logger)
-                    # FIXME: Add details
                     self.hidden_operation.delete_instance(openstack_session=os_session,
                                                           deployed_app_resource=deployed_app_resource,
                                                           logger=logger)
@@ -211,11 +209,12 @@ class OpenStackShell(object):
 
                     os_session = self.os_session_provider.get_openstack_session(cs_session, resource_model, logger)
                     self.refresh_ip_operation.refresh_ip(openstack_session=os_session,
-                                                           cloudshell_session=cs_session,
-                                                           deployed_app_resource=deployed_app_resource,
-                                                           private_ip=deployed_app_private_ip,
-                                                           resource_fullname=deployed_app_fullname,
-                                                           logger=logger)
+                                                         cloudshell_session=cs_session,
+                                                         deployed_app_resource=deployed_app_resource,
+                                                         private_ip=deployed_app_private_ip,
+                                                         resource_fullname=deployed_app_fullname,
+                                                         cp_resource_model=resource_model,
+                                                         logger=logger)
 
     def apply_connectivity(self, command_context, connectivity_request):
         """

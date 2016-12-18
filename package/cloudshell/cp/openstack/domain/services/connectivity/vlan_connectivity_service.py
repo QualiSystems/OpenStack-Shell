@@ -101,9 +101,10 @@ class VLANConnectivityService(object):
         results = []
 
         for k, values in vlan_actions.iteritems():
-            net = self.network_service.create_or_get_network_with_vlanid(openstack_session=openstack_session,
-                                                                         vlanid=int(k),
-                                                                         logger=logger)
+            net = self.network_service.create_or_get_network_with_segmentation_id(openstack_session=openstack_session,
+                                                                                  cp_resource_model=cp_resource_model,
+                                                                                  segmentation_id=int(k),
+                                                                                  logger=logger)
             if not net:
                 fail_results = self.set_fail_results(values=values,
                                                       action_type='setVlan',
@@ -152,8 +153,8 @@ class VLANConnectivityService(object):
         results = []
 
         for k, values in vlan_actions.iteritems():
-            net = self.network_service.get_network_with_vlanid(openstack_session=openstack_session,
-                                                               vlanid=int(k), logger=logger)
+            net = self.network_service.get_network_with_segmentation_id(openstack_session=openstack_session,
+                                                                        segmentation_id=int(k), logger=logger)
             if not net:
                 fail_results = self.set_fail_results(values=values,
                                                       action_type='removeVlan',

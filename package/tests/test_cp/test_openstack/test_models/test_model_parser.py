@@ -22,6 +22,8 @@ class TestOpenStackShellModelParser(TestCase):
         test_resource.attributes['Quali Management Network UUID'] = '1234-56-78'
         test_resource.attributes['Floating IP Pool']  = '10.0.0.100-10.0.0.101'
         test_resource.attributes['Reserved Networks'] = '172.22.0.0/16'
+        test_resource.attributes['Vlan Type'] = 'vlan'
+        test_resource.attributes['Provider Network Interface'] = 'public'
 
         result = self.tested_class.get_resource_model_from_context(test_resource)
 
@@ -32,8 +34,9 @@ class TestOpenStackShellModelParser(TestCase):
         self.assertEqual(result.os_user_name, 'test_user')
         self.assertEqual(result.os_user_password, 'test_pass')
         self.assertEqual(result.qs_mgmt_os_net_uuid, '1234-56-78')
-        self.assertEqual(result.os_floating_ip_pool, '10.0.0.100-10.0.0.101')
         self.assertEqual(result.reserved_networks, '172.22.0.0/16')
+        self.assertEqual(result.vlan_type, 'vlan')
+        self.assertEqual(result.provider_network_interface, 'public')
 
     @mock.patch("cloudshell.cp.openstack.models.model_parser.jsonpickle")
     @mock.patch("cloudshell.cp.openstack.models.model_parser.DeployOSNovaImageInstanceResourceModel")

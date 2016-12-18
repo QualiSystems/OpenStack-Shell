@@ -53,8 +53,6 @@ class NovaInstanceService(object):
                                          flavor=flavor_obj,
                                          nics=[qnet_dict])
 
-        # instance_attrrs = instance.get
-        # FIXME : Wait for the server to be ready
         self.instance_waiter.wait(instance, state=self.instance_waiter.ACTIVE)
         return instance
 
@@ -149,10 +147,29 @@ class NovaInstanceService(object):
         """
         pass
 
-    def get_private_ip(self, instance):
+    def get_instance_mgmt_network_name(self, instance, openstack_session, cp_resource_model):
         """
 
         :param novaclient.Client.servers.Server instance:
+        :param keystoneauth1.session.Sesssion openstack_session:
+        :param OpenStackResourceModel cp_resource_model:
+        :rtype str: Network Name
+        """
+
+        client = novaclient.Client(self.API_VERSION, session=openstack_session)
+
+        for net in client.networks.list():
+            net_dict = net.to_dict()
+            if net_dict['id'] == cp_resource_model.qs_mgmt_os_net_uuid:
+                return net_dict['label']
+
+        return None
+
+    def get_private_ip(self, instance, private_network_name):
+        """
+
+        :param novaclient.Client.servers.Server instance:
+        :param str private_network_name:
         :rtype str: Instance IP
         """
         if not instance:
@@ -160,9 +177,8 @@ class NovaInstanceService(object):
 
         ip = ""
 
-        # FIXME: quali-network is hard-coded here.
         for net_name, net_ips in instance.networks.iteritems():
-            if net_name == 'quali-network':
+            if net_name == private_network_name:
                 ip = net_ips[0] if net_ips else ""
                 break
 

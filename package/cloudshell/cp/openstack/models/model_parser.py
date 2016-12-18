@@ -24,8 +24,9 @@ class OpenStackShellModelParser(object):
         os_res_model.os_user_name = attrs['OpenStack User Name']
         os_res_model.os_user_password = attrs['OpenStack User Password']
         os_res_model.qs_mgmt_os_net_uuid = attrs['Quali Management Network UUID']
-        os_res_model.os_floating_ip_pool = attrs['Floating IP Pool']
         os_res_model.reserved_networks = attrs['Reserved Networks']
+        os_res_model.vlan_type = attrs['Vlan Type']
+        os_res_model.provider_network_interface = attrs['Provider Network Interface']
         return os_res_model
 
     @staticmethod

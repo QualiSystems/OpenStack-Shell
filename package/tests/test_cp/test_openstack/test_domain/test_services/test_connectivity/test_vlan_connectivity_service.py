@@ -20,7 +20,7 @@ class TestVlanConnectivityService(TestCase):
         mock_test_value = 'test_value'
         test_vlan_actions = {1 : mock_test_value, 2: mock_test_value}
 
-        self.connectivity_service.network_service.create_or_get_network_with_vlanid = Mock(return_value=None)
+        self.connectivity_service.network_service.create_or_get_network_with_segmentation_id = Mock(return_value=None)
         self.connectivity_service.set_fail_results = Mock(return_value='fail_result')
 
         results = self.connectivity_service.set_vlan_actions(openstack_session=self.os_session,
@@ -38,7 +38,7 @@ class TestVlanConnectivityService(TestCase):
         test_vlan_actions = {1 : mock_test_value, 2: mock_test_value}
 
         mock_create_or_get_result = {'id': 'test_net_id', 'subnets' : []}
-        self.connectivity_service.network_service.create_or_get_network_with_vlanid = Mock(
+        self.connectivity_service.network_service.create_or_get_network_with_segmentation_id = Mock(
                                 return_value=mock_create_or_get_result)
 
         self.connectivity_service.network_service.create_and_attach_subnet_to_net = Mock(return_value=None)
@@ -61,7 +61,7 @@ class TestVlanConnectivityService(TestCase):
         test_vlan_actions = {1 : mock_test_value, 2: mock_test_value}
 
         mock_create_or_get_result = {'id': 'test_net_id', 'subnets' : []}
-        self.connectivity_service.network_service.create_or_get_network_with_vlanid = Mock(
+        self.connectivity_service.network_service.create_or_get_network_with_segmentation_id = Mock(
                                 return_value=mock_create_or_get_result)
 
         self.connectivity_service.network_service.create_and_attach_subnet_to_net = Mock(return_value='test_subnet')
@@ -79,7 +79,7 @@ class TestVlanConnectivityService(TestCase):
         mock_test_value = 'test_value'
         test_vlan_actions = {1: mock_test_value, 2: mock_test_value}
 
-        self.connectivity_service.network_service.get_network_with_vlanid = Mock(return_value=None)
+        self.connectivity_service.network_service.get_network_with_segmentation_id = Mock(return_value=None)
         self.connectivity_service.set_fail_results = Mock(return_value='fail_result')
 
         results = self.connectivity_service.remove_vlan_actions(openstack_session=self.os_session,
@@ -96,7 +96,7 @@ class TestVlanConnectivityService(TestCase):
         test_vlan_actions = {1: mock_test_value, 2: mock_test_value}
 
         mock_get_network_with_vlanid_result = {'id' : 'test-net-id'}
-        self.connectivity_service.network_service.get_network_with_vlanid = Mock(
+        self.connectivity_service.network_service.get_network_with_segmentation_id = Mock(
                         return_value=mock_get_network_with_vlanid_result)
         self.connectivity_service.detach_nic_from_instance_action_result = Mock(return_value='Success')
         self.connectivity_service.network_service.remove_subnet_and_net = Mock()

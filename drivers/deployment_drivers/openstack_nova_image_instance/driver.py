@@ -41,8 +41,6 @@ class DeployOSNovaImageInstanceDriver(ResourceDriverInterface):
                                 context.reservation.domain))
 
                 deploy_service_res_model = OSModelParser.get_deploy_resource_model_from_context_resource(context.resource)
-                # FIXME: hacky right now
-                # deploy_service_res_model.cloud_provider = 'OpenStack'
 
                 app_name = jsonpickle.decode(context.resource.app_context.app_request_json)['name']
 
