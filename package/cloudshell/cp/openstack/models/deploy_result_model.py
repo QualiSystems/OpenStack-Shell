@@ -10,7 +10,7 @@ class DeployResultModel(object):
         self.cloud_provider_resource_name = cloud_provider_name
         #self.autoload = autoload
         #self.auto_delete = autodelete
-        #self.wait_for_ip = wait_for_ip
+        self.wait_for_ip = False
         #self.auto_power_off = auto_power_off
         #self.inbound_ports = inbound_ports
         #self.outbound_ports = outbound_ports
