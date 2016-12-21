@@ -31,11 +31,14 @@ class NeutronNetworkService(object):
         network_type = cp_resource_model.vlan_type.lower()
 
         nw_name = "net_segmentation_id_{0}".format(segmentation_id)
-        create_nw_json = {'provider:physical_network': interface_name,
-                              'provider:network_type': network_type,
+        create_nw_json = {'provider:network_type': network_type,
                               'provider:segmentation_id': segmentation_id,
                               'name': nw_name,
                               'admin_state_up': True}
+
+        if network_type == 'vlan':
+            create_nw_json.update({'provider:physical_network': interface_name})
+
         try:
             new_net = client.create_network({'network': create_nw_json})
             new_net = new_net['network']
