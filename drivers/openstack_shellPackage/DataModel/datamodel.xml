@@ -188,8 +188,8 @@
             </AttachedAttribute>
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Vlan Type" UserInput="true">
               <AllowedValues>
-                <AllowedValue>Vlan</AllowedValue>
-                <AllowedValue>Vxlan</AllowedValue>
+                <AllowedValue>VLAN</AllowedValue>
+                <AllowedValue>VXLAN</AllowedValue>
               </AllowedValues>
             </AttachedAttribute>
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Provider Network Interface" UserInput="true">
