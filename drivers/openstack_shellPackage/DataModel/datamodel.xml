@@ -55,7 +55,7 @@
       </Rules>
     </AttributeInfo>
 
-    <AttributeInfo DefaultValue="VLAN" Description="Type of the provider network deployed. Supported values are VLAN and VxLAN" IsReadOnly="false" Name="Vlan Type" Type="String">
+    <AttributeInfo DefaultValue="Vlan   " Description="Type of the provider network deployed. Supported values are VLAN and VxLAN" IsReadOnly="false" Name="Vlan Type" Type="String">
       <Rules>
         <Rule Name="Configuration" />
         <Rule Name="Setting" />
@@ -160,7 +160,7 @@
       <AttachedAttributes />
       <AttributeValues />
       <Models>
-        <ResourceModel Description="Shell Driver for OpenStack Cloud Provider" ImagePath="openstack-cloud-software-vertical-web.png" Name="OpenStack" SupportsConcurrentCommands="true">
+        <ResourceModel Description="Shell Driver for OpenStack Cloud Provider" ImagePath="OpenStack_VM_Cloud.png" Name="OpenStack" SupportsConcurrentCommands="true">
           <AttachedAttributes>
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Controller URL" UserInput="true">
               <AllowedValues />
@@ -187,7 +187,10 @@
               <AllowedValues />
             </AttachedAttribute>
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Vlan Type" UserInput="true">
-              <AllowedValues />
+              <AllowedValues>
+                <AllowedValue>VLAN</AllowedValue>
+                <AllowedValue>VXLAN</AllowedValue>
+              </AllowedValues>
             </AttachedAttribute>
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Provider Network Interface" UserInput="true">
               <AllowedValues />
@@ -253,7 +256,7 @@
       <AttachedAttributes />
       <AttributeValues />
       <Models>
-        <ResourceModel Description="OpenStack Instance from Image Deployment Driver" Name="OpenStack Deploy from Glance Image" SupportsConcurrentCommands="false">
+        <ResourceModel Description="OpenStack Instance from Image Deployment Driver" ImagePath="OpenStack_VM_Icon.png" Name="OpenStack Deploy from Glance Image" SupportsConcurrentCommands="false">
           <AttachedAttributes>
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Cloud Provider" UserInput="true">
               <AllowedValues />
