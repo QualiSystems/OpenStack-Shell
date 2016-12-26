@@ -55,7 +55,7 @@
       </Rules>
     </AttributeInfo>
 
-    <AttributeInfo DefaultValue="VLAN" Description="Type of the provider network deployed. Supported values are VLAN and VxLAN" IsReadOnly="false" Name="Vlan Type" Type="String">
+    <AttributeInfo DefaultValue="Vlan   " Description="Type of the provider network deployed. Supported values are VLAN and VxLAN" IsReadOnly="false" Name="Vlan Type" Type="String">
       <Rules>
         <Rule Name="Configuration" />
         <Rule Name="Setting" />
@@ -187,10 +187,10 @@
               <AllowedValues />
             </AttachedAttribute>
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Vlan Type" UserInput="true">
-              <AllowedValues/>
-                <!--AllowedValue>Vlan</AllowedValue>
+              <AllowedValues>
+                <AllowedValue>Vlan</AllowedValue>
                 <AllowedValue>Vxlan</AllowedValue>
-              </AllowedValues-->
+              </AllowedValues>
             </AttachedAttribute>
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Provider Network Interface" UserInput="true">
               <AllowedValues />
