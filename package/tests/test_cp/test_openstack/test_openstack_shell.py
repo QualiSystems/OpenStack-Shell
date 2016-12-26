@@ -129,7 +129,7 @@ class TestOpenStackShell(TestCase):
                     self.assertEqual(decoded_res['vm_name'], app_name)
                     self.assertEqual(decoded_res['vm_uuid'], deploy_result.vm_uuid)
                     self.assertEqual(decoded_res['cloud_provider_resource_name'], deploy_res_mock.cloud_provider)
-                    self.assertEqual(decoded_res['deployed_app_ip'], deploy_result.deployed_app_ip)
+                    self.assertEqual(decoded_res['deployed_app_address'], deploy_result.deployed_app_address)
 
     def test_delete_instance(self):
         """
