@@ -15,5 +15,5 @@ class DeployResultModel(object):
         #self.inbound_ports = inbound_ports
         #self.outbound_ports = outbound_ports
         #self.deployed_app_attributes = deployed_app_attributes
-        self.deployed_app_ip = deployed_app_ip
+        self.deployed_app_address = deployed_app_ip
         #self.floating_ip = floating_ip

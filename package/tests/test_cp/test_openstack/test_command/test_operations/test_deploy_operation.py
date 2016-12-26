@@ -47,4 +47,4 @@ class TestDeployOperation(TestCase):
         self.assertEqual(test_result.vm_name, test_name)
         self.assertEqual(test_result.vm_uuid, test_id)
         self.assertEqual(test_result.cloud_provider_resource_name, test_cloud_provider)
-        self.assertEqual(test_result.deployed_app_ip, test_private_ip)
+        self.assertEqual(test_result.deployed_app_address, test_private_ip)
