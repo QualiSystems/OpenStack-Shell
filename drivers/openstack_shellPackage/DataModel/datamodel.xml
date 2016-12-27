@@ -55,7 +55,7 @@
       </Rules>
     </AttributeInfo>
 
-    <AttributeInfo DefaultValue="Vlan   " Description="Type of the provider network deployed. Supported values are VLAN and VxLAN" IsReadOnly="false" Name="Vlan Type" Type="String">
+    <AttributeInfo DefaultValue="" Description="Type of the provider network deployed. Supported values are VLAN and VxLAN" IsReadOnly="false" Name="Vlan Type" Type="String">
       <Rules>
         <Rule Name="Configuration" />
         <Rule Name="Setting" />
