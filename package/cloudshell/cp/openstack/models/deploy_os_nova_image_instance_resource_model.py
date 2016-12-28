@@ -9,5 +9,4 @@ class DeployOSNovaImageInstanceResourceModel(object):
         self.instance_flavor = ''
         self.add_floating_ip = False
         self.autoload = False
-        self.outbound_ports = ''
-        self.inbound_ports = ''
+        self.external_network_uuid = ''
