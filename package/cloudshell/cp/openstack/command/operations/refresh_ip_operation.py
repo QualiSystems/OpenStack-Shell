@@ -23,6 +23,7 @@ class RefreshIPOperation(object):
         :param LoggingSessionContext logger:
         :rtype None:
         """
+        logger.debug(deployed_app_resource)
         logger.info(deployed_app_resource.attributes)
         logger.info(private_ip)
         logger.info("Refresh_IP called")
@@ -44,5 +45,5 @@ class RefreshIPOperation(object):
         if new_private_ip != private_ip:
             cloudshell_session.UpdateResourceAddress(resource_fullname, new_private_ip)
 
-        # FIXME : hardcoded public IP right now. Get it from floating IP later.
-        cloudshell_session.SetAttributeValue(resource_fullname, RefreshIPOperation.public_ip, "192.168.1.1")
+        floating_ip = '' # FIXME : deployed_app_resource.attributes.public_ip
+        cloudshell_session.SetAttributeValue(resource_fullname, RefreshIPOperation.public_ip, floating_ip)
