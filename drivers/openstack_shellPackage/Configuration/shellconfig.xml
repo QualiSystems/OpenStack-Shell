@@ -19,6 +19,7 @@
               <Attribute Name="Quali Management Network UUID" Value=""/>
               <Attribute Name="Vlan Type" Value=""/>
               <Attribute Name="Provider Network Interface" Value=""/>
+              <Attribute Name="External Network UUID" Value=""/>
             </Attributes>
         </ResourceTemplate>
     </ResourceTemplates>

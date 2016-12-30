@@ -203,6 +203,7 @@ class OpenStackShell(object):
 
                     deployed_app_resource = self.model_parser.deployed_app_resource_from_context_remote(context_remote)
                     deployed_app_private_ip = context_remote.address
+                    deployed_app_public_ip = context_remote.attributes['Public IP']
                     deployed_app_fullname = context_remote.fullname
 
                     logger.info(deployed_app_resource)
@@ -212,6 +213,7 @@ class OpenStackShell(object):
                                                          cloudshell_session=cs_session,
                                                          deployed_app_resource=deployed_app_resource,
                                                          private_ip=deployed_app_private_ip,
+                                                         public_ip=deployed_app_public_ip,
                                                          resource_fullname=deployed_app_fullname,
                                                          cp_resource_model=resource_model,
                                                          logger=logger)

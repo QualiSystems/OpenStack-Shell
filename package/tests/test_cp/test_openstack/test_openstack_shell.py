@@ -180,10 +180,12 @@ class TestOpenStackShell(TestCase):
                         return_value=mock_resource_value)
 
                     mock_private_ip = '1.2.3.4'
+                    mock_public_ip = '4.3.2.1'
                     mock_full_name = 'test full name'
                     mock_context_remote = Mock()
                     mock_context_remote.fullname = mock_full_name
                     mock_context_remote.address = mock_private_ip
+                    mock_context_remote.attributes = {'Public IP': mock_public_ip}
 
                     self.command_context.remote_endpoints = [mock_context_remote]
 
@@ -199,6 +201,7 @@ class TestOpenStackShell(TestCase):
                         openstack_session=self.os_shell_api.os_session_provider.get_openstack_session(),
                         deployed_app_resource=mock_resource_value,
                         private_ip=mock_private_ip,
+                        public_ip=mock_public_ip,
                         resource_fullname=mock_full_name,
                         cloudshell_session=mock_cs_session_obj,
                         cp_resource_model=mock_cp_resource_model,

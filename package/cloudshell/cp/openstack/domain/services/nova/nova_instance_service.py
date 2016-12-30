@@ -140,13 +140,6 @@ class NovaInstanceService(object):
         """
         pass
 
-    def assign_floating_ip(self, instance):
-        """
-        :param novaclient.Client.servers.Server instance:
-        :rtype dict: Dictionary of Security Groups attached to instance.
-        """
-        pass
-
     def get_instance_mgmt_network_name(self, instance, openstack_session, cp_resource_model):
         """
 
@@ -264,13 +257,14 @@ class NovaInstanceService(object):
             logger.error(traceback.format_exc())
             return False
 
-    def assign_floating_ip(self, instance, openstack_session, cp_resource_model, floating_ip_net_uuid):
+    def assign_floating_ip(self, instance, openstack_session, cp_resource_model, floating_ip_net_uuid, logger):
         """
 
         :param instance:,
         :param openstack_session:
         :param cp_resource_model:
         :param floating_ip_net_uuid:
+        :param logger:
         :return str: Floating IP as a string.
         """
 
@@ -280,7 +274,7 @@ class NovaInstanceService(object):
         for net in client.networks.list():
             net_dict = net.to_dict()
             if net_dict['id'] == floating_ip_net_uuid:
-                floating_ip_net_name = new_dict['label']
+                floating_ip_net_name = net_dict['label']
 
         if not floating_ip_net_name:
             raise ValueError("Cannot find a network with ID {0}".format(floating_ip_net_name))

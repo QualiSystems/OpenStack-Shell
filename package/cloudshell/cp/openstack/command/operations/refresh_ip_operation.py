@@ -10,14 +10,15 @@ class RefreshIPOperation(object):
         self.instance_service = NovaInstanceService(InstanceWaiter())
 
     def refresh_ip(self, openstack_session, cloudshell_session,
-                   deployed_app_resource, private_ip, resource_fullname,
-                   cp_resource_model, logger):
+                   deployed_app_resource, private_ip, public_ip,
+                   resource_fullname, cp_resource_model, logger):
         """
 
         :param keystoneauth1.session.Session openstack_session:
         :param CloudShellSessionContext cloudshell_session:
         :param deployed_app_resource:
         :param str private_ip:
+        :param str public_ip:
         :param str resource_fullname:
         :param OpenStackResourceModel cp_resource_model:
         :param LoggingSessionContext logger:
@@ -45,5 +46,5 @@ class RefreshIPOperation(object):
         if new_private_ip != private_ip:
             cloudshell_session.UpdateResourceAddress(resource_fullname, new_private_ip)
 
-        floating_ip = '' # FIXME : deployed_app_resource.attributes.public_ip
+        floating_ip = public_ip
         cloudshell_session.SetAttributeValue(resource_fullname, RefreshIPOperation.public_ip, floating_ip)

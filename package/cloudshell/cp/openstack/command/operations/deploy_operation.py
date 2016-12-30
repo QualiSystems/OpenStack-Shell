@@ -54,7 +54,7 @@ class DeployOperation(object):
 
         # Assign floating IP
         floating_ip = ''
-        if deploy_req_model.floating_ip:
+        if deploy_req_model.add_floating_ip:
             if deploy_req_model.external_network_uuid:
                 floating_ip_net_uuid = deploy_req_model.external_network_uuid
             else:
@@ -63,12 +63,12 @@ class DeployOperation(object):
             floating_ip = self.instance_service.assign_floating_ip(instance=instance,
                                                                    openstack_session=os_session,
                                                                    cp_resource_model=cp_resource_model,
-                                                                   floating_ip_net_uuid=floating_ip_net_uuid)
-
+                                                                   floating_ip_net_uuid=floating_ip_net_uuid,
+                                                                   logger=logger)
         # Get private IP
         private_ip_address = self.instance_service.get_private_ip(instance, private_network_name)
 
-        deployed_app_attributes = {}
+        deployed_app_attributes = dict()
         deployed_app_attributes['Public IP'] = floating_ip
 
         return DeployResultModel(vm_name=instance.name,
