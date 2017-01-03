@@ -250,3 +250,32 @@ class TestNovaInstanceService(TestCase):
                                                                 port_id='test_port_id',
                                                                 logger=self.mock_logger)
         self.assertEqual(result, False)
+
+    def test_assign_floating_ip(self):
+        mock_client = Mock()
+        test_nova_instance_service.novaclient.Client = Mock(return_value=mock_client)
+
+        test_external_nw_id = 'ext-net-id'
+        test_floating_ip = '4.3.2.1'
+        test_net_label = 'test-net'
+
+        mock_net_obj = Mock()
+        mock_net_obj.to_dict = Mock(return_value={'id':test_external_nw_id, 'label': test_net_label})
+
+        mock_client.networks.list = Mock(return_value=[mock_net_obj])
+
+        mock_floating_ip_obj = Mock()
+        mock_floating_ip_obj.ip = test_floating_ip
+        mock_client.floating_ips.create = Mock(return_value=mock_floating_ip_obj)
+
+        mock_instance = Mock()
+        mock_cp_resource_model = Mock()
+
+        result = self.instance_service.assign_floating_ip(openstack_session=self.openstack_session,
+                                                          instance=mock_instance,
+                                                          cp_resource_model=mock_cp_resource_model,
+                                                          floating_ip_net_uuid=test_external_nw_id,
+                                                          logger=self.mock_logger)
+
+        mock_client.floating_ips.create.assert_called_with(test_net_label)
+        self.assertEqual(result, test_floating_ip)

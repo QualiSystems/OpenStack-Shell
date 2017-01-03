@@ -140,13 +140,6 @@ class NovaInstanceService(object):
         """
         pass
 
-    def assign_floating_ip(self, instance):
-        """
-        :param novaclient.Client.servers.Server instance:
-        :rtype dict: Dictionary of Security Groups attached to instance.
-        """
-        pass
-
     def get_instance_mgmt_network_name(self, instance, openstack_session, cp_resource_model):
         """
 
@@ -263,3 +256,30 @@ class NovaInstanceService(object):
         except Exception as e:
             logger.error(traceback.format_exc())
             return False
+
+    def assign_floating_ip(self, instance, openstack_session, cp_resource_model, floating_ip_net_uuid, logger):
+        """
+
+        :param novaclient.Client.servers.Server instance:,
+        :param keystoneauth1.session.Session openstack_session:
+        :param OpenStackResourceModel cp_resource_model:
+        :param str floating_ip_net_uuid:
+        :param LoggingSessionContext logger:
+        :return str: Floating IP as a string.
+        """
+
+        client = novaclient.Client(self.API_VERSION, session=openstack_session)
+
+        floating_ip_net_name = ''
+        for net in client.networks.list():
+            net_dict = net.to_dict()
+            if net_dict['id'] == floating_ip_net_uuid:
+                floating_ip_net_name = net_dict['label']
+
+        if not floating_ip_net_name:
+            raise ValueError("Cannot find a network with ID {0}".format(floating_ip_net_name))
+
+        floating_ip_obj = client.floating_ips.create(floating_ip_net_name)
+        instance.add_floating_ip(floating_ip_obj)
+
+        return floating_ip_obj.ip

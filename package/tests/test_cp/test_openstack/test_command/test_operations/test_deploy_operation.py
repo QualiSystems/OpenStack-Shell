@@ -21,10 +21,14 @@ class TestDeployOperation(TestCase):
         test_id = '1234'
         test_cloud_provider = 'test CP'
         test_private_ip = '1.2.3.4'
+        test_floating_ip = '4.3.2.1'
+        test_deployed_app_attrs = {'Public IP': 'test_public_ip'}
         mock_deploy_result = DeployResultModel(vm_name=test_name,
                                                vm_uuid=test_id,
                                                cloud_provider_name=test_cloud_provider,
-                                               deployed_app_ip=test_private_ip)
+                                               deployed_app_ip=test_private_ip,
+                                               deployed_app_attributes=test_deployed_app_attrs,
+                                               floating_ip=test_floating_ip)
 
         self.deploy_operation.instance_service.get_private_ip = Mock(return_value=test_private_ip)
 

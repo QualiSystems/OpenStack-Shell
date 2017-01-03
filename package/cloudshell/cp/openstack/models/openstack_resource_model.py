@@ -13,6 +13,8 @@ class OpenStackResourceModel:
         self.reserved_networks = ''
         self.vlan_type = ''
         self.provider_network_interface = ''
+        self.external_network_uuid = ''
+        self.default_sec_group_uuid = ''
 
     def __str__(self):
         desc = "OpenStack Resource: controller_url: {0}, domain: {1}, project_name : {2}, os_user_name : {3}".format(
