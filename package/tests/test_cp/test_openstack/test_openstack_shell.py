@@ -201,7 +201,6 @@ class TestOpenStackShell(TestCase):
                         openstack_session=self.os_shell_api.os_session_provider.get_openstack_session(),
                         deployed_app_resource=mock_resource_value,
                         private_ip=mock_private_ip,
-                        public_ip=mock_public_ip,
                         resource_fullname=mock_full_name,
                         cloudshell_session=mock_cs_session_obj,
                         cp_resource_model=mock_cp_resource_model,

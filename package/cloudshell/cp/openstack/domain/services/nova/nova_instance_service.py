@@ -260,11 +260,11 @@ class NovaInstanceService(object):
     def assign_floating_ip(self, instance, openstack_session, cp_resource_model, floating_ip_net_uuid, logger):
         """
 
-        :param instance:,
-        :param openstack_session:
-        :param cp_resource_model:
-        :param floating_ip_net_uuid:
-        :param logger:
+        :param novaclient.Client.servers.Server instance:,
+        :param keystoneauth1.session.Session openstack_session:
+        :param OpenStackResourceModel cp_resource_model:
+        :param str floating_ip_net_uuid:
+        :param LoggingSessionContext logger:
         :return str: Floating IP as a string.
         """
 
