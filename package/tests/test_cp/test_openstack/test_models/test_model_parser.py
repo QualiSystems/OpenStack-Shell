@@ -25,7 +25,6 @@ class TestOpenStackShellModelParser(TestCase):
         test_resource.attributes['Vlan Type'] = 'vlan'
         test_resource.attributes['Provider Network Interface'] = 'public'
         test_resource.attributes['External Network UUID'] = 'external_network_uuid'
-        test_resource.attributes['Default Security Group UUID'] = 'default_secgroup_uuid'
         result = self.tested_class.get_resource_model_from_context(test_resource)
 
         self.assertEqual(result.controller_url, 'test url')
@@ -39,8 +38,7 @@ class TestOpenStackShellModelParser(TestCase):
         self.assertEqual(result.vlan_type, 'vlan')
         self.assertEqual(result.provider_network_interface, 'public')
         self.assertEqual(result.external_network_uuid, 'external_network_uuid')
-        self.assertEqual(result.default_sec_group_uuid, 'default_secgroup_uuid')
-
+        
     @mock.patch("cloudshell.cp.openstack.models.model_parser.jsonpickle")
     @mock.patch("cloudshell.cp.openstack.models.model_parser.DeployOSNovaImageInstanceResourceModel")
     @mock.patch("cloudshell.cp.openstack.models.model_parser.DeployDataHolder")

@@ -28,7 +28,6 @@ class OpenStackShellModelParser(object):
         os_res_model.vlan_type = attrs['Vlan Type']
         os_res_model.provider_network_interface = attrs['Provider Network Interface']
         os_res_model.external_network_uuid = attrs['External Network UUID']
-        os_res_model.default_sec_group_uuid = attrs['Default Security Group UUID']
         return os_res_model
 
     @staticmethod
