@@ -253,7 +253,7 @@
       <AttachedAttributes />
       <AttributeValues />
       <Models>
-        <ResourceModel Description="OpenStack Instance from Image Deployment Driver" ImagePath="OpenStack_VM_Icon.png" Name="OpenStack Deploy from Glance Image" SupportsConcurrentCommands="false">
+        <ResourceModel Description="OpenStack Instance from Image Deployment Driver" ImagePath="OpenStack_VM_Icon.png" Name="OpenStack Deploy From Glance Image" SupportsConcurrentCommands="false">
           <AttachedAttributes>
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Cloud Provider" UserInput="true">
               <AllowedValues />
