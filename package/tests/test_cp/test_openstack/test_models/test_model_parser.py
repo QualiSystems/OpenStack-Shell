@@ -116,3 +116,31 @@ class TestOpenStackShellModelParser(TestCase):
         self.assertEqual(deploy_resource_model.add_floating_ip, parse_boolean_result)
         self.assertEqual(deploy_resource_model.autoload, parse_boolean_result)
         self.assertEqual(deploy_resource_model.external_network_uuid, external_network_uuid)
+
+    @mock.patch("cloudshell.cp.openstack.models.model_parser.OpenStackShellModelParser")
+    @mock.patch("cloudshell.cp.openstack.models.model_parser.DeployOSNovaImageInstanceResourceModel")
+    def test_get_deploy_resource_model_from_context_resource_without_cloud_provider_attribute(self, deploy_os_nova_image_instance_resource_model_class,
+                                                             openstack_shell_model_parser_class):
+        """Check that method returns DeployOSNovaImageInstanceResourceModel instance with correct attributes"""
+        deploy_os_nova_image_instance_resource_model = mock.MagicMock()
+        parse_boolean_result = mock.MagicMock()
+        deploy_os_nova_image_instance_resource_model_class.return_value = deploy_os_nova_image_instance_resource_model
+        openstack_shell_model_parser_class.parse_boolean.return_value = parse_boolean_result
+        test_resource = mock.MagicMock()
+        test_resource.attributes = {}
+        test_resource.attributes['Availability Zone'] = test_availability_zone = 'test_availability_zone'
+        test_resource.attributes['Image UUID'] = test_image_uuid = 'test_image_uuid'
+        test_resource.attributes['Instance Flavor'] = test_instance_flavor = 'test_instance_flavor'
+        test_resource.attributes['Add Floating IP'] = 'True'
+        test_resource.attributes['Autoload'] = '1'
+        test_resource.attributes['External Network UUID'] = external_network_uuid = 'external_network_uuid'
+
+        deploy_resource_model = self.tested_class.get_deploy_resource_model_from_context_resource(test_resource)
+
+        self.assertIs(deploy_resource_model, deploy_os_nova_image_instance_resource_model)
+        self.assertEqual(deploy_resource_model.cp_avail_zone, test_availability_zone)
+        self.assertEqual(deploy_resource_model.img_uuid, test_image_uuid)
+        self.assertEqual(deploy_resource_model.instance_flavor, test_instance_flavor)
+        self.assertEqual(deploy_resource_model.add_floating_ip, parse_boolean_result)
+        self.assertEqual(deploy_resource_model.autoload, parse_boolean_result)
+        self.assertEqual(deploy_resource_model.external_network_uuid, external_network_uuid)
