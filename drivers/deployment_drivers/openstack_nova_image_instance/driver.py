@@ -42,7 +42,15 @@ class DeployOSNovaImageInstanceDriver(ResourceDriverInterface):
 
                 deploy_service_res_model = OSModelParser.get_deploy_resource_model_from_context_resource(context.resource)
 
-                app_name = jsonpickle.decode(context.resource.app_context.app_request_json)['name']
+                context_json_decoded = jsonpickle.decode(context.resource.app_context.app_request_json)
+
+                app_name = context_json_decoded['name']
+                cloud_provider_name = context_json_decoded["deploymentService"].get("cloudProviderName")
+
+                logger.debug("cloud_provider_name from context = {0}".format(cloud_provider_name))
+
+                if cloud_provider_name:
+                    deploy_service_res_model.cloud_provider = str(cloud_provider_name)
 
                 deploy_req = DeployDataHolder({self.APP_NAME: app_name,
                                                self.IMAGE_PARAM: deploy_service_res_model})
@@ -59,9 +67,6 @@ class DeployOSNovaImageInstanceDriver(ResourceDriverInterface):
                                                 self._get_command_inputs_list(deploy_req),
                                                 False)
                 return result.Output
-                # return str(jsonpickle.encode({"vm_name": "testvm", "vm_uuid": "1234-5678",
-                #                             "cloud_provider_resource_name": "openstack"},
-                #                             unpicklable=False))
 
     def _get_command_inputs_list(self, data_holder):
         return [InputNameValue('request', jsonpickle.encode(data_holder, unpicklable=False))]
