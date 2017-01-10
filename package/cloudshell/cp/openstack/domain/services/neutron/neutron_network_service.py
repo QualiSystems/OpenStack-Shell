@@ -30,7 +30,7 @@ class NeutronNetworkService(object):
         interface_name = cp_resource_model.provider_network_interface
         network_type = cp_resource_model.vlan_type.lower()
 
-        nw_name = "net_segmentation_id_{0}".format(segmentation_id)
+        nw_name = "qs_net_segmentation_id_{0}".format(segmentation_id)
         create_nw_json = {'provider:network_type': network_type,
                               'provider:segmentation_id': segmentation_id,
                               'name': nw_name,
@@ -85,9 +85,12 @@ class NeutronNetworkService(object):
             logger.error("Cannot allocate new subnet. All subnets exhausted")
             return None
 
+        subnet_name = 'qs_subnet_' + net_id
         create_subnet_json = {'cidr': cidr,
                               'network_id': net_id,
-                              'ip_version': 4}
+                              'ip_version': 4,
+                              'name': subnet_name,
+                              'gateway_ip': None}
 
         try:
             new_subnet = client.create_subnet({'subnet':create_subnet_json})
