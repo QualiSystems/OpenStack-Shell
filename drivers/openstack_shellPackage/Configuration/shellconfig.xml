@@ -4,7 +4,7 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns="http://schemas.qualisystems.com/ResourceManagement/ShellsConfigurationSchema.xsd">
     <ResourceTemplates>
-        <ResourceTemplate Name="OpenStack" Model="OpenStack" Driver="OpenStack Shell Driver">
+        <ResourceTemplate Name="OpenStack" Model="OpenStack" Driver="OpenStack Shell Driver" AddressRequired="false">
             <Description>Template for creating OpenStack cloud Provider Resource</Description>
             <AutoLoad Enable="true">
                 <Description>Checks that the inputs are valid for the target OpenStack</Description>

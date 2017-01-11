@@ -11,7 +11,7 @@ from cloudshell.cp.openstack.models.model_parser import OpenStackShellModelParse
 # From Cloudshell API
 from cloudshell.api.cloudshell_api import InputNameValue
 
-class DeployOSNovaImageInstanceDriver(ResourceDriverInterface):
+class DeployFromGlanceImage(ResourceDriverInterface):
     APP_NAME = 'app_name'
     IMAGE_PARAM = 'image'
 
