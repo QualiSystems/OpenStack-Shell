@@ -197,7 +197,6 @@ class TestOpenStackSessionProvider(TestCase):
                                                              logger=self.mock_logger)
 
         self.cp_validator.validate_network_attributes.assert_called_with(openstack_session=mock_openstack_sesion,
-                                                                         cs_session=mock_cs_session,
                                                                          cp_resource_model=mock_cp_resource_model,
                                                                          logger=self.mock_logger)
 

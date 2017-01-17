@@ -158,7 +158,13 @@ class OpenStackCPValidator(object):
         return True
 
     def validate_network_attributes(self, openstack_session, cp_resource_model, logger):
+        """
 
+        :param openstack_session:
+        :param cp_resource_model:
+        :param logger:
+        :return:
+        """
         net_client = neutron_client.Client(session=openstack_session)
 
         self.validate_mgmt_network(net_client, cp_resource_model.qs_mgmt_os_net_uuid, logger)
@@ -242,7 +248,6 @@ class OpenStackCPValidator(object):
                              logger=logger)
 
         self.validate_network_attributes(openstack_session=openstack_session,
-                                         cs_session=cs_session,
                                          cp_resource_model=cp_resource_model,
                                          logger=logger)
 
