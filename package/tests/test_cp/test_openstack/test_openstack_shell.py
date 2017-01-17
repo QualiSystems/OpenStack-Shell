@@ -151,6 +151,9 @@ class TestOpenStackShell(TestCase):
                     mock_context_remote = Mock()
                     mock_context_remote.full_name = 'test full name'
 
+                    test_floating_ip = '1.2.3.4'
+                    mock_context_remote.attributes = {'Public IP': test_floating_ip}
+
                     self.command_context.remote_endpoints = [mock_context_remote]
 
                     self.os_shell_api.hidden_operation.delete_instance = Mock(return_value=True)
@@ -159,6 +162,7 @@ class TestOpenStackShell(TestCase):
                     self.os_shell_api.hidden_operation.delete_instance.assert_called_with(
                         openstack_session=self.os_shell_api.os_session_provider.get_openstack_session(),
                         deployed_app_resource=mock_resource_value,
+                        floating_ip=test_floating_ip,
                         logger=mock_log_obj)
 
     def test_refresh_ip(self):

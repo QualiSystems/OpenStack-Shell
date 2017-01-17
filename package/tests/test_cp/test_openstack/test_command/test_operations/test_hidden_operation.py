@@ -20,14 +20,19 @@ class TestHiddenOperation(TestCase):
         test_id = '1234-56'
         test_deployed_app_resource = Mock()
         test_deployed_app_resource.vmdetails.uid = test_id
+        test_floating_ip = '1.2.3.4'
 
         self.hidden_operation.delete_instance(openstack_session=self.openstack_session,
                                               deployed_app_resource=test_deployed_app_resource,
+                                              floating_ip=test_floating_ip,
                                               logger=self.mock_logger)
 
         self.hidden_operation.instance_service.terminate_instance.assert_called_with(openstack_session=self.openstack_session,
                                                                                      instance_id=test_id,
                                                                                      logger=self.mock_logger)
+        self.hidden_operation.instance_service.delete_floating_ip.assert_called_with(openstack_session=self.openstack_session,
+                                                                                     floating_ip=test_floating_ip)
+
 
     def test_delete_operation_exception(self):
         test_id = '1234-56'

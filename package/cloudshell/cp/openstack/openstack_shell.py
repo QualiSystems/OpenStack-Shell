@@ -176,10 +176,12 @@ class OpenStackShell(object):
                         raise ValueError("Cannot get remote_endpoint for command context: {0}".format(command_context))
 
                     deployed_app_resource = self.model_parser.deployed_app_resource_from_context_remote(context_remote)
+                    floating_ip = context_remote.attributes['Public IP']
 
                     os_session = self.os_session_provider.get_openstack_session(cs_session, resource_model, logger)
                     self.hidden_operation.delete_instance(openstack_session=os_session,
                                                           deployed_app_resource=deployed_app_resource,
+                                                          floating_ip=floating_ip,
                                                           logger=logger)
 
     # Hidden Operations End
