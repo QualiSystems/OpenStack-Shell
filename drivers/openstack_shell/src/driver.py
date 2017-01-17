@@ -1,8 +1,6 @@
-from cloudshell.shell.core.driver_context import AutoLoadDetails
 from cloudshell.shell.core.resource_driver_interface import ResourceDriverInterface
 
 from cloudshell.cp.openstack.openstack_shell import OpenStackShell
-from cloudshell.cp.openstack.domain.services.cp_validators.cp_validator import OpenStackCPValidator
 
 class OpenStackShellDriver(ResourceDriverInterface):
     def __init__(self):
@@ -48,10 +46,4 @@ class OpenStackShellDriver(ResourceDriverInterface):
         return self.os_shell.refresh_ip(context)
 
     def get_inventory(self, context):
-
-        cp_validator = OpenStackCPValidator(context)
-
-        # This will raise exception if there's a problem or else we fall through to AutoLoadDetails
-        cp_validator.validate_all()
-
-        return AutoLoadDetails([], [])
+        return self.os_shell.get_inventory(command_context=context)

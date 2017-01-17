@@ -1,9 +1,5 @@
 
-from cloudshell.core.logger.qs_logger import get_qs_logger
-
-from cloudshell.cp.openstack.common.driver_helper import CloudshellDriverHelper
-from cloudshell.cp.openstack.models.model_parser import OpenStackShellModelParser
-from cloudshell.cp.openstack.domain.services.session_providers.os_session_provider import OpenStackSessionProvider
+from cloudshell.shell.core.driver_context import AutoLoadDetails
 
 from novaclient import client as nova_client
 from neutronclient.v2_0 import client as neutron_client
@@ -18,67 +14,41 @@ import traceback
 
 class OpenStackCPValidator(object):
 
-    def __init__(self, context):
+    def __init__(self):
+        pass
 
-        # Get CP Resource Object
-        self.model_parser = OpenStackShellModelParser()
-        self.cp_resource = self.model_parser.get_resource_model_from_context(context.resource)
+    def validate_controller_url(self, controller_url, logger):
 
-        # Get Logger
-        logger = get_qs_logger(log_group='Autoload',
-                               log_file_prefix=context.resource.name,
-                               log_category="OpenStackShell")
-        self.logger = logger
+        return self._is_not_empty(controller_url, "Controller URL") and \
+               self._is_http_url(controller_url, "Controller URL")
 
-        # Get CloudShell Sesssion
-        cs_domain = 'Global'
-        cs_helper = CloudshellDriverHelper()
-        self.cs_session = cs_helper.get_session(server_address=context.connectivity.server_address,
-                                                token=context.connectivity.admin_auth_token,
-                                                reservation_domain=cs_domain)
+    def validate_openstack_domain(self, os_domain, logger):
 
-        # Get OpenStack Session Object
-        os_session_provider = OpenStackSessionProvider()
-        self.os_session = os_session_provider.get_openstack_session(cloudshell_session=self.cs_session,
-                                                                    openstack_resource_model=self.cp_resource,
-                                                                    logger=logger)
+        return self._is_not_empty(os_domain, "OpenStack Domain")
 
-    def validate_controller_url(self, controller_url):
+    def validate_openstack_project(self, os_project, logger):
 
-        if len(controller_url) == 0:
-            raise ValueError("Controller URL Cannot be empty.")
+        return self._is_not_empty(os_project, "OpenStack Project")
 
-        if not ( controller_url.lower().startswith('http://') or
-                 controller_url.lower().startswith('https://')):
-            raise ValueError("Controller URL {0} is not in valid format.".format(controller_url))
+    def validate_openstack_username(self, os_username, logger):
+
+        return self._is_not_empty(os_username, "OpenStack Username")
+
+    def validate_openstack_password(self, os_password, logger):
+
+        return self._is_not_empty(os_password, "OpenStack Passwrd")
+
+    def _is_not_empty(self, value, err_value):
+
+        if len(value) == 0:
+            raise ValueError("{0} Cannot be empty", err_value)
 
         return True
 
-    def validate_openstack_domain(self, os_domain):
+    def _is_http_url(self, value, err_value):
 
-        if len(os_domain) == 0:
-            raise ValueError("OpenStack Domain Cannot be empty")
-
-        return True
-
-    def validate_openstack_project(self, os_project):
-
-        if len(os_project) == 0:
-            raise ValueError("OpenStack Project Cannot be empty")
-
-        return True
-
-    def validate_openstack_username(self, os_username):
-
-        if len(os_username) == 0:
-            raise ValueError("OpenStack User cannot be empty")
-
-        return True
-
-    def validate_openstack_password(self, os_password):
-
-        if len(os_password) == 0:
-            return ValueError("OpenStack Password cannot be empty")
+        if not (value.lower().startswith('http://') or value.lower().startswith('https://')):
+            raise ValueError("{0} {1} is not in valid format.".format(err_value, value))
 
         return True
 
@@ -92,8 +62,7 @@ class OpenStackCPValidator(object):
                 raise ValueError("Network with ID {0} Not Found".format(network_id))
 
             if len(net_list['networks']) != 1:
-                raise ValueError("More than one network matching ID {0} Found".format(network_id
-                                                                                      ))
+                raise ValueError("More than one network matching ID {0} Found".format(network_id))
             network_obj = net_list['networks'][0]
 
         except ValueError:
@@ -104,7 +73,7 @@ class OpenStackCPValidator(object):
 
         return network_obj
 
-    def validate_mgmt_network(self, net_client, mgmt_network_id):
+    def validate_mgmt_network(self, net_client, mgmt_network_id, logger):
 
         # we do not wrap this in try because we assume - we have validated credentials already
 
@@ -115,7 +84,7 @@ class OpenStackCPValidator(object):
 
         return True
 
-    def validate_external_network(self, net_client, external_network_id):
+    def validate_external_network(self, net_client, external_network_id, logger):
 
         if len(external_network_id) == 0:
             raise ValueError("External Network UUID Cannot be Empty")
@@ -127,7 +96,7 @@ class OpenStackCPValidator(object):
 
         return True
 
-    def validate_vlan_type(self, net_client, vlan_type, provider_net_interface):
+    def validate_vlan_type(self, net_client, vlan_type, provider_net_interface, logger):
 
         vlan_type = vlan_type.lower()
         if vlan_type not in ['vlan', 'vxlan']:
@@ -151,7 +120,7 @@ class OpenStackCPValidator(object):
 
         return True
 
-    def validate_reserved_networks(self, reserved_networks):
+    def validate_reserved_networks(self, reserved_networks, logger):
 
         # Just try to create an IPv4Network if anything, it'd raise a ValueError
         for reserved_net in reserved_networks.split(","):
@@ -161,15 +130,23 @@ class OpenStackCPValidator(object):
 
         return True
 
-    def validate_region(self):
+    def validate_region(self, openstack_session, cs_session, cp_resource_model, logger):
+        """
 
-        region_name = self.cp_resource.os_region
+        :param openstack_session:
+        :param cs_session:
+        :param cp_resource_model:
+        :param logger:
+        :return:
+        """
+
+        region_name = cp_resource_model.os_region
         if len(region_name) == 0:
             # Empty region allowed - Do nothing
             return True
 
         try:
-            ks_client = keystone_client.Client(session=self.os_session)
+            ks_client = keystone_client.Client(session=openstack_session)
             ks_client.regions.get(region_name)
 
         except keystoneauth1.exceptions.http.NotFound:
@@ -178,37 +155,51 @@ class OpenStackCPValidator(object):
         except Exception as e:
             raise ValueError("Unknown Error occurred trying to get Region with id {0}. Error: {1}".
                              format(region_name, e))
+        return True
 
-    def validate_network_attributes(self):
+    def validate_network_attributes(self, openstack_session, cp_resource_model, logger):
 
-        net_client = neutron_client.Client(session=self.os_session)
-        self.validate_mgmt_network(net_client, self.cp_resource.qs_mgmt_os_net_uuid)
-        self.validate_external_network(net_client, self.cp_resource.external_network_uuid)
+        net_client = neutron_client.Client(session=openstack_session)
+
+        self.validate_mgmt_network(net_client, cp_resource_model.qs_mgmt_os_net_uuid, logger)
+
+        self.validate_external_network(net_client, cp_resource_model.external_network_uuid, logger)
+
         self.validate_vlan_type(net_client=net_client,
-                                vlan_type=self.cp_resource.vlan_type,
-                                provider_net_interface=self.cp_resource.provider_network_interface)
-        self.validate_reserved_networks(self.cp_resource.reserved_networks)
+                                vlan_type=cp_resource_model.vlan_type,
+                                provider_net_interface=cp_resource_model.provider_network_interface,
+                                logger=logger)
 
-    def validate_openstack_credentials(self):
+        self.validate_reserved_networks(cp_resource_model.reserved_networks, logger)
 
-        if not self.validate_controller_url(self.cp_resource.controller_url):
+    def validate_openstack_credentials(self, openstack_session, cs_session, cp_resource_model, logger):
+        """
+
+        :param openstack_session:
+        :param cs_session:
+        :param cp_resource_model:
+        :param logger:
+        :return:
+        """
+
+        if not self.validate_controller_url(cp_resource_model.controller_url, logger):
             return False
 
-        if not self.validate_openstack_domain(self.cp_resource.os_domain_name):
+        if not self.validate_openstack_domain(cp_resource_model.os_domain_name, logger):
             return False
 
-        if not self.validate_openstack_project(self.cp_resource.os_project_name):
+        if not self.validate_openstack_project(cp_resource_model.os_project_name, logger):
             return False
 
-        if not self.validate_openstack_username(self.cp_resource.os_user_name):
+        if not self.validate_openstack_username(cp_resource_model.os_user_name, logger):
             return False
 
-        os_user_passwd = self.cs_session.DecryptPassword(self.cp_resource.os_user_password).Value
-        if not self.validate_openstack_password(os_user_passwd):
+        os_user_passwd = cs_session.DecryptPassword(cp_resource_model.os_user_password).Value
+        if not self.validate_openstack_password(os_user_passwd, logger):
             return False
 
         try:
-            compute_client = nova_client.Client(version='2.0', session=self.os_session)
+            compute_client = nova_client.Client(version='2.0', session=openstack_session)
             # An API Call to Validate Credentials
             _ = compute_client.servers.list()
 
@@ -224,15 +215,35 @@ class OpenStackCPValidator(object):
             raise
 
         except Exception as e:
-            self.logger.error(traceback.format_exc())
+            print e
+            logger.error(traceback.format_exc())
             raise ValueError("One or more values are not correct. {0}".format(e.message))
 
         return True
 
-    def validate_all(self):
+    def validate_all(self, openstack_session, cs_session, cp_resource_model, logger):
+        """
 
-        self.validate_openstack_credentials()
+        :param openstack_session:
+        :param cs_session:
+        :param cp_resource_model:
+        :param logger:
+        :return:
+        """
 
-        self.validate_region()
+        self.validate_openstack_credentials(openstack_session=openstack_session,
+                                            cs_session=cs_session,
+                                            cp_resource_model=cp_resource_model,
+                                            logger=logger)
 
-        self.validate_network_attributes()
+        self.validate_region(openstack_session=openstack_session,
+                             cs_session=cs_session,
+                             cp_resource_model=cp_resource_model,
+                             logger=logger)
+
+        self.validate_network_attributes(openstack_session=openstack_session,
+                                         cs_session=cs_session,
+                                         cp_resource_model=cp_resource_model,
+                                         logger=logger)
+
+        return AutoLoadDetails([],[])
