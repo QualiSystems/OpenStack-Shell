@@ -283,3 +283,23 @@ class NovaInstanceService(object):
         instance.add_floating_ip(floating_ip_obj)
 
         return floating_ip_obj.ip
+
+    def delete_floating_ip(self, openstack_session, floating_ip):
+        """
+
+        :param keystoneauth1.session.Session openstack_session:
+        :param str floating_ip:
+        :return: None
+        """
+
+        client = novaclient.Client(self.API_VERSION, session=openstack_session)
+
+        # We need to get the ID
+        floating_ip_objid = ''
+        for fl in client.floating_ips.list():
+            if fl.ip == floating_ip:
+                floating_ip_objid = fl.id
+                break
+
+        if floating_ip_objid:
+            client.floating_ips.delete(floating_ip_objid)

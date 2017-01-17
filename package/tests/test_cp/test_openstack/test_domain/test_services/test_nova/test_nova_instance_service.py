@@ -279,3 +279,17 @@ class TestNovaInstanceService(TestCase):
 
         mock_client.floating_ips.create.assert_called_with(test_net_label)
         self.assertEqual(result, test_floating_ip)
+
+    def test_delete_floating_ip(self):
+        mock_client = Mock()
+        test_nova_instance_service.novaclient.Client = Mock(return_value=mock_client)
+
+        mock_client.floating_ips = Mock()
+        mock_floating_ip_obj = Mock()
+        mock_floating_ip_obj.ip = '1.2.3.4'
+        mock_floating_ip_obj.id = 'test-id'
+        mock_client.floating_ips.list = Mock(return_value=[mock_floating_ip_obj])
+
+        self.instance_service.delete_floating_ip(openstack_session=self.openstack_session,
+                                                 floating_ip=mock_floating_ip_obj.ip)
+        mock_client.floating_ips.delete.assert_called_with(mock_floating_ip_obj.id)
