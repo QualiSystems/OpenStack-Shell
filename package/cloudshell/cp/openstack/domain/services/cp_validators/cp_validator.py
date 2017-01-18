@@ -41,7 +41,7 @@ class OpenStackCPValidator(object):
     def _is_not_empty(self, value, err_value):
 
         if len(value) == 0:
-            raise ValueError("{0} Cannot be empty", err_value)
+            raise ValueError("{0} Cannot be empty".format(err_value))
 
         return True
 
@@ -221,7 +221,6 @@ class OpenStackCPValidator(object):
             raise
 
         except Exception as e:
-            print e
             logger.error(traceback.format_exc())
             raise ValueError("One or more values are not correct. {0}".format(e.message))
 
