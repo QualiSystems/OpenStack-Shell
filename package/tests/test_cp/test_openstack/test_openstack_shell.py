@@ -210,3 +210,28 @@ class TestOpenStackShell(TestCase):
                         cp_resource_model=mock_cp_resource_model,
                         logger=mock_log_obj)
 
+    def test_get_inventory(self):
+        """
+
+        :return:
+        """
+        with patch('cloudshell.cp.openstack.openstack_shell.LoggingSessionContext', autospec=True) as mock_logger:
+            with patch('cloudshell.cp.openstack.openstack_shell.ErrorHandlingContext'):
+                with patch('cloudshell.cp.openstack.openstack_shell.CloudShellSessionContext') as mock_cs_session:
+                    mock_cs_session_obj = Mock()
+                    mock_cs_session.return_value.__enter__ = Mock(return_value=mock_cs_session_obj)
+                    mock_log_obj = Mock()
+                    mock_logger.return_value.__enter__ = Mock(return_value=mock_log_obj)
+
+                    mock_cp_resource_model = Mock()
+                    self.os_shell_api.model_parser.get_resource_model_from_context = Mock(
+                        return_value=mock_cp_resource_model)
+
+                    self.os_shell_api.autoload_operation.get_inventory = Mock()
+                    self.os_shell_api.get_inventory(self.command_context)
+
+                    self.os_shell_api.autoload_operation.get_inventory.assert_called_with(
+                        openstack_session=self.os_shell_api.os_session_provider.get_openstack_session(),
+                        cs_session=mock_cs_session_obj,
+                        cp_resource_model=mock_cp_resource_model,
+                        logger=mock_log_obj)

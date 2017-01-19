@@ -19,6 +19,7 @@ from cloudshell.cp.openstack.command.operations.deploy_operation import DeployOp
 from cloudshell.cp.openstack.command.operations.connectivity_operation import ConnectivityOperation
 from cloudshell.cp.openstack.command.operations.hidden_operation import HiddenOperation
 from cloudshell.cp.openstack.command.operations.refresh_ip_operation import RefreshIPOperation
+from cloudshell.cp.openstack.command.operations.autoload_operation import AutoLoadOperation
 
 # Command Result Parser
 from cloudshell.cp.openstack.command.command_result_parser import OpenStackShellCommandResultParser
@@ -43,6 +44,7 @@ class OpenStackShell(object):
         self.connectivity_operation = ConnectivityOperation()
         self.refresh_ip_operation = RefreshIPOperation()
         self.hidden_operation = HiddenOperation()
+        self.autoload_operation = AutoLoadOperation()
 
         self.model_parser = OpenStackShellModelParser()
         self.command_result_parser = OpenStackShellCommandResultParser()
@@ -242,3 +244,23 @@ class OpenStackShell(object):
                     return self.command_result_parser.set_command_result(connectivity_result)
 
     # Connectivity Operations End
+
+    # Autoload operations Begin
+    def get_inventory(self, command_context):
+        """
+
+        :param command_context:
+        :return:
+        """
+        with LoggingSessionContext(command_context) as logger:
+            with ErrorHandlingContext(logger):
+                with CloudShellSessionContext(command_context) as cs_session:
+                    # FIXME: When implementing a context manager create all clients inside the contextManager.
+                    cp_resource_model = self.model_parser.get_resource_model_from_context(command_context.resource)
+
+                    logger.debug(cp_resource_model)
+                    os_session = self.os_session_provider.get_openstack_session(cs_session, cp_resource_model, logger)
+                    return self.autoload_operation.get_inventory(cs_session=cs_session,
+                                                                 openstack_session=os_session,
+                                                                 cp_resource_model=cp_resource_model,
+                                                                 logger=logger)
