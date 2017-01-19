@@ -466,21 +466,30 @@ class TestOpenStackSessionProvider(TestCase):
 
         self.assertTrue(context)
 
-    def validate_openstack_credentials_attrs_false(self):
+    def test_validate_openstack_credentials_attrs_false(self):
 
-        self.cp_validator.validate_controller_url = Mock(return_value=False)
 
         mock_openstack_sesion = Mock()
         mock_cs_session = Mock()
         mock_cp_resource_model = Mock()
 
+        self.cp_validator.validate_controller_url = Mock(return_value=False)
         result = self.cp_validator.validate_openstack_credentials(openstack_session=mock_openstack_sesion,
                                                          cs_session=mock_cs_session,
                                                          cp_resource_model=mock_cp_resource_model,
                                                          logger=self.mock_logger)
         self.assertFalse(result)
 
+        self.cp_validator.validate_controller_url = Mock(return_value=False)
+        self.cp_validator.validate_openstack_project = Mock(return_value=False)
+        result = self.cp_validator.validate_openstack_credentials(openstack_session=mock_openstack_sesion,
+                                                                  cs_session=mock_cs_session,
+                                                                  cp_resource_model=mock_cp_resource_model,
+                                                                  logger=self.mock_logger)
+        self.assertFalse(result)
+
         self.cp_validator.validate_controller_url = Mock(return_value=True)
+        self.cp_validator.validate_openstack_project = Mock(return_value=True)
         self.cp_validator.validate_openstack_domain = Mock(return_value=False)
         result = self.cp_validator.validate_openstack_credentials(openstack_session=mock_openstack_sesion,
                                                                   cs_session=mock_cs_session,
@@ -489,6 +498,7 @@ class TestOpenStackSessionProvider(TestCase):
         self.assertFalse(result)
 
         self.cp_validator.validate_controller_url = Mock(return_value=True)
+        self.cp_validator.validate_openstack_project = Mock(return_value=True)
         self.cp_validator.validate_openstack_domain = Mock(return_value=True)
         self.cp_validator.validate_openstack_username = Mock(return_value=False)
         result = self.cp_validator.validate_openstack_credentials(openstack_session=mock_openstack_sesion,
@@ -498,6 +508,7 @@ class TestOpenStackSessionProvider(TestCase):
         self.assertFalse(result)
 
         self.cp_validator.validate_controller_url = Mock(return_value=True)
+        self.cp_validator.validate_openstack_project = Mock(return_value=True)
         self.cp_validator.validate_openstack_domain = Mock(return_value=True)
         self.cp_validator.validate_openstack_username = Mock(return_value=True)
         self.cp_validator.validate_openstack_username = Mock(return_value=False)
