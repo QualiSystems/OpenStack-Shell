@@ -46,7 +46,6 @@ class TestOpenStackSessionProvider(TestCase):
                                                  logger=self.mock_logger)
         self.assertTrue(context)
 
-
     def test_validate_vlan_type_success(self):
 
         test_net_client = Mock()
@@ -57,13 +56,29 @@ class TestOpenStackSessionProvider(TestCase):
         test_vlan_type = 'vlan'
         test_provider_net_interface = 'test_interface'
 
+
         result = self.cp_validator.validate_vlan_type(net_client=test_net_client,
                                                       vlan_type=test_vlan_type,
                                                       provider_net_interface=test_provider_net_interface,
                                                       logger=self.mock_logger)
-
         self.assertTrue(result)
 
+    def test_validate_vlan_type_exception(self):
+
+        test_net_client = Mock()
+
+        test_net_client.create_network = Mock(side_effect=Exception)
+        test_net_client.delete_network = Mock()
+
+        test_vlan_type = 'vlan'
+        test_provider_net_interface = 'test_interface'
+
+        with self.assertRaises(Exception) as context:
+            self.cp_validator.validate_vlan_type(net_client=test_net_client,
+                                                      vlan_type=test_vlan_type,
+                                                      provider_net_interface=test_provider_net_interface,
+                                                      logger=self.mock_logger)
+        self.assertTrue(context)
 
     def test_validate_external_network(self):
 
@@ -79,6 +94,23 @@ class TestOpenStackSessionProvider(TestCase):
                                                              logger=self.mock_logger)
 
         self.assertTrue(result)
+
+    def test_validate_external_network_exception(self):
+
+        test_net_client = Mock()
+
+
+        test_net_client.list_networks = Mock(side_effect=Exception)
+
+        test_external_network_id = 'test_external_net'
+
+        with self.assertRaises(Exception) as context:
+            self.cp_validator.validate_external_network(net_client=test_net_client,
+                                                             external_network_id=test_external_network_id,
+                                                             logger=self.mock_logger)
+
+        self.assertTrue(context)
+
 
     def test_validate_mgmt_network(self):
         test_net_client = Mock()
@@ -113,6 +145,63 @@ class TestOpenStackSessionProvider(TestCase):
         mock_ks_client.regions.get.assert_called_with('test-region')
 
         self.assertTrue(result)
+
+    def test_validate_region_not_found(self):
+        mock_cp_resource_model = Mock()
+        mock_cp_resource_model.os_region = 'test-region'
+
+        mock_os_session = Mock()
+
+        mock_ks_client = Mock()
+        mock_ks_client.regions = Mock()
+        mock_ks_client.regions.get = Mock()
+        test_cp_validator.keystone_client = Mock()
+        test_cp_validator.keystone_client.Client = Mock(return_value=mock_ks_client)
+
+        mock_ks_client.regions = Mock()
+        mock_ks_client.regions.get = Mock(side_effect=test_cp_validator.keystoneauth1.exceptions.http.NotFound)
+        with self.assertRaises(test_cp_validator.keystoneauth1.exceptions.http.NotFound) as context:
+            self.cp_validator.validate_region(openstack_session=mock_os_session,
+                                                       cs_session=Mock(),
+                                                       cp_resource_model=mock_cp_resource_model,
+                                                       logger=self.mock_logger)
+        self.assertTrue(context)
+
+    def test_validate_region_unknown_exception(self):
+        mock_cp_resource_model = Mock()
+        mock_cp_resource_model.os_region = 'test-region'
+
+        mock_os_session = Mock()
+
+        mock_ks_client = Mock()
+        mock_ks_client.regions = Mock()
+        mock_ks_client.regions.get = Mock()
+        test_cp_validator.keystone_client = Mock()
+        test_cp_validator.keystone_client.Client = Mock(return_value=mock_ks_client)
+
+        mock_ks_client.regions = Mock()
+        mock_ks_client.regions.get = Mock(side_effect=Exception)
+        with self.assertRaises(Exception) as context:
+            self.cp_validator.validate_region(openstack_session=mock_os_session,
+                                                       cs_session=Mock(),
+                                                       cp_resource_model=mock_cp_resource_model,
+                                                       logger=self.mock_logger)
+        self.assertTrue(context)
+
+
+    def test_validate_region_empty(self):
+        mock_cp_resource_model = Mock()
+        mock_cp_resource_model.os_region = ''
+
+        mock_os_session = Mock()
+
+        result = self.cp_validator.validate_region(openstack_session=mock_os_session,
+                                          cs_session=Mock(),
+                                          cp_resource_model=mock_cp_resource_model,
+                                          logger=self.mock_logger)
+        self.assertTrue(result)
+
+
 
     def test_validate_network_attributes(self):
         mock_cp_resource_model = Mock()
@@ -300,7 +389,7 @@ class TestOpenStackSessionProvider(TestCase):
 
         self.assertTrue(result)
 
-    def test_validate_openstack_credentials_raises_exception(self):
+    def test_validate_openstack_credentials_raises_openstack_exception(self):
         mock_openstack_sesion = Mock()
         mock_cs_session = Mock()
         mock_cp_resource_model = Mock()
@@ -338,3 +427,82 @@ class TestOpenStackSessionProvider(TestCase):
 
         self.assertTrue(context)
 
+        test_cp_validator.nova_client.Client = Mock(side_effect=test_cp_validator.keystoneauth1.exceptions.http.Unauthorized)
+        with self.assertRaises(test_cp_validator.keystoneauth1.exceptions.http.Unauthorized) as context:
+            self.cp_validator.validate_openstack_credentials(openstack_session=mock_openstack_sesion,
+                                                             cs_session=mock_cs_session,
+                                                             cp_resource_model=mock_cp_resource_model,
+                                                             logger=self.mock_logger)
+
+        self.assertTrue(context)
+
+
+    def test_validate_openstack_credentials_raises_unknown_exception(self):
+        mock_openstack_sesion = Mock()
+        mock_cs_session = Mock()
+        mock_cp_resource_model = Mock()
+
+        mock_passwd = Mock()
+        mock_passwd.Value = 'mock-passwd'
+        mock_cs_session.DecryptPassword = Mock(return_value=mock_passwd)
+
+        mock_nova_client = Mock()
+        mock_nova_client.servers = Mock()
+        mock_nova_client.servers.list = Mock(return_type=[])
+        test_cp_validator.nova_client = Mock()
+        test_cp_validator.nova_client.Client = Mock(side_effect=Exception)
+
+        self.cp_validator.validate_controller_url = Mock(return_value=True)
+        self.cp_validator.validate_openstack_domain = Mock(return_value=True)
+        self.cp_validator.validate_openstack_project = Mock(return_value=True)
+        self.cp_validator.validate_openstack_username = Mock(return_value=True)
+        self.cp_validator.validate_openstack_password = Mock(return_value=True)
+
+        with self.assertRaises(Exception) as context:
+            self.cp_validator.validate_openstack_credentials(openstack_session=mock_openstack_sesion,
+                                                             cs_session=mock_cs_session,
+                                                             cp_resource_model=mock_cp_resource_model,
+                                                             logger=self.mock_logger)
+
+        self.assertTrue(context)
+
+    def validate_openstack_credentials_attrs_false(self):
+
+        self.cp_validator.validate_controller_url = Mock(return_value=False)
+
+        mock_openstack_sesion = Mock()
+        mock_cs_session = Mock()
+        mock_cp_resource_model = Mock()
+
+        result = self.cp_validator.validate_openstack_credentials(openstack_session=mock_openstack_sesion,
+                                                         cs_session=mock_cs_session,
+                                                         cp_resource_model=mock_cp_resource_model,
+                                                         logger=self.mock_logger)
+        self.assertFalse(result)
+
+        self.cp_validator.validate_controller_url = Mock(return_value=True)
+        self.cp_validator.validate_openstack_domain = Mock(return_value=False)
+        result = self.cp_validator.validate_openstack_credentials(openstack_session=mock_openstack_sesion,
+                                                                  cs_session=mock_cs_session,
+                                                                  cp_resource_model=mock_cp_resource_model,
+                                                                  logger=self.mock_logger)
+        self.assertFalse(result)
+
+        self.cp_validator.validate_controller_url = Mock(return_value=True)
+        self.cp_validator.validate_openstack_domain = Mock(return_value=True)
+        self.cp_validator.validate_openstack_username = Mock(return_value=False)
+        result = self.cp_validator.validate_openstack_credentials(openstack_session=mock_openstack_sesion,
+                                                                  cs_session=mock_cs_session,
+                                                                  cp_resource_model=mock_cp_resource_model,
+                                                                  logger=self.mock_logger)
+        self.assertFalse(result)
+
+        self.cp_validator.validate_controller_url = Mock(return_value=True)
+        self.cp_validator.validate_openstack_domain = Mock(return_value=True)
+        self.cp_validator.validate_openstack_username = Mock(return_value=True)
+        self.cp_validator.validate_openstack_username = Mock(return_value=False)
+        result = self.cp_validator.validate_openstack_credentials(openstack_session=mock_openstack_sesion,
+                                                                  cs_session=mock_cs_session,
+                                                                  cp_resource_model=mock_cp_resource_model,
+                                                                  logger=self.mock_logger)
+        self.assertFalse(result)
