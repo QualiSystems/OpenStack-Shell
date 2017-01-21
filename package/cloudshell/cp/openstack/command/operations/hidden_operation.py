@@ -20,7 +20,5 @@ class HiddenOperation(object):
         instance_id = deployed_app_resource.vmdetails.uid
         self.instance_service.terminate_instance(openstack_session=openstack_session,
                                                  instance_id=instance_id,
+                                                 floating_ip=floating_ip,
                                                  logger=logger)
-
-        if floating_ip:
-            self.instance_service.delete_floating_ip(openstack_session=openstack_session, floating_ip=floating_ip)

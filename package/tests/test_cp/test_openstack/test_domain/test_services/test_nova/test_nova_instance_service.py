@@ -104,6 +104,7 @@ class TestNovaInstanceService(TestCase):
         with self.assertRaises(ValueError) as context:
             self.instance_service.terminate_instance(openstack_session=None,
                                                      instance_id='1234',
+                                                     floating_ip = '1.2.3.4',
                                                      logger=self.mock_logger)
             self.assertTrue(context)
 
@@ -113,12 +114,18 @@ class TestNovaInstanceService(TestCase):
 
         mock_instance = Mock()
         test_instance_id = '1234-56'
+        test_floating_ip =  '1.2.3.4'
         self.instance_service.get_instance_from_instance_id = Mock(return_value=mock_instance)
+        self.instance_service.detach_and_delete_floating_ip = Mock()
         self.instance_service.terminate_instance(openstack_session=self.openstack_session,
                                                  instance_id=test_instance_id,
+                                                 floating_ip = test_floating_ip,
                                                  logger=self.mock_logger)
 
         mock_client2.servers.delete.assert_called_with(mock_instance)
+        self.instance_service.detach_and_delete_floating_ip.assert_called_with(openstack_session=self.openstack_session,
+                                                                               instance=mock_instance,
+                                                                               floating_ip=test_floating_ip)
 
     def test_instance_power_off_success(self):
         mock_client2 = Mock()
@@ -332,6 +339,12 @@ class TestNovaInstanceService(TestCase):
         mock_floating_ip_obj.id = 'test-id'
         mock_client.floating_ips.list = Mock(return_value=[mock_floating_ip_obj])
 
-        self.instance_service.delete_floating_ip(openstack_session=self.openstack_session,
-                                                 floating_ip=mock_floating_ip_obj.ip)
+        mock_instance = Mock()
+        self.instance_service.get_instance_from_instance_id = Mock(return_value=mock_instance)
+        mock_instance.remove_floating_ip = Mock()
+
+        self.instance_service.detach_and_delete_floating_ip(openstack_session=self.openstack_session,
+                                                            instance=mock_instance,
+                                                            floating_ip=mock_floating_ip_obj.ip)
         mock_client.floating_ips.delete.assert_called_with(mock_floating_ip_obj.id)
+        mock_instance.remove_floating_ip.assert_called_with(mock_floating_ip_obj)

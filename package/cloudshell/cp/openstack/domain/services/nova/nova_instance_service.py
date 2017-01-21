@@ -62,11 +62,12 @@ class NovaInstanceService(object):
         self.instance_waiter.wait(instance, state=self.instance_waiter.ACTIVE)
         return instance
 
-    def terminate_instance(self, openstack_session, instance_id, logger):
+    def terminate_instance(self, openstack_session, instance_id, floating_ip, logger):
         """
         :param keystoneauth1.session.Session openstack_session:
         :param str instance_id: Instance ID to be terminated
         :param LoggingSessionContext logger:
+        :param str floating_ip:
         :rtype Boolean:
         """
         logger.info("Deleting instance with instance ID {0}".format(instance_id))
@@ -82,6 +83,11 @@ class NovaInstanceService(object):
         if instance is None:
             logger.info("Instance with Instance ID {0} does not exist. Already Deleted?".format(instance_id))
         else:
+            if floating_ip:
+                self.detach_and_delete_floating_ip(openstack_session=openstack_session,
+                                                   instance=instance,
+                                                   floating_ip=floating_ip)
+            # Wait till floating IP obj is deleted???
             client.servers.delete(instance)
 
     def instance_power_on(self, openstack_session, instance_id, logger):
@@ -290,10 +296,11 @@ class NovaInstanceService(object):
 
         return floating_ip_obj.ip
 
-    def delete_floating_ip(self, openstack_session, floating_ip):
+    def detach_and_delete_floating_ip(self, openstack_session, instance, floating_ip):
         """
 
         :param keystoneauth1.session.Session openstack_session:
+        :param instance:
         :param str floating_ip:
         :return: None
         """
@@ -308,4 +315,5 @@ class NovaInstanceService(object):
                 break
 
         if floating_ip_objid:
+            instance.remove_floating_ip(fl)
             client.floating_ips.delete(floating_ip_objid)
