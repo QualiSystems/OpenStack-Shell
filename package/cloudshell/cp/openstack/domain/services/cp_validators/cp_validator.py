@@ -218,7 +218,9 @@ class OpenStackCPValidator(object):
             raise
 
         except keystoneauth1.exceptions.http.NotFound:
-            raise
+            # Contorller URL not not valid
+            logger.error(traceback.format_exc())
+            raise ValueError("Controller URL '{}' is not found".format(cp_resource_model.controller_url))
 
         except Exception as e:
             logger.error(traceback.format_exc())
