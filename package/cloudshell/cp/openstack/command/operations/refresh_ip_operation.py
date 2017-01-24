@@ -6,8 +6,8 @@ from cloudshell.cp.openstack.domain.services.waiters.instance import InstanceWai
 class RefreshIPOperation(object):
     public_ip = "Public IP"
 
-    def __init__(self):
-        self.instance_service = NovaInstanceService(InstanceWaiter())
+    def __init__(self, cancellation_service):
+        self.instance_service = NovaInstanceService(InstanceWaiter(cancellation_service=cancellation_service))
 
     def refresh_ip(self, openstack_session, cloudshell_session,
                    deployed_app_resource, private_ip,

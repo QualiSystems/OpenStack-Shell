@@ -10,11 +10,15 @@ from cloudshell.cp.openstack.domain.services.waiters.instance import InstanceWai
 from cloudshell.cp.openstack.models.deploy_result_model import DeployResultModel
 
 class DeployOperation(object):
-    def __init__(self):
-        self.instance_waiter = InstanceWaiter()
+    def __init__(self, cancellation_service):
+
+        self.cancellation_service = cancellation_service
+
+        # FIXME : Get following through dependency injection as well.
+        self.instance_waiter = InstanceWaiter(self.cancellation_service)
         self.instance_service = NovaInstanceService(self.instance_waiter)
 
-    def deploy(self, os_session, name, reservation, cp_resource_model, deploy_req_model, logger):
+    def deploy(self, os_session, name, reservation, cp_resource_model, deploy_req_model, cancellation_context, logger):
         """
         Performs actual deploy operation.
         :param keystoneauth1.session.Session os_session:
@@ -22,6 +26,7 @@ class DeployOperation(object):
         :param ReservationModel reservation:
         :param DeployDataHolder deploy_req_model:
         :param OpenStackResourceModel cp_resource_model:
+        :param cancellation_context:
         :param LoggingSessionContext logger:
         :rtype DeployResultModel:
         """
@@ -32,6 +37,7 @@ class DeployOperation(object):
                                                          reservation=reservation,
                                                          cp_resource_model=cp_resource_model,
                                                          deploy_req_model=deploy_req_model,
+                                                         cancellation_context=cancellation_context,
                                                          logger=logger)
 
         # Actually cannot come here and instance is None. If the previous statement raised an Exception let it go

@@ -5,7 +5,8 @@ from cloudshell.cp.openstack.command.operations.connectivity_operation import Co
 
 class TestConnectivityOperation(TestCase):
     def setUp(self):
-        self.conn_operation = ConnectivityOperation()
+        self.cancellation_service = Mock()
+        self.conn_operation = ConnectivityOperation(cancellation_service=self.cancellation_service)
         self.conn_operation.connectivity_service = Mock()
         self.os_session = Mock()
         self.cp_resource_model = Mock()

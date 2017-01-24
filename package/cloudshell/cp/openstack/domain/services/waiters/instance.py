@@ -20,34 +20,34 @@ class InstanceWaiter(object):
 
     INSTANCE_STATES = [ACTIVE, ERROR, BUILDING, STOPPED, DELETED, SHUTOFF]
 
-    def __init__(self, delay=2, timeout=10):
+    def __init__(self, cancellation_service, delay=10):
         """
         :param delay: Time in seconds between each poll
         :type delay: int
         :param timeout: Timeout after which Exception will be raised
         :type timeout: int
         """
+        self.cancellation_service = cancellation_service
         self.delay = delay
-        self.timeout = timeout * self.SECS
 
-
-    def wait(self, instance, state):
+    def wait(self, instance, state, cancellation_context):
         """
+        Waits till cancelled.
+
         :param instance: Instance to be waited on
         :type instance: novaclient.v2.servers.Server
         :param state:
         :type state: str
+        :param cancellation_context:
+        :type cancellation_context:
         :return: novaclient.v2.servers.Server (updated)
         """
-        start_time = time.time()
 
         if state not in self.INSTANCE_STATES:
             raise ValueError('Unsupported Instance State {0}'.format(state))
 
-        while time.time() - start_time <= self.timeout:
-            instance.get()
-            if instance.status == state:
-                return instance
+        while instance.status != state:
+            self.cancellation_service.check_if_cancelled(cancellation_context=cancellation_context)
             time.sleep(self.delay)
-        raise InstanceWaiterTimeoutException('Maximum time exceeded waiting \
-                                        for Instance {0}'.format(instance.name))
+
+        return instance

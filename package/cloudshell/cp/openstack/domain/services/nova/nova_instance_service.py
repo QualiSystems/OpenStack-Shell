@@ -52,8 +52,13 @@ class NovaInstanceService(object):
                                          image=img_obj,
                                          flavor=flavor_obj,
                                          nics=[qnet_dict])
+        try:
+            self.instance_waiter.wait(instance, state=self.instance_waiter.ACTIVE)
+        except Exception as e:
+            if instance:
+                client.servers.delete(instance)
+            raise
 
-        self.instance_waiter.wait(instance, state=self.instance_waiter.ACTIVE)
         return instance
 
     def terminate_instance(self, openstack_session, instance_id, logger):

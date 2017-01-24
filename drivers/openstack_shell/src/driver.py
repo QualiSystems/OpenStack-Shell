@@ -16,16 +16,14 @@ class OpenStackShellDriver(ResourceDriverInterface):
     def cleanup(self):
         pass
 
-    def deploy_from_image(self, context, request):
+    def deploy_from_image(self, context, request, cancellation_context):
         """
         :param cloudshell.shell.core.context.ResourceCommandContext context:
         :param DeployDataHolder request:
         :rtype  : str
         """
-        return self.os_shell.deploy_instance_from_image(context, request)
-        #return str(jsonpickle.encode({"vm_name": "testvm_shell_driver", "vm_uuid": "1234-5678",
-        #                           "cloud_provider_resource_name" : "openstack"},
-        #                            unpicklable=False))
+        return self.os_shell.deploy_instance_from_image(command_context=context, deploy_request=request,
+                                                        cancellation_context=cancellation_context)
 
     def ApplyConnectivityChanges(self, context, request):
         return self.os_shell.apply_connectivity(context, request)

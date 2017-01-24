@@ -26,7 +26,7 @@ from cloudshell.cp.openstack.command.command_result_parser import OpenStackShell
 
 from cloudshell.cp.openstack.domain.services.session_providers.os_session_provider \
     import OpenStackSessionProvider
-
+from cloudshell.cp.openstack.domain.services.cancellation_services.command_cancellation import CommandCancellationService
 
 class OpenStackShell(object):
     """
@@ -39,11 +39,15 @@ class OpenStackShell(object):
         self.os_session_provider = OpenStackSessionProvider()
         self.cs_driver_helper = CloudshellDriverHelper()
 
-        self.power_operation = PowerOperation()
-        self.deploy_operation = DeployOperation()
-        self.connectivity_operation = ConnectivityOperation()
-        self.refresh_ip_operation = RefreshIPOperation()
-        self.hidden_operation = HiddenOperation()
+        # We start making user of service constructors here as
+        self.cancellation_service = CommandCancellationService()
+
+        self.power_operation = PowerOperation(cancellation_service=self.cancellation_service)
+        self.deploy_operation = DeployOperation(cancellation_service=self.cancellation_service)
+        self.connectivity_operation = ConnectivityOperation(cancellation_service=self.cancellation_service)
+        self.refresh_ip_operation = RefreshIPOperation(cancellation_service=self.cancellation_service)
+        self.hidden_operation = HiddenOperation(cancellation_service=self.cancellation_service)
+
         self.autoload_operation = AutoLoadOperation()
 
         self.model_parser = OpenStackShellModelParser()
@@ -111,12 +115,13 @@ class OpenStackShell(object):
 
     # Deploy Operations Begin
 
-    def deploy_instance_from_image(self, command_context, deploy_request):
+    def deploy_instance_from_image(self, command_context, deploy_request, cancellation_context):
         """
         Deploys an image with specification provided by deploy_request on a
         Nova instance
         :param cloudshell.shell.core.context.ResourceCommandContext command_context:
         :param DeployDataHolder deploy_request: Specification of for the instance to be deployed
+        :param cancellation_context:
         :rtype str:
         """
 
@@ -148,6 +153,7 @@ class OpenStackShell(object):
                                                                  reservation=reservation_model,
                                                                  cp_resource_model=resource_model,
                                                                  deploy_req_model=deploy_req_model,
+                                                                 cancellation_context=cancellation_context,
                                                                  logger=logger)
 
                     if not deployed_data:

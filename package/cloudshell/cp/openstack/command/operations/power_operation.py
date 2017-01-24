@@ -5,8 +5,8 @@ import traceback
 
 
 class PowerOperation(object):
-    def __init__(self):
-        self.instance_waiter = InstanceWaiter()
+    def __init__(self, cancellation_service):
+        self.instance_waiter = InstanceWaiter(cancellation_service=cancellation_service)
         self.instance_service = NovaInstanceService(self.instance_waiter)
 
     def power_on(self, openstack_session, cloudshell_session,
