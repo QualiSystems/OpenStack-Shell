@@ -11,6 +11,7 @@ from cloudshell.cp.openstack.models.model_parser import OpenStackShellModelParse
 # From Cloudshell API
 from cloudshell.api.cloudshell_api import InputNameValue
 
+
 class DeployOSNovaImageInstanceDriver(ResourceDriverInterface):
     APP_NAME = 'app_name'
     IMAGE_PARAM = 'image'
@@ -33,14 +34,15 @@ class DeployOSNovaImageInstanceDriver(ResourceDriverInterface):
         with LoggingSessionContext(context) as logger:
             with CloudShellSessionContext(context) as session:
                 logger.debug("Deploy Called for Reservation: {0}".format(
-                                        context.reservation.reservation_id))
+                        context.reservation.reservation_id))
                 # Get CS Session we are going to make an API call using this session
                 logger.debug("creating session: {0}, {1}, {2}".format(
-                                context.connectivity.server_address,
-                                context.connectivity.admin_auth_token,
-                                context.reservation.domain))
+                        context.connectivity.server_address,
+                        context.connectivity.admin_auth_token,
+                        context.reservation.domain))
 
-                deploy_service_res_model = OSModelParser.get_deploy_resource_model_from_context_resource(context.resource)
+                deploy_service_res_model = OSModelParser.get_deploy_resource_model_from_context_resource(
+                    context.resource)
 
                 context_json_decoded = jsonpickle.decode(context.resource.app_context.app_request_json)
 
