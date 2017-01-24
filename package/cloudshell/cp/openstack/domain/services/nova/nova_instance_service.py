@@ -226,7 +226,8 @@ class NovaInstanceService(object):
             # result = "/".join([iface_ip, iface_portid, iface_mac])
             return result
         except Exception as e:
-            logger.info("Exception: {0} during interface attach".format(e))
+            logger.error("Exception: {0} during interface attach.".format(e))
+            raise
 
         return None
 

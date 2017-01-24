@@ -48,9 +48,10 @@ class TestVlanConnectivityService(TestCase):
                                                              cp_resource_model=mock_cp_resource_model,
                                                              vlan_actions=test_vlan_actions,
                                                              logger=self.mock_logger)
+        failure_text = 'Failed to attach Subnet to Network test_net_id.Raised Exception: empty_subnet'
         self.connectivity_service.set_fail_results.assert_any_call(values='test_value',
                                                                    action_type='setVlan',
-                                                                   failure_text='Failed to attach Subnet to Network test_net_id')
+                                                                   failure_text=failure_text)
         assert self.connectivity_service.set_fail_results.call_count == 2
         self.assertTrue(results, ['fail_result', 'fail_result'])
 

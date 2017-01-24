@@ -210,12 +210,13 @@ class TestNovaInstanceService(TestCase):
 
         mock_instance.interface_attach = Mock(side_effect=Exception)
 
-        result = self.instance_service.attach_nic_to_net(openstack_session=self.openstack_session,
+        with self.assertRaises(Exception) as context:
+            result = self.instance_service.attach_nic_to_net(openstack_session=self.openstack_session,
                                                          net_id='test_net_id',
                                                          instance_id='test_instance_id',
                                                          logger=self.mock_logger)
 
-        self.assertEqual(result, None)
+        self.assertTrue(context)
 
     def test_detach_nic_from_net_success(self):
 

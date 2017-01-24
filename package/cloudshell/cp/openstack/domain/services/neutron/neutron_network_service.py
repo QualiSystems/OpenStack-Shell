@@ -46,8 +46,7 @@ class NeutronNetworkService(object):
             new_net = client.list_networks(**{'provider:segmentation_id':segmentation_id})
             new_net = new_net['networks'][0]
         except Exception as e:
-            logger.error(traceback.format_exc())
-            return None
+            raise
 
         return new_net
 
@@ -83,7 +82,7 @@ class NeutronNetworkService(object):
         cidr = self._get_unused_cidr(client=client, cp_resvd_cidrs=cp_resource_model.reserved_networks, logger=logger)
         if cidr is None:
             logger.error("Cannot allocate new subnet. All subnets exhausted")
-            return None
+            raise ValueError("All Subnets Exhausted")
 
         subnet_name = 'qs_subnet_' + net_id
         create_subnet_json = {'cidr': cidr,
@@ -92,12 +91,8 @@ class NeutronNetworkService(object):
                               'name': subnet_name,
                               'gateway_ip': None}
 
-        try:
-            new_subnet = client.create_subnet({'subnet':create_subnet_json})
-            new_subnet = new_subnet['subnet']
-        except Exception as e:
-            logger.error(traceback.format_exc())
-            return None
+        new_subnet = client.create_subnet({'subnet':create_subnet_json})
+        new_subnet = new_subnet['subnet']
 
         return new_subnet
 

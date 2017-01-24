@@ -11,6 +11,7 @@ from cloudshell.cp.openstack.domain.services.nova.nova_instance_service import N
 from cloudshell.cp.openstack.domain.services.waiters.instance import InstanceWaiter
 from cloudshell.cp.openstack.domain.services.neutron.neutron_network_service import NeutronNetworkService
 from threading import Lock
+import traceback
 
 
 class VLANConnectivityService(object):
@@ -101,33 +102,48 @@ class VLANConnectivityService(object):
         results = []
 
         for k, values in vlan_actions.iteritems():
-            net = self.network_service.create_or_get_network_with_segmentation_id(openstack_session=openstack_session,
+            net = None
+            net_err_msg = ''
+            try:
+                net = self.network_service.create_or_get_network_with_segmentation_id(openstack_session=openstack_session,
                                                                                   cp_resource_model=cp_resource_model,
                                                                                   segmentation_id=int(k),
                                                                                   logger=logger)
+            except Exception as e:
+                logger.error(traceback.format_exc())
+                net_err_msg = "{0} {1}".format(type(e), e.message)
+                net_err_msg = net_err_msg.replace("<", "(").replace(">", ")")
             if not net:
                 fail_results = self.set_fail_results(values=values,
                                                       action_type='setVlan',
-                                                      failure_text="Failed to Create Network with VLAN ID {0}".format(
-                                                          k))
+                                                      failure_text="Failed to Create Network with VLAN ID {0}:"
+                                                                   "Raised Exception {1}".format(k, net_err_msg))
                 results += fail_results
             else:
-                net_id = net['id']
-
-                subnet = net['subnets']
-                if not subnet:
-                    with self.subnet_lock:
-                        subnet = self.network_service.create_and_attach_subnet_to_net(openstack_session=openstack_session,
-                                                                                      cp_resource_model=cp_resource_model,
-                                                                                      net_id=net_id,
-                                                                                      logger=logger)
-                else:
-                    subnet = subnet[0]
+                subnet = None
+                subnet_err_msg = ''
+                try:
+                    net_id = net['id']
+                    subnet = net['subnets']
+                    if not subnet:
+                        with self.subnet_lock:
+                            subnet = self.network_service.create_and_attach_subnet_to_net(openstack_session=openstack_session,
+                                                                                          cp_resource_model=cp_resource_model,
+                                                                                          net_id=net_id,
+                                                                                          logger=logger)
+                            subnet_err_msg = 'empty_subnet'
+                    else:
+                        subnet = subnet[0]
+                except Exception as e:
+                    logger.error(traceback.format_exc())
+                    subnet_err_msg = "{0} {1}".format(type(e), e.message)
+                    subnet_err_msg = subnet_err_msg.replace("<", "(").replace(">", ")")
                 if not subnet:
                     fail_results = self.set_fail_results(values=values,
                                                           action_type='setVlan',
-                                                          failure_text="Failed to attach Subnet to Network {0}".format(
-                                                              net_id))
+                                                          failure_text="Failed to attach Subnet to Network {0}."
+                                                                       "Raised Exception: {1}".format(net_id,
+                                                                                                   subnet_err_msg))
                     results += fail_results
                 else:
                     attach_results = []
@@ -266,15 +282,23 @@ class VLANConnectivityService(object):
         """
         action_result = ConnectivityActionResultModel()
 
-        instance_id = action_resource_info.vm_uuid
-        result = self.instance_service.attach_nic_to_net(openstack_session=openstack_session,
-                                                         instance_id=instance_id, net_id=net_id, logger=logger)
+        result = None
+        result_err_msg = ''
+        try:
+            instance_id = action_resource_info.vm_uuid
+            result = self.instance_service.attach_nic_to_net(openstack_session=openstack_session,
+                                                             instance_id=instance_id, net_id=net_id, logger=logger)
+        except Exception as e:
+            result_err_msg = "{0} {1}".format(type(e), e.message)
+            result_err_msg = result_err_msg.replace("<", "(").replace(">",")")
+            logger.error(result_err_msg)
         if not result:
             action_result.success = "False"
             action_result.actionId = action_resource_info.actionid
-            action_result.errorMessage = "Failed to Attach NIC on Network {0} to Instance {1}".format(
-                net_id,
-                action_resource_info.deployed_app_resource_name)
+            action_result.errorMessage = "Failed to Attach NIC on Network {0} to Instance {1}." \
+                                         "Raised Exception: {2} ".format(net_id,
+                                                                       action_resource_info.deployed_app_resource_name,
+                                                                       result_err_msg)
             action_result.infoMessage = ""
             action_result.updatedInterface = ""
             action_result.type = 'setVlan'
@@ -303,15 +327,24 @@ class VLANConnectivityService(object):
 
         port_id = action_resource_info.interface_port_id
         vm_uuid = action_resource_info.vm_uuid
+        result_err_msg = ''
+        result = None
+        try:
 
-        result = self.instance_service.detach_nic_from_instance(openstack_session=openstack_session,
-                                                                instance_id=vm_uuid, port_id=port_id, logger=logger)
+            result = self.instance_service.detach_nic_from_instance(openstack_session=openstack_session,
+                                                                    instance_id=vm_uuid, port_id=port_id, logger=logger)
+        except Exception as e:
+            logger.error(e)
+            result_err_msg = "{0} {1}".format(type(e), e.message)
+            result_err_msg = result_err_msg.replace("<", "(").replace(">",")")
+            logger.error(result_err_msg)
         if not result:
             action_result.success = "False"
             action_result.actionId = action_resource_info.actionid
-            action_result.errorMessage = "Failed to Detach NIC {0} from Instance {1}".format(
+            action_result.errorMessage = "Failed to Detach NIC {0} from Instance {1}. Error {2}".format(
                 port_id,
-                action_resource_info.deployed_app_resource_name)
+                action_resource_info.deployed_app_resource_name,
+                result_err_msg)
             action_result.infoMessage = ""
             action_result.updatedInterface = ""
             action_result.type = 'removeVlan'
