@@ -5,6 +5,8 @@ from cloudshell.cp.openstack.domain.services.nova.nova_instance_service import N
 import cloudshell.cp.openstack.domain.services.nova.nova_instance_service as test_nova_instance_service
 from cloudshell.cp.openstack.common.driver_helper import CloudshellDriverHelper
 
+from cloudshell.cp.openstack.domain.services.cancellation_services.command_cancellation import CommandCancellationException
+
 class TestNovaInstanceService(TestCase):
     def setUp(self):
         instance_waiter = Mock()
@@ -64,6 +66,42 @@ class TestNovaInstanceService(TestCase):
                                                                       state=self.instance_service.instance_waiter.ACTIVE,
                                                                       cancellation_context=mock_cancellation_context,
                                                                       logger=self.mock_logger)
+
+    def test_instance_create_cancellation_called(self):
+        test_name = 'test'
+        CloudshellDriverHelper.get_uuid = Mock(return_value='1234')
+        test_uniq_name = 'test-1234'
+        mock_client2 = Mock()
+
+        test_nova_instance_service.novaclient.Client = Mock(return_value=mock_client2)
+        # mock_client.Client = Mock(return_vaule=mock_client2)
+        mock_image = Mock()
+        mock_flavor = Mock()
+        mock_client2.images.find = Mock(return_value=mock_image)
+        mock_client2.flavors.find = Mock(return_value=mock_flavor)
+
+        mock_cp_resource_model = Mock()
+        mock_cp_resource_model.qs_mgmt_os_net_uuid = '1234'
+
+        mock_cancellation_context = Mock()
+
+        mock_client2.servers = Mock()
+        mocked_inst = Mock()
+        mock_client2.servers.create = Mock(return_value=mocked_inst)
+        mock_qnet_dict = {'net-id': mock_cp_resource_model.qs_mgmt_os_net_uuid}
+
+        self.instance_service.instance_waiter = Mock()
+        self.instance_service.instance_waiter.wait = Mock(side_effect=CommandCancellationException)
+        with self.assertRaises(CommandCancellationException) as context:
+            result = self.instance_service.create_instance(openstack_session=self.openstack_session,
+                                                           name=test_name,
+                                                           reservation=Mock(),
+                                                           cp_resource_model=mock_cp_resource_model,
+                                                           deploy_req_model=Mock(),
+                                                           cancellation_context=mock_cancellation_context,
+                                                           logger=self.mock_logger)
+        self.assertTrue(context)
+
 
     def test_instance_terminate_openstack_session_none(self):
         with self.assertRaises(ValueError) as context:
