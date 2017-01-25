@@ -21,6 +21,7 @@ class TestNovaInstanceService(TestCase):
                                                        reservation=Mock(),
                                                        cp_resource_model=Mock(),
                                                        deploy_req_model=Mock(),
+                                                       cancellation_context=Mock(),
                                                        logger=self.mock_logger)
         self.assertEqual(result, None)
 
@@ -40,6 +41,8 @@ class TestNovaInstanceService(TestCase):
         mock_cp_resource_model = Mock()
         mock_cp_resource_model.qs_mgmt_os_net_uuid = '1234'
 
+        mock_cancellation_context = Mock()
+
         mock_client2.servers = Mock()
         mocked_inst = Mock()
         mock_client2.servers.create = Mock(return_value=mocked_inst)
@@ -49,6 +52,7 @@ class TestNovaInstanceService(TestCase):
                                                        reservation=Mock(),
                                                        cp_resource_model=mock_cp_resource_model,
                                                        deploy_req_model=Mock(),
+                                                       cancellation_context=mock_cancellation_context,
                                                        logger=self.mock_logger)
 
         mock_client2.servers.create.assert_called_with(name=test_uniq_name,
@@ -56,7 +60,10 @@ class TestNovaInstanceService(TestCase):
                                                        flavor=mock_flavor,
                                                        nics=[mock_qnet_dict])
         self.assertEquals(result, mocked_inst)
-        self.instance_service.instance_waiter.wait.assert_called_with(mocked_inst, state=self.instance_service.instance_waiter.ACTIVE)
+        self.instance_service.instance_waiter.wait.assert_called_with(mocked_inst,
+                                                                      state=self.instance_service.instance_waiter.ACTIVE,
+                                                                      cancellation_context=mock_cancellation_context,
+                                                                      logger=self.mock_logger)
 
     def test_instance_terminate_openstack_session_none(self):
         with self.assertRaises(ValueError) as context:

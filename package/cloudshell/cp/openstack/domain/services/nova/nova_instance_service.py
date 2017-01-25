@@ -20,7 +20,7 @@ class NovaInstanceService(object):
         # can be called without a proper client object
 
     def create_instance(self, openstack_session, name, reservation,
-                        cp_resource_model, deploy_req_model, logger):
+                        cp_resource_model, deploy_req_model, cancellation_context, logger):
         """
         :param keystoneauth1.session.Session openstack_session: Keystone Session
         :param str name: Name of Instance
@@ -53,7 +53,9 @@ class NovaInstanceService(object):
                                          flavor=flavor_obj,
                                          nics=[qnet_dict])
         try:
-            self.instance_waiter.wait(instance, state=self.instance_waiter.ACTIVE)
+            logger.error("cancellation_context.is_cancelled: {}".format(cancellation_context.is_cancelled))
+            self.instance_waiter.wait(instance, state=self.instance_waiter.ACTIVE,
+                                      cancellation_context=cancellation_context, logger=logger)
         except Exception as e:
             if instance:
                 client.servers.delete(instance)

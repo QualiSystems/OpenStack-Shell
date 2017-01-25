@@ -30,7 +30,7 @@ class InstanceWaiter(object):
         self.cancellation_service = cancellation_service
         self.delay = delay
 
-    def wait(self, instance, state, cancellation_context):
+    def wait(self, instance, state, cancellation_context, logger):
         """
         Waits till cancelled.
 
@@ -47,7 +47,9 @@ class InstanceWaiter(object):
             raise ValueError('Unsupported Instance State {0}'.format(state))
 
         while instance.status != state:
+            instance.get()
             self.cancellation_service.check_if_cancelled(cancellation_context=cancellation_context)
             time.sleep(self.delay)
+            logger.error("after instance.status: {} , state: {}".format(instance.status, state))
 
         return instance

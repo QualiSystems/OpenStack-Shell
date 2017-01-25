@@ -18,3 +18,5 @@ class CommandCancellationService(object ):
 
         if cancellation_context.is_cancelled:
             raise CommandCancellationException("Command was Cancelled")
+
+        return None
