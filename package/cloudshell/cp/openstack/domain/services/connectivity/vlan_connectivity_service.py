@@ -88,6 +88,16 @@ class VLANConnectivityService(object):
 
         return driver_response_root
 
+    def _format_err_msg_for_exception(self, e):
+        """
+
+        :param Exception e:
+        :return:
+        """
+        err_msg = "{0} {1}".format(type(e), e.message)
+        err_msg = err_msg.replace("<", "(").replace(">", ")")
+        return err_msg
+
     def set_vlan_actions(self, openstack_session, cp_resource_model, vlan_actions, logger):
         """
 
@@ -111,8 +121,7 @@ class VLANConnectivityService(object):
                                                                                   logger=logger)
             except Exception as e:
                 logger.error(traceback.format_exc())
-                net_err_msg = "{0} {1}".format(type(e), e.message)
-                net_err_msg = net_err_msg.replace("<", "(").replace(">", ")")
+                net_err_msg = self._format_err_msg_for_exception(e)
             if not net:
                 fail_results = self.set_fail_results(values=values,
                                                       action_type='setVlan',
@@ -136,8 +145,7 @@ class VLANConnectivityService(object):
                         subnet = subnet[0]
                 except Exception as e:
                     logger.error(traceback.format_exc())
-                    subnet_err_msg = "{0} {1}".format(type(e), e.message)
-                    subnet_err_msg = subnet_err_msg.replace("<", "(").replace(">", ")")
+                    subnet_err_msg = self._format_err_msg_for_exception(e)
                 if not subnet:
                     fail_results = self.set_fail_results(values=values,
                                                           action_type='setVlan',
@@ -289,16 +297,15 @@ class VLANConnectivityService(object):
             result = self.instance_service.attach_nic_to_net(openstack_session=openstack_session,
                                                              instance_id=instance_id, net_id=net_id, logger=logger)
         except Exception as e:
-            result_err_msg = "{0} {1}".format(type(e), e.message)
-            result_err_msg = result_err_msg.replace("<", "(").replace(">",")")
+            result_err_msg = self._format_err_msg_for_exception(e)
             logger.error(result_err_msg)
         if not result:
             action_result.success = "False"
             action_result.actionId = action_resource_info.actionid
             action_result.errorMessage = "Failed to Attach NIC on Network {0} to Instance {1}." \
                                          "Raised Exception: {2} ".format(net_id,
-                                                                       action_resource_info.deployed_app_resource_name,
-                                                                       result_err_msg)
+                                                                         action_resource_info.deployed_app_resource_name,
+                                                                         result_err_msg)
             action_result.infoMessage = ""
             action_result.updatedInterface = ""
             action_result.type = 'setVlan'
@@ -334,9 +341,7 @@ class VLANConnectivityService(object):
             result = self.instance_service.detach_nic_from_instance(openstack_session=openstack_session,
                                                                     instance_id=vm_uuid, port_id=port_id, logger=logger)
         except Exception as e:
-            logger.error(e)
-            result_err_msg = "{0} {1}".format(type(e), e.message)
-            result_err_msg = result_err_msg.replace("<", "(").replace(">",")")
+            result_err_msg = self._format_err_msg_for_exception(e)
             logger.error(result_err_msg)
         if not result:
             action_result.success = "False"
