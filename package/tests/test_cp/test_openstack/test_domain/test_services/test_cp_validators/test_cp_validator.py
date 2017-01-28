@@ -393,6 +393,7 @@ class TestOpenStackSessionProvider(TestCase):
         mock_openstack_sesion = Mock()
         mock_cs_session = Mock()
         mock_cp_resource_model = Mock()
+        mock_cp_resource_model.controller_url = "http://bla.com"
 
         mock_passwd = Mock()
         mock_passwd.Value = 'mock-passwd'
@@ -410,7 +411,7 @@ class TestOpenStackSessionProvider(TestCase):
         self.cp_validator.validate_openstack_username = Mock(return_value=True)
         self.cp_validator.validate_openstack_password = Mock(return_value=True)
 
-        with self.assertRaises(test_cp_validator.keystoneauth1.exceptions.http.NotFound) as context:
+        with self.assertRaisesRegexp(ValueError, "Controller URL 'http://bla.com' is not found") as context:
             self.cp_validator.validate_openstack_credentials(openstack_session=mock_openstack_sesion,
                                                              cs_session=mock_cs_session,
                                                              cp_resource_model=mock_cp_resource_model,

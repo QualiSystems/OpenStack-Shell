@@ -261,7 +261,7 @@
       <AttachedAttributes />
       <AttributeValues />
       <Models>
-        <ResourceModel Description="OpenStack Instance from Image Deployment Driver" ImagePath="OpenStack_VM_Icon.png" Name="OpenStack Deploy From Glance Image" SupportsConcurrentCommands="false">
+        <ResourceModel Description="" ImagePath="OpenStack_VM_Icon.png" Name="OpenStack Deploy From Glance Image" SupportsConcurrentCommands="false">
           <AttachedAttributes>
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Cloud Provider" UserInput="true">
               <AllowedValues />
@@ -293,7 +293,7 @@
           </AttributeValues>
           <ParentModels />
           <Drivers>
-            <DriverName>Deploy OpenStack Nova Image Instance</DriverName>
+            <DriverName>Deploy From Glance Image</DriverName>
           </Drivers>
         </ResourceModel>
       </Models>
@@ -303,6 +303,6 @@
   </ResourceFamilies>
   <DriverDescriptors>
       <DriverDescriptor Name="OpenStack Shell Driver" DriverType="PythonDriver" />
-      <DriverDescriptor Name="Deploy OpenStack Nova Image Instance" DriverType="PythonDriver" />
+      <DriverDescriptor Name="Deploy From Glance Image" DriverType="PythonDriver" />
   </DriverDescriptors>
 </DataModelInfo>

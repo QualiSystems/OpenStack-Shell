@@ -95,3 +95,5 @@ package/cloudshell/shell/*
 package/cloudshell/configuration/*
 package/temp/
 openstack_shellPackage/Resource Driver - Python/*
+drivers/deployment_drivers/openstack_nova_image_instance/debug.xml
+drivers/deployment_drivers/openstack_nova_image_instance/debug_info.txt
