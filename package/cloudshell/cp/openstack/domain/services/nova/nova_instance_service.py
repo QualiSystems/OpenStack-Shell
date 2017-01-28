@@ -87,8 +87,8 @@ class NovaInstanceService(object):
                 self.detach_and_delete_floating_ip(openstack_session=openstack_session,
                                                    instance=instance,
                                                    floating_ip=floating_ip)
-            # Wait till floating IP obj is deleted???
             client.servers.delete(instance)
+
 
     def instance_power_on(self, openstack_session, instance_id, logger):
         """
@@ -307,13 +307,8 @@ class NovaInstanceService(object):
 
         client = novaclient.Client(self.API_VERSION, session=openstack_session)
 
-        # We need to get the ID
-        floating_ip_objid = ''
-        for fl in client.floating_ips.list():
-            if fl.ip == floating_ip:
-                floating_ip_objid = fl.id
-                break
-
-        if floating_ip_objid:
-            instance.remove_floating_ip(fl)
-            client.floating_ips.delete(floating_ip_objid)
+        floating_ip_obj = client.floating_ips.find(ip=floating_ip)
+        if floating_ip_obj: # Returns a list - we ensure non-empty
+            floating_ip_obj = floating_ip_obj[0]
+            instance.remove_floating_ip(floating_ip_obj)
+            client.floating_ips.delete(floating_ip_obj.id)

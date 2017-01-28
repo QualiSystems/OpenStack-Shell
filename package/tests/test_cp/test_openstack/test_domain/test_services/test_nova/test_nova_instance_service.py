@@ -337,7 +337,7 @@ class TestNovaInstanceService(TestCase):
         mock_floating_ip_obj = Mock()
         mock_floating_ip_obj.ip = '1.2.3.4'
         mock_floating_ip_obj.id = 'test-id'
-        mock_client.floating_ips.list = Mock(return_value=[mock_floating_ip_obj])
+        mock_client.floating_ips.find = Mock(return_value=[mock_floating_ip_obj])
 
         mock_instance = Mock()
         self.instance_service.get_instance_from_instance_id = Mock(return_value=mock_instance)
