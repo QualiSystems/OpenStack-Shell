@@ -45,8 +45,6 @@ class NeutronNetworkService(object):
         except NetCreateConflict:
             new_net = client.list_networks(**{'provider:segmentation_id':segmentation_id})
             new_net = new_net['networks'][0]
-        except Exception as e:
-            raise
 
         return new_net
 
