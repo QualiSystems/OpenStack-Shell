@@ -90,12 +90,13 @@ class TestNeutronNetworkService(TestCase):
         test_net_id = 'test-net-id'
         mock_client = Mock()
         test_neutron_network_service.neutron_client.Client = Mock(return_value=mock_client)
-        mock_client.create_subnet = Mock(return_value=None)
+        mock_client.create_subnet = Mock(side_effect=Exception)
 
         self.network_service._get_unused_cidr = Mock(return_value = '10.0.0.0/24')
 
-        result = self.network_service.create_and_attach_subnet_to_net(openstack_session=self.openstack_session,
+        with self.assertRaises(Exception) as context:
+            result = self.network_service.create_and_attach_subnet_to_net(openstack_session=self.openstack_session,
                                                                       cp_resource_model=Mock(),
                                                                       net_id=test_net_id,
                                                                       logger=self.mock_logger)
-        self.assertEqual(result, None)
+        self.assertTrue(context)
