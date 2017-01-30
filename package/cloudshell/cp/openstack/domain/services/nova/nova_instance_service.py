@@ -46,21 +46,28 @@ class NovaInstanceService(object):
         # Quali Network - Quali Network UUID is a OpenStack Resource Model attribute
         qnet_dict = {'net-id': cp_resource_model.qs_mgmt_os_net_uuid}
 
+        # get affinity_group_by_name
+
         uniq = CloudshellDriverHelper.get_uuid() #str(uuid.uuid4()).split("-")[0]
         name = name + "-" + uniq
-        instance = client.servers.create(name=name,
-                                         image=img_obj,
-                                         flavor=flavor_obj,
-                                         nics=[qnet_dict])
+
+        server_create_args = {'name': name, 'image':img_obj, 'flavor':flavor_obj, 'nics': [qnet_dict]}
+
+        affinity_group_id = deploy_req_model.affinity_group_uuid
+        if affinity_group_id:
+            server_create_args.update({'scheduler_hints':{'group': affinity_group_id}})
+
+        instance = client.servers.create(**server_create_args)
 
         self.instance_waiter.wait(instance, state=self.instance_waiter.ACTIVE)
         return instance
 
-    def terminate_instance(self, openstack_session, instance_id, logger):
+    def terminate_instance(self, openstack_session, instance_id, floating_ip, logger):
         """
         :param keystoneauth1.session.Session openstack_session:
         :param str instance_id: Instance ID to be terminated
         :param LoggingSessionContext logger:
+        :param str floating_ip:
         :rtype Boolean:
         """
         logger.info("Deleting instance with instance ID {0}".format(instance_id))
@@ -76,7 +83,12 @@ class NovaInstanceService(object):
         if instance is None:
             logger.info("Instance with Instance ID {0} does not exist. Already Deleted?".format(instance_id))
         else:
+            if floating_ip:
+                self.detach_and_delete_floating_ip(openstack_session=openstack_session,
+                                                   instance=instance,
+                                                   floating_ip=floating_ip)
             client.servers.delete(instance)
+
 
     def instance_power_on(self, openstack_session, instance_id, logger):
         """
@@ -270,22 +282,19 @@ class NovaInstanceService(object):
 
         return floating_ip_obj.ip
 
-    def delete_floating_ip(self, openstack_session, floating_ip):
+    def detach_and_delete_floating_ip(self, openstack_session, instance, floating_ip):
         """
 
         :param keystoneauth1.session.Session openstack_session:
+        :param instance:
         :param str floating_ip:
         :return: None
         """
 
         client = novaclient.Client(self.API_VERSION, session=openstack_session)
 
-        # We need to get the ID
-        floating_ip_objid = ''
-        for fl in client.floating_ips.list():
-            if fl.ip == floating_ip:
-                floating_ip_objid = fl.id
-                break
-
-        if floating_ip_objid:
-            client.floating_ips.delete(floating_ip_objid)
+        floating_ip_obj = client.floating_ips.find(ip=floating_ip)
+        if floating_ip_obj: # Returns a list - we ensure non-empty
+            floating_ip_obj = floating_ip_obj[0]
+            instance.remove_floating_ip(floating_ip_obj)
+            client.floating_ips.delete(floating_ip_obj.id)

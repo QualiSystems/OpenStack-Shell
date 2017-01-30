@@ -119,6 +119,14 @@
         <Rule Name="Setting" />
       </Rules>
     </AttributeInfo>
+
+    <!-- 5 -->
+    <AttributeInfo DefaultValue="" Description="Specifies which Affinity Group this App belongs to. Right now supported affinity type is 'affinity'." IsReadOnly="false" Name="Affinity Group UUID" Type="String">
+      <Rules>
+        <Rule Name="Configuration" />
+        <Rule Name="Setting" />
+      </Rules>
+    </AttributeInfo>
     <!-- 8 -->
     <AttributeInfo DefaultValue="false" Description="Enables the automatic execution of the Autoload command during reservation Setup.." IsReadOnly="false" Name="Autoload"  Type="Boolean">
         <Rules>
@@ -271,6 +279,9 @@
               <AllowedValues />
             </AttachedAttribute>
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Autoload" UserInput="false">
+              <AllowedValues />
+            </AttachedAttribute>
+            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Affinity Group UUID" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="External Network UUID" UserInput="false">
