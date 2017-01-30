@@ -10,3 +10,4 @@ class DeployOSNovaImageInstanceResourceModel(object):
         self.add_floating_ip = False
         self.autoload = False
         self.external_network_uuid = ''
+        self.affinity_group_uuid = ''

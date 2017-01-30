@@ -30,10 +30,8 @@ class TestHiddenOperation(TestCase):
 
         self.hidden_operation.instance_service.terminate_instance.assert_called_with(openstack_session=self.openstack_session,
                                                                                      instance_id=test_id,
+                                                                                     floating_ip=test_floating_ip,
                                                                                      logger=self.mock_logger)
-        self.hidden_operation.instance_service.delete_floating_ip.assert_called_with(openstack_session=self.openstack_session,
-                                                                                     floating_ip=test_floating_ip)
-
 
     def test_delete_operation_exception(self):
         test_id = '1234-56'

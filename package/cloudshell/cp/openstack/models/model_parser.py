@@ -42,6 +42,7 @@ class OpenStackShellModelParser(object):
         deploy_res_model.add_floating_ip = data_holder.image.add_floating_ip
         deploy_res_model.autoload = data_holder.image.autoload
         deploy_res_model.external_network_uuid = data_holder.image.external_network_uuid
+        deploy_res_model.affinity_group_uuid = data_holder.image.affinity_group_uuid
 
         app_name = data_holder.app_name
 
@@ -59,6 +60,7 @@ class OpenStackShellModelParser(object):
         deploy_resource_model.add_floating_ip = OpenStackShellModelParser.parse_boolean(attrs['Add Floating IP'])
         deploy_resource_model.autoload = OpenStackShellModelParser.parse_boolean(attrs['Autoload'])
         deploy_resource_model.external_network_uuid = attrs['External Network UUID']
+        deploy_resource_model.affinity_group_uuid = attrs['Affinity Group UUID']
         return deploy_resource_model
 
 
