@@ -137,21 +137,6 @@ class NovaInstanceService(object):
                 instance.stop()
                 self.instance_waiter.wait(instance, self.instance_waiter.SHUTOFF)
 
-    def get_security_groups(self, openstack_session, instance):
-        """
-        :param keystoneauth1.session.Session openstack_session:
-        :param novaclient.Client.servers.Server instance:
-        :rtype dict: Dictionary of Security Groups attached to instance.
-        """
-        pass
-
-    def get_interfaces(self, instance):
-        """
-        :param novaclient.Client.servers.Server instance:
-        :rtype dict: Dictionary of Interfaces attached (gives IP addrsses)
-        """
-        pass
-
     def get_instance_mgmt_network_name(self, instance, openstack_session, cp_resource_model):
         """
 
@@ -238,7 +223,8 @@ class NovaInstanceService(object):
             # result = "/".join([iface_ip, iface_portid, iface_mac])
             return result
         except Exception as e:
-            logger.info("Exception: {0} during interface attach".format(e))
+            logger.error("Exception: {0} during interface attach.".format(e))
+            raise
 
         return None
 
