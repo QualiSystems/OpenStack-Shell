@@ -50,6 +50,5 @@ class InstanceWaiter(object):
             instance.get()
             self.cancellation_service.check_if_cancelled(cancellation_context=cancellation_context)
             time.sleep(self.delay)
-            logger.error("after instance.status: {} , state: {}".format(instance.status, state))
 
         return instance

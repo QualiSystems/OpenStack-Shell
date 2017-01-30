@@ -7,8 +7,8 @@ from cloudshell.cp.openstack.command.operations.hidden_operation import HiddenOp
 class TestHiddenOperation(TestCase):
 
     def setUp(self):
-        self.cancellation_service=Mock()
-        self.hidden_operation = HiddenOperation(cancellation_service=self.cancellation_service)
+        self.instance_service=Mock()
+        self.hidden_operation = HiddenOperation(instance_service=self.instance_service)
         self.hidden_operation.instance_service = Mock()
         self.hidden_operation.instance_waiter = Mock()
 

@@ -54,19 +54,13 @@ class NovaInstanceService(object):
         server_create_args = {'name': name, 'image':img_obj, 'flavor':flavor_obj, 'nics': [qnet_dict]}
 
         affinity_group_id = deploy_req_model.affinity_group_uuid
+
         if affinity_group_id:
             server_create_args.update({'scheduler_hints':{'group': affinity_group_id}})
 
         instance = client.servers.create(**server_create_args)
-        try:
-            logger.error("cancellation_context.is_cancelled: {}".format(cancellation_context.is_cancelled))
-            self.instance_waiter.wait(instance, state=self.instance_waiter.ACTIVE,
-                                      cancellation_context=cancellation_context, logger=logger)
-        except Exception as e:
-            if instance:
-                client.servers.delete(instance)
-            raise
-
+        self.instance_waiter.wait(instance, state=self.instance_waiter.ACTIVE,
+                                  cancellation_context=cancellation_context, logger=logger)
         return instance
 
     def terminate_instance(self, openstack_session, instance_id, floating_ip, logger):
@@ -282,7 +276,7 @@ class NovaInstanceService(object):
                 floating_ip_net_name = net_dict['label']
 
         if not floating_ip_net_name:
-            raise ValueError("Cannot find a network with ID {0}".format(floating_ip_net_name))
+            raise ValueError("Cannot find a network with ID {0}".format(floating_ip_net_uuid))
 
         floating_ip_obj = client.floating_ips.create(floating_ip_net_name)
         instance.add_floating_ip(floating_ip_obj)

@@ -26,7 +26,14 @@ from cloudshell.cp.openstack.command.command_result_parser import OpenStackShell
 
 from cloudshell.cp.openstack.domain.services.session_providers.os_session_provider \
     import OpenStackSessionProvider
+
 from cloudshell.cp.openstack.domain.services.cancellation_services.command_cancellation import CommandCancellationService
+from cloudshell.cp.openstack.domain.services.nova.nova_instance_service import NovaInstanceService
+from cloudshell.cp.openstack.domain.services.waiters.instance import InstanceWaiter
+from cloudshell.cp.openstack.domain.services.neutron.neutron_network_service import NeutronNetworkService
+from cloudshell.cp.openstack.domain.services.cp_validators.cp_validator import OpenStackCPValidator
+from cloudshell.cp.openstack.domain.services.connectivity.vlan_connectivity_service import VLANConnectivityService
+
 
 class OpenStackShell(object):
     """
@@ -39,16 +46,22 @@ class OpenStackShell(object):
         self.os_session_provider = OpenStackSessionProvider()
         self.cs_driver_helper = CloudshellDriverHelper()
 
-        # We start making user of service constructors here as
+        # We start making user of service constructors
         self.cancellation_service = CommandCancellationService()
+        self.instance_service_waiter = InstanceWaiter(cancellation_service=self.cancellation_service)
+        self.instance_service = NovaInstanceService(instance_waiter=self.instance_service_waiter)
+        self.network_service = NeutronNetworkService()
+        self.cp_validator_service = OpenStackCPValidator()
+        self.vlan_connectivity_service = VLANConnectivityService(instance_service=self.instance_service,
+                                                                 network_service=self.network_service)
 
-        self.power_operation = PowerOperation(cancellation_service=self.cancellation_service)
-        self.deploy_operation = DeployOperation(cancellation_service=self.cancellation_service)
-        self.connectivity_operation = ConnectivityOperation(cancellation_service=self.cancellation_service)
-        self.refresh_ip_operation = RefreshIPOperation(cancellation_service=self.cancellation_service)
-        self.hidden_operation = HiddenOperation(cancellation_service=self.cancellation_service)
-
-        self.autoload_operation = AutoLoadOperation()
+        self.autoload_operation = AutoLoadOperation(cp_validator_service=self.cp_validator_service)
+        self.connectivity_operation = ConnectivityOperation(connectivity_service=self.vlan_connectivity_service)
+        self.deploy_operation = DeployOperation(instance_service=self.instance_service,
+                                                cancellation_service=self.cancellation_service)
+        self.hidden_operation = HiddenOperation(instance_service=self.instance_service)
+        self.power_operation = PowerOperation(instance_service=self.instance_service)
+        self.refresh_ip_operation = RefreshIPOperation(instance_service=self.instance_service)
 
         self.model_parser = OpenStackShellModelParser()
         self.command_result_parser = OpenStackShellCommandResultParser()

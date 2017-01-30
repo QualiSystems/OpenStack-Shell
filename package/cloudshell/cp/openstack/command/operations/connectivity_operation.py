@@ -4,8 +4,12 @@ from cloudshell.cp.openstack.domain.services.connectivity.vlan_connectivity_serv
 class ConnectivityOperation(object):
     public_ip = "Public IP"
 
-    def __init__(self, cancellation_service):
-        self.connectivity_service = VLANConnectivityService(cancellation_service=cancellation_service)
+    def __init__(self, connectivity_service):
+        """
+
+        :param connectivity_service:
+        """
+        self.connectivity_service = connectivity_service
 
     def apply_connectivity(self, openstack_session, cp_resource_model, conn_request, logger):
         """

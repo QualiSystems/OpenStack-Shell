@@ -7,7 +7,9 @@ from cloudshell.cp.openstack.models.deploy_result_model import DeployResultModel
 class TestDeployOperation(TestCase):
     def setUp(self):
         self.cancellation_service = Mock()
-        self.deploy_operation = DeployOperation(cancellation_service=self.cancellation_service)
+        self.instance_service = Mock()
+        self.deploy_operation = DeployOperation(cancellation_service=self.cancellation_service,
+                                                instance_service=self.instance_service)
         self.deploy_operation.instance_service = Mock()
         self.deploy_operation.instance_waiter = Mock()
 

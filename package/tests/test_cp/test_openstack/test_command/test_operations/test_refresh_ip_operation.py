@@ -5,8 +5,8 @@ from cloudshell.cp.openstack.command.operations.refresh_ip_operation import Refr
 
 class TestRefreshIPOperation(TestCase):
     def setUp(self):
-        self.cancellation_service = Mock()
-        self.refresh_ip_operation = RefreshIPOperation(cancellation_service=self.cancellation_service)
+        self.instance_service = Mock()
+        self.refresh_ip_operation = RefreshIPOperation(instance_service=self.instance_service)
         self.refresh_ip_operation.instance_service = Mock()
 
         self.openstack_session = Mock()

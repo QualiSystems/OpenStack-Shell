@@ -1,13 +1,11 @@
-from cloudshell.cp.openstack.domain.services.nova.nova_instance_service import NovaInstanceService
-from cloudshell.cp.openstack.domain.services.waiters.instance import InstanceWaiter
 from cloudshell.shell.core.session.logging_session import LoggingSessionContext
+
 import traceback
 
 
 class PowerOperation(object):
-    def __init__(self, cancellation_service):
-        self.instance_waiter = InstanceWaiter(cancellation_service=cancellation_service)
-        self.instance_service = NovaInstanceService(self.instance_waiter)
+    def __init__(self, instance_service):
+        self.instance_service = instance_service
 
     def power_on(self, openstack_session, cloudshell_session,
                  deployed_app_resource, resource_fullname,
