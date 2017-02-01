@@ -295,7 +295,7 @@ class NovaInstanceService(object):
         client = novaclient.Client(self.API_VERSION, session=openstack_session)
 
         floating_ip_obj = client.floating_ips.find(ip=floating_ip)
-        if floating_ip_obj: # Returns a list - we ensure non-empty
-            floating_ip_obj = floating_ip_obj[0]
+        if floating_ip_obj: # we ensure non-empty
+            floating_ip_obj = floating_ip_obj
             instance.remove_floating_ip(floating_ip_obj)
             client.floating_ips.delete(floating_ip_obj.id)
