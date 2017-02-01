@@ -20,7 +20,7 @@ class NovaInstanceService(object):
         # can be called without a proper client object
 
     def create_instance(self, openstack_session, name, reservation,
-                        cp_resource_model, deploy_req_model, logger):
+                        cp_resource_model, deploy_req_model, cancellation_context, logger):
         """
         :param keystoneauth1.session.Session openstack_session: Keystone Session
         :param str name: Name of Instance
@@ -54,12 +54,13 @@ class NovaInstanceService(object):
         server_create_args = {'name': name, 'image':img_obj, 'flavor':flavor_obj, 'nics': [qnet_dict]}
 
         affinity_group_id = deploy_req_model.affinity_group_uuid
+
         if affinity_group_id:
             server_create_args.update({'scheduler_hints':{'group': affinity_group_id}})
 
         instance = client.servers.create(**server_create_args)
-
-        self.instance_waiter.wait(instance, state=self.instance_waiter.ACTIVE)
+        self.instance_waiter.wait(instance, state=self.instance_waiter.ACTIVE,
+                                  cancellation_context=cancellation_context, logger=logger)
         return instance
 
     def terminate_instance(self, openstack_session, instance_id, floating_ip, logger):
@@ -275,7 +276,7 @@ class NovaInstanceService(object):
                 floating_ip_net_name = net_dict['label']
 
         if not floating_ip_net_name:
-            raise ValueError("Cannot find a network with ID {0}".format(floating_ip_net_name))
+            raise ValueError("Cannot find a network with ID {0}".format(floating_ip_net_uuid))
 
         floating_ip_obj = client.floating_ips.create(floating_ip_net_name)
         instance.add_floating_ip(floating_ip_obj)
@@ -294,7 +295,7 @@ class NovaInstanceService(object):
         client = novaclient.Client(self.API_VERSION, session=openstack_session)
 
         floating_ip_obj = client.floating_ips.find(ip=floating_ip)
-        if floating_ip_obj: # Returns a list - we ensure non-empty
-            floating_ip_obj = floating_ip_obj[0]
+        if floating_ip_obj: # we ensure non-empty
+            floating_ip_obj = floating_ip_obj
             instance.remove_floating_ip(floating_ip_obj)
             client.floating_ips.delete(floating_ip_obj.id)

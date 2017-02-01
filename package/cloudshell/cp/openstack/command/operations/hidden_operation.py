@@ -1,11 +1,7 @@
-from cloudshell.cp.openstack.domain.services.nova.nova_instance_service import NovaInstanceService
-from cloudshell.cp.openstack.domain.services.waiters.instance import InstanceWaiter
-
 
 class HiddenOperation(object):
-    def __init__(self):
-        self.instance_waiter = InstanceWaiter()
-        self.instance_service = NovaInstanceService(self.instance_waiter)
+    def __init__(self, instance_service):
+        self.instance_service = instance_service
 
     def delete_instance(self, openstack_session, deployed_app_resource, floating_ip, logger):
         """

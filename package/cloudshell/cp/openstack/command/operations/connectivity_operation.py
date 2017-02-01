@@ -1,11 +1,15 @@
 from cloudshell.cp.openstack.domain.services.connectivity.vlan_connectivity_service import VLANConnectivityService
 
+
 class ConnectivityOperation(object):
     public_ip = "Public IP"
 
-    def __init__(self):
-        self.connectivity_service = VLANConnectivityService()
+    def __init__(self, connectivity_service):
+        """
 
+        :param connectivity_service:
+        """
+        self.connectivity_service = connectivity_service
 
     def apply_connectivity(self, openstack_session, cp_resource_model, conn_request, logger):
         """

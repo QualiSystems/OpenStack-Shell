@@ -124,8 +124,11 @@ class TestOpenStackShell(TestCase):
 
                     self.os_shell_api.deploy_operation.deploy = Mock(return_value=deploy_result)
 
+                    cancellation_context = Mock()
                     os_cloud_provider = OpenStackResourceModel()
-                    res = self.os_shell_api.deploy_instance_from_image(self.command_context, os_cloud_provider)
+                    res = self.os_shell_api.deploy_instance_from_image(command_context=self.command_context,
+                                                                       deploy_request=os_cloud_provider,
+                                                                       cancellation_context=cancellation_context)
 
                     decoded_res = jsonpickle.decode(res)
                     self.assertEqual(decoded_res['vm_name'], app_name)

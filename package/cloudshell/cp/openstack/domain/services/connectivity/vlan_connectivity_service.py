@@ -18,9 +18,14 @@ class VLANConnectivityService(object):
     """
     Class implementing Business Logic for VLAN Connectivity.
     """
-    def __init__(self):
-        self.network_service = NeutronNetworkService()
-        self.instance_service = NovaInstanceService(InstanceWaiter())
+    def __init__(self, instance_service, network_service):
+        """
+
+        :param NovaInstanceService instance_service:
+        :param NeutronNetworkService network_service:
+        """
+        self.network_service = network_service
+        self.instance_service = instance_service
         self.subnet_lock = Lock()
 
     def perform_apply_connectivity(self, openstack_session, cp_resource_model, connection_request, logger):

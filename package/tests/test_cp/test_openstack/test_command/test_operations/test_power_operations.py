@@ -3,9 +3,11 @@ from mock import Mock
 
 from cloudshell.cp.openstack.command.operations.power_operation import PowerOperation
 
+
 class TestPowerOperation(TestCase):
     def setUp(self):
-        self.power_operation = PowerOperation()
+        self.instance_service = Mock()
+        self.power_operation = PowerOperation(instance_service=self.instance_service)
         self.power_operation.instance_waiter = Mock()
         self.power_operation.instance_service = Mock()
         self.openstack_session = Mock()

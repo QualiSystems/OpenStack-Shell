@@ -1,7 +1,7 @@
 <Driver Description="This driver orchestrate all the command that will be executed on OpenStack" MainClass="driver.OpenStackShellDriver" Name="OpenStack Shell Driver" Version="0.0.16">
     <Layout>
         <Category Name="Deployment">
-            <Command Description="" DisplayName="Deploy From Image" Name="deploy_from_image" Tags="allow_unreserved" />
+            <Command Description="" DisplayName="Deploy From Image" EnableCancellation="true" Name="deploy_from_image" Tags="allow_unreserved" />
         </Category>
         <Category Name="Connectivity">
             <Command Description="" DisplayName="Refresh IP" EnableCancellation="true" Name="remote_refresh_ip" Tags="remote_connectivity,allow_shared" />

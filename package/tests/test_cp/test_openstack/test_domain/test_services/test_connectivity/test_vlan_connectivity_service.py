@@ -9,7 +9,10 @@ import jsonpickle
 
 class TestVlanConnectivityService(TestCase):
     def setUp(self):
-        self.connectivity_service = VLANConnectivityService()
+        self.instance_service = Mock()
+        self.network_service = Mock()
+        self.connectivity_service = VLANConnectivityService(instance_service=self.instance_service,
+                                                            network_service=self.network_service)
 
         self.os_session = Mock()
         self.mock_logger = Mock()

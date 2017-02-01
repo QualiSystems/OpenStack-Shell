@@ -6,7 +6,10 @@ from cloudshell.cp.openstack.models.deploy_result_model import DeployResultModel
 
 class TestDeployOperation(TestCase):
     def setUp(self):
-        self.deploy_operation = DeployOperation()
+        self.cancellation_service = Mock()
+        self.instance_service = Mock()
+        self.deploy_operation = DeployOperation(cancellation_service=self.cancellation_service,
+                                                instance_service=self.instance_service)
         self.deploy_operation.instance_service = Mock()
         self.deploy_operation.instance_waiter = Mock()
 
@@ -41,11 +44,14 @@ class TestDeployOperation(TestCase):
         test_deploy_req_model = Mock()
         test_deploy_req_model.cloud_provider = test_cloud_provider
 
+        mock_cancellation_context = Mock()
+
         test_result = self.deploy_operation.deploy(os_session=self.openstack_session,
                                                    name=test_name,
                                                    reservation=self.reservation,
                                                    cp_resource_model=self.cp_resource_model,
                                                    deploy_req_model=test_deploy_req_model,
+                                                   cancellation_context=mock_cancellation_context,
                                                    logger=self.mock_logger)
 
         self.assertEqual(test_result.vm_name, test_name)
