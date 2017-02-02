@@ -48,7 +48,8 @@ class InstanceWaiter(object):
 
         while instance.status != state:
             instance.get()
-            self.cancellation_service.check_if_cancelled(cancellation_context=cancellation_context)
+            if cancellation_context is not None:
+                self.cancellation_service.check_if_cancelled(cancellation_context=cancellation_context)
             time.sleep(self.delay)
 
         return instance

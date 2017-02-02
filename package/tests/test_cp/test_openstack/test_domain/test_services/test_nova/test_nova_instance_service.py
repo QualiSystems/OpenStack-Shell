@@ -150,7 +150,6 @@ class TestNovaInstanceService(TestCase):
                                                                       cancellation_context=mock_cancellation_context,
                                                                       logger=self.mock_logger)
 
-
     def test_instance_terminate_openstack_session_none(self):
         with self.assertRaises(ValueError) as context:
             self.instance_service.terminate_instance(openstack_session=None,
@@ -193,6 +192,10 @@ class TestNovaInstanceService(TestCase):
                                                                                instance_id=test_instance_id,
                                                                                logger=self.mock_logger,
                                                                                client=mock_client2)
+        self.instance_service.instance_waiter.wait.assert_called_with(instance=mock_instance,
+                                                                      state=self.instance_service.instance_waiter.SHUTOFF,
+                                                                      cancellation_context=None,
+                                                                      logger=self.mock_logger)
         self.assertEqual(True, mock_instance.stop.called)
 
     def test_instance_power_on_success(self):
@@ -210,6 +213,10 @@ class TestNovaInstanceService(TestCase):
                                                                                instance_id=test_instance_id,
                                                                                logger=self.mock_logger,
                                                                                client=mock_client2)
+        self.instance_service.instance_waiter.wait.assert_called_with(instance=mock_instance,
+                                                                      state=self.instance_service.instance_waiter.ACTIVE,
+                                                                      cancellation_context=None,
+                                                                      logger=self.mock_logger)
         self.assertEqual(True, mock_instance.start.called)
 
     def test_instance_power_on_no_instance(self):
