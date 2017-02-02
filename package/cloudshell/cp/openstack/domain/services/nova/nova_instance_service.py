@@ -113,7 +113,8 @@ class NovaInstanceService(object):
 
             if instance.status != self.instance_waiter.ACTIVE:
                 instance.start()
-                self.instance_waiter.wait(instance, self.instance_waiter.ACTIVE)
+                self.instance_waiter.wait(instance=instance, state=self.instance_waiter.ACTIVE,
+                                          cancellation_context=None, logger=logger)
 
     def instance_power_off(self, openstack_session, instance_id, logger):
         """
@@ -136,7 +137,8 @@ class NovaInstanceService(object):
         else:
             if instance.status != self.instance_waiter.SHUTOFF:
                 instance.stop()
-                self.instance_waiter.wait(instance, self.instance_waiter.SHUTOFF)
+                self.instance_waiter.wait(instance=instance, state=self.instance_waiter.SHUTOFF,
+                                          cancellation_context=None, logger=logger)
 
     def get_instance_mgmt_network_name(self, instance, openstack_session, cp_resource_model):
         """
