@@ -4,42 +4,36 @@
     <AttributeInfo DefaultValue="" Description="" IsReadOnly="false" Name="Generic Input" Type="String">
       <Rules/>
     </AttributeInfo>
-    <!-- 1 -->
     <AttributeInfo DefaultValue="http://controller:5000/v3" Description="Public Endpoint of the Keystone Controller URL for the OpenStack deployment. Typically this will be of the form http://controler-ip:5000/v3" IsReadOnly="false" Name="Controller URL" Type="String">
       <Rules>
         <Rule Name="Configuration" />
         <Rule Name="Setting" />
       </Rules>
     </AttributeInfo>
-    <!-- 2 -->
     <AttributeInfo DefaultValue="default" Description="OpenStack domain used for authentication." IsReadOnly="false" Name="OpenStack Domain Name" Type="String">
       <Rules>
         <Rule Name="Configuration" />
         <Rule Name="Setting" />
       </Rules>
     </AttributeInfo>
-    <!-- 3 -->
     <AttributeInfo DefaultValue="" Description="Project name (tenant name) inside the OpenStack domain for which the deployment will be done." IsReadOnly="false" Name="OpenStack Project Name" Type="String">
       <Rules>
         <Rule Name="Configuration" />
         <Rule Name="Setting" />
       </Rules>
     </AttributeInfo>
-    <!-- 4 -->
      <AttributeInfo DefaultValue="" Description="In a multi-region deployment name of the region where resources will be deployed. Leave blank for single region." IsReadOnly="false" Name="OpenStack Region" Type="String">
       <Rules>
         <Rule Name="Configuration" />
         <Rule Name="Setting" />
       </Rules>
     </AttributeInfo>
-    <!-- 5 -->
     <AttributeInfo DefaultValue="" Description="OpenStack User Name" IsReadOnly="false" Name="OpenStack User Name" Type="String">
       <Rules>
         <Rule Name="Configuration" />
         <Rule Name="Setting" />
       </Rules>
     </AttributeInfo>
-    <!-- 6 -->
     <AttributeInfo DefaultValue="" Description="" IsReadOnly="false" Name="OpenStack User Password" Type="Password">
       <Rules>
         <Rule Name="Configuration" />
@@ -47,7 +41,6 @@
       </Rules>
     </AttributeInfo>
 
-    <!-- 7 -->
     <AttributeInfo DefaultValue="" Description="Network ID of Quali Management Network." IsReadOnly="false" Name="Quali Management Network UUID" Type="String">
       <Rules>
         <Rule Name="Configuration" />
@@ -61,14 +54,12 @@
         <Rule Name="Setting" />
       </Rules>
     </AttributeInfo>
-
     <AttributeInfo DefaultValue="" Description="Provider Network Interface Name." IsReadOnly="false" Name="Provider Network Interface" Type="String">
       <Rules>
         <Rule Name="Configuration" />
         <Rule Name="Setting" />
       </Rules>
     </AttributeInfo>
-    <!-- 12 -->
     <AttributeInfo DefaultValue="" Description="Reserved Networks: A Comma separated List of CIDRs that are not to be used by the Subnet CIDR during App connectivity" IsReadOnly="false" Name="Reserved Networks" Type="String">
       <Rules>
         <Rule Name="Configuration" />
@@ -84,35 +75,24 @@
     </AttributeInfo>
 
     <!-- attributes used in deployed app -->
-    <!-- 1 -->
-    <AttributeInfo DefaultValue="" Description="Cloud Provider" IsReadOnly="false" Name="Cloud Provider" Type="String">
-      <Rules>
-        <Rule Name="Configuration" />
-        <Rule Name="Setting" />
-      </Rules>
-    </AttributeInfo>
-    <!-- 2 -->
     <AttributeInfo DefaultValue="" Description="Availability Zone." IsReadOnly="false" Name="Availability Zone" Type="String">
       <Rules>
         <Rule Name="Configuration" />
         <Rule Name="Setting" />
       </Rules>
     </AttributeInfo>
-    <!-- 3 -->
     <AttributeInfo DefaultValue="" Description="UUID of the image to be used for deployment. Check Horizon UI for Image ID" IsReadOnly="false" Name="Image UUID" Type="String">
       <Rules>
         <Rule Name="Configuration" />
         <Rule Name="Setting" />
       </Rules>
     </AttributeInfo>
-    <!-- 4 -->
     <AttributeInfo DefaultValue="" Description="Flavor of the compute Instance. Check Horizon UI for supported flavors" IsReadOnly="false" Name="Instance Flavor" Type="String">
       <Rules>
         <Rule Name="Configuration" />
         <Rule Name="Setting" />
       </Rules>
     </AttributeInfo>
-    <!-- 5 -->
     <AttributeInfo DefaultValue="false" Description="Should the Floating IP be Added to the instance." IsReadOnly="false" Name="Add Floating IP" Type="Boolean">
       <Rules>
         <Rule Name="Configuration" />
@@ -120,14 +100,12 @@
       </Rules>
     </AttributeInfo>
 
-    <!-- 5 -->
     <AttributeInfo DefaultValue="" Description="Specifies which Affinity Group this App belongs to. Right now supported affinity type is 'affinity'." IsReadOnly="false" Name="Affinity Group UUID" Type="String">
       <Rules>
         <Rule Name="Configuration" />
         <Rule Name="Setting" />
       </Rules>
     </AttributeInfo>
-    <!-- 8 -->
     <AttributeInfo DefaultValue="false" Description="Enables the automatic execution of the Autoload command during reservation Setup.." IsReadOnly="false" Name="Autoload"  Type="Boolean">
         <Rules>
             <Rule Name="Configuration" />
@@ -263,9 +241,6 @@
       <Models>
         <ResourceModel Description="" ImagePath="OpenStack_VM_Icon.png" Name="OpenStack Deploy From Glance Image" SupportsConcurrentCommands="false">
           <AttachedAttributes>
-            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Cloud Provider" UserInput="true">
-              <AllowedValues />
-            </AttachedAttribute>
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Availability Zone" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
