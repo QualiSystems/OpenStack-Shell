@@ -126,7 +126,7 @@ class OpenStackCPValidator(object):
         for reserved_net in reserved_networks.split(","):
             if len(reserved_net) == 0:
                 continue
-            ipaddress.ip_network(unicode(reserved_net))
+            ipaddress.ip_network(unicode(reserved_net.strip()))
 
         return True
 

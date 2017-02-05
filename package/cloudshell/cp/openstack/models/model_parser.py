@@ -54,6 +54,8 @@ class OpenStackShellModelParser(object):
         deploy_resource_model = DeployOSNovaImageInstanceResourceModel()
         if 'Cloud Provider' in attrs:
             deploy_resource_model.cloud_provider = attrs['Cloud Provider']
+        else:
+            deploy_resource_model.cloud_provider = None
         deploy_resource_model.cp_avail_zone = attrs['Availability Zone']
         deploy_resource_model.img_uuid = attrs['Image UUID']
         deploy_resource_model.instance_flavor = attrs['Instance Flavor']
