@@ -10,6 +10,7 @@ from cloudshell.cp.openstack.models.deploy_result_model import DeployResultModel
 
 import traceback
 
+
 class DeployOperation(object):
     def __init__(self, instance_service, cancellation_service):
         """
@@ -28,7 +29,7 @@ class DeployOperation(object):
         :param ReservationModel reservation:
         :param DeployDataHolder deploy_req_model:
         :param OpenStackResourceModel cp_resource_model:
-        :param cancellation_context:
+        :param cloudshell.shell.core.context.CancellationContext cancellation_context:
         :param LoggingSessionContext logger:
         :rtype DeployResultModel:
         """
@@ -38,21 +39,21 @@ class DeployOperation(object):
         floating_ip = ''
         try:
             instance = self.instance_service.create_instance(openstack_session=os_session,
-                                                         name=name,
-                                                         reservation=reservation,
-                                                         cp_resource_model=cp_resource_model,
-                                                         deploy_req_model=deploy_req_model,
-                                                         cancellation_context=cancellation_context,
-                                                         logger=logger)
+                                                             name=name,
+                                                             reservation=reservation,
+                                                             cp_resource_model=cp_resource_model,
+                                                             deploy_req_model=deploy_req_model,
+                                                             cancellation_context=cancellation_context,
+                                                             logger=logger)
 
             # Actually cannot come here and instance is None. If the previous statement raised an Exception,
             # we'd deal with it in the except cause.
             if instance is None:
                 raise ValueError("Create Instance Returned None")
 
-            logger.info("Deploy Operation Done. Instance Created: {0}:{1}".format(instance.name,instance.id))
+            logger.info("Deploy Operation Done. Instance Created: {0}:{1}".format(instance.name, instance.id))
 
-        # Get Private Network
+            # Get Private Network
             private_network_name = self.instance_service.get_instance_mgmt_network_name(instance=instance,
                                                                                         openstack_session=os_session,
                                                                                         cp_resource_model=cp_resource_model)
@@ -60,7 +61,7 @@ class DeployOperation(object):
                 raise ValueError("Management network with ID for instance not found". \
                                  format(cp_resource_model.qs_mgmt_os_net_id))
 
-        # Assign floating IP
+            # Assign floating IP
             if deploy_req_model.add_floating_ip:
                 if deploy_req_model.external_network_uuid:
                     floating_ip_net_uuid = deploy_req_model.external_network_uuid
@@ -98,7 +99,6 @@ class DeployOperation(object):
                                                          instance_id=instance_id,
                                                          floating_ip=floating_ip,
                                                          logger=logger)
-
 
             # Re-raise for the UI
             raise

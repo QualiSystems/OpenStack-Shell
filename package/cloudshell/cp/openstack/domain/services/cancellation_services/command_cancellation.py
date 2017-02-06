@@ -12,7 +12,7 @@ class CommandCancellationService(object ):
         """
         Check if command was cancelled from cloudshell
 
-        :param cancellation_context:
+        :param cloudshell.shell.core.context.CancellationContext cancellation_context:
         :return:
         """
 
