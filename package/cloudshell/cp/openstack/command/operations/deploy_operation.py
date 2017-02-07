@@ -37,6 +37,9 @@ class DeployOperation(object):
         instance = None
         floating_ip = ''
         try:
+            # Look for right at the beginning -- ???    
+            self.cancellation_service.check_if_cancelled(cancellation_context=cancellation_context)
+
             instance = self.instance_service.create_instance(openstack_session=os_session,
                                                          name=name,
                                                          reservation=reservation,
