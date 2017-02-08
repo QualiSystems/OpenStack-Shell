@@ -84,11 +84,14 @@ class OpenStackCPValidator(object):
 
         return True
 
-    def validate_external_network(self, net_client, external_network_id, logger):
+    def validate_floating_ip_subnet(self, net_client, floating_ip_subnet_id, logger):
 
-        if len(external_network_id) == 0:
-            raise ValueError("External Network UUID Cannot be Empty")
+        if len(floating_ip_subnet_id) == 0:
+            raise ValueError("Floating IP Subnet UUID Cannot be Empty")
 
+        subnet = net_client.show_subnet(floating_ip_subnet_id)
+
+        external_network_id = subnet['subnet']['network_id']
         external_network = self._get_network_from_id(net_client, external_network_id)
 
         if not external_network['router:external']:
@@ -169,7 +172,7 @@ class OpenStackCPValidator(object):
 
         self.validate_mgmt_network(net_client, cp_resource_model.qs_mgmt_os_net_uuid, logger)
 
-        self.validate_external_network(net_client, cp_resource_model.external_network_uuid, logger)
+        self.validate_floating_ip_subnet(net_client, cp_resource_model.floating_ip_subnet_uuid, logger)
 
         self.validate_vlan_type(net_client=net_client,
                                 vlan_type=cp_resource_model.vlan_type,
