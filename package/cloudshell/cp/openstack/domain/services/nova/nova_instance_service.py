@@ -22,6 +22,7 @@ class NovaInstanceService(object):
     def create_instance(self, openstack_session, name, reservation,
                         cp_resource_model, deploy_req_model, cancellation_context, logger):
         """
+        :param cloudshell.shell.core.context.CancellationContext cancellation_context:
         :param keystoneauth1.session.Session openstack_session: Keystone Session
         :param str name: Name of Instance
         :param ReservationModel reservation: Reservation Model

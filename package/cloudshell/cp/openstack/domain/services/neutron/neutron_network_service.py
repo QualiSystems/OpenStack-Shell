@@ -42,9 +42,13 @@ class NeutronNetworkService(object):
         try:
             new_net = client.create_network({'network': create_nw_json})
             new_net = new_net['network']
-        except NetCreateConflict:
-            new_net = client.list_networks(**{'provider:segmentation_id':segmentation_id})
-            new_net = new_net['networks'][0]
+        except NetCreateConflict as e:
+            logger.error(traceback.format_exc())
+            networks_res = client.list_networks(**{'provider:segmentation_id': segmentation_id})
+            networks = networks_res['networks']
+            if not networks:
+                raise
+            new_net = networks_res['networks'][0]
 
         return new_net
 
