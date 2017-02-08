@@ -63,12 +63,14 @@ class NovaInstanceService(object):
                                   cancellation_context=cancellation_context, logger=logger)
         return instance
 
-    def terminate_instance(self, openstack_session, instance_id, floating_ip, logger):
+    # FIXME: All the instance methods except "get_instance_from_instance_id" should use instance as a parameter and not
+    # instance sometimes and instance_id sometimes. And when we do that - 'stop passing openstack_session' down all the way
+
+    def terminate_instance(self, openstack_session, instance_id, logger):
         """
         :param keystoneauth1.session.Session openstack_session:
         :param str instance_id: Instance ID to be terminated
         :param LoggingSessionContext logger:
-        :param str floating_ip:
         :rtype Boolean:
         """
         logger.info("Deleting instance with instance ID {0}".format(instance_id))
@@ -84,12 +86,7 @@ class NovaInstanceService(object):
         if instance is None:
             logger.info("Instance with Instance ID {0} does not exist. Already Deleted?".format(instance_id))
         else:
-            if floating_ip:
-                self.detach_and_delete_floating_ip(openstack_session=openstack_session,
-                                                   instance=instance,
-                                                   floating_ip=floating_ip)
             client.servers.delete(instance)
-
 
     def instance_power_on(self, openstack_session, instance_id, logger):
         """
@@ -140,6 +137,7 @@ class NovaInstanceService(object):
                 self.instance_waiter.wait(instance=instance, state=self.instance_waiter.SHUTOFF,
                                           cancellation_context=None, logger=logger)
 
+    # FIXME : This method should be part of network service. There is nothing instance specific here
     def get_instance_mgmt_network_name(self, instance, openstack_session, cp_resource_model):
         """
 
@@ -258,34 +256,25 @@ class NovaInstanceService(object):
             logger.error(traceback.format_exc())
             return False
 
-    def assign_floating_ip(self, instance, openstack_session, cp_resource_model, floating_ip_net_uuid, logger):
+    def attach_floating_ip(self, openstack_session, instance, floating_ip, logger):
         """
 
         :param novaclient.Client.servers.Server instance:,
         :param keystoneauth1.session.Session openstack_session:
         :param OpenStackResourceModel cp_resource_model:
-        :param str floating_ip_net_uuid:
+        :param str floating_ip:
         :param LoggingSessionContext logger:
         :return str: Floating IP as a string.
         """
 
-        client = novaclient.Client(self.API_VERSION, session=openstack_session)
+        if not floating_ip:
+            logger.info("Empty Floating IP doing nothing")
+            return False
 
-        floating_ip_net_name = ''
-        for net in client.networks.list():
-            net_dict = net.to_dict()
-            if net_dict['id'] == floating_ip_net_uuid:
-                floating_ip_net_name = net_dict['label']
+        instance.add_floating_ip(floating_ip)
+        return True
 
-        if not floating_ip_net_name:
-            raise ValueError("Cannot find a network with ID {0}".format(floating_ip_net_uuid))
-
-        floating_ip_obj = client.floating_ips.create(floating_ip_net_name)
-        instance.add_floating_ip(floating_ip_obj)
-
-        return floating_ip_obj.ip
-
-    def detach_and_delete_floating_ip(self, openstack_session, instance, floating_ip):
+    def detach_floating_ip(self, openstack_session, instance, floating_ip, logger):
         """
 
         :param keystoneauth1.session.Session openstack_session:
@@ -294,10 +283,10 @@ class NovaInstanceService(object):
         :return: None
         """
 
+        if not floating_ip:
+            return False
+
         client = novaclient.Client(self.API_VERSION, session=openstack_session)
 
-        floating_ip_obj = client.floating_ips.find(ip=floating_ip)
-        if floating_ip_obj: # we ensure non-empty
-            floating_ip_obj = floating_ip_obj
-            instance.remove_floating_ip(floating_ip_obj)
-            client.floating_ips.delete(floating_ip_obj.id)
+        instance.remove_floating_ip(floating_ip)
+        return True

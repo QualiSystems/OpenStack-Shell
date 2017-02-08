@@ -100,3 +100,83 @@ class TestNeutronNetworkService(TestCase):
                                                                       net_id=test_net_id,
                                                                       logger=self.mock_logger)
         self.assertTrue(context)
+
+    def test_create_floating_ip_success(self):
+
+        mock_client = Mock()
+        test_neutron_network_service.neutron_client.Client = Mock(return_value=mock_client)
+
+        test_network_id = 'test_network_id'
+        test_subnet_id = 'test_subnet_id'
+        test_result_subnet_dict = {'subnets': [{'network_id':test_network_id}]}
+
+        mock_client.list_subnets = Mock(return_value=test_result_subnet_dict)
+
+        test_floating_ip = '1.2.3.4'
+        test_floating_ip_dict = {'floatingip':test_floating_ip}
+
+        mock_client.create_floatingip = Mock(return_value=test_floating_ip_dict)
+
+        result = self.network_service.create_floating_ip(openstack_session=self.openstack_session,
+                                                         floating_ip_subnet_id=test_subnet_id,
+                                                         logger=self.mock_logger)
+
+        floating_ip_call_dict = {'floatingip': {'floating_network_id':test_network_id, 'subnet_id':test_subnet_id}}
+        mock_client.create_floatingip.assert_called_with(floating_ip_call_dict)
+        self.assertEqual(result, test_floating_ip)
+
+    def test_create_floating_ip_returns_None(self):
+
+        mock_client = Mock()
+        test_neutron_network_service.neutron_client.Client = Mock(return_value=mock_client)
+
+        test_network_id = 'test_network_id'
+        test_subnet_id = 'test_subnet_id'
+        test_result_subnet_dict = {'subnets': [{'network_id':test_network_id}]}
+
+        mock_client.list_subnets = Mock(return_value=test_result_subnet_dict)
+
+        mock_client.create_floatingip = Mock(return_value={})
+
+        result = self.network_service.create_floating_ip(openstack_session=self.openstack_session,
+                                                         floating_ip_subnet_id=test_subnet_id,
+                                                         logger=self.mock_logger)
+
+        floating_ip_call_dict = {'floatingip': {'floating_network_id':test_network_id, 'subnet_id':test_subnet_id}}
+        mock_client.create_floatingip.assert_called_with(floating_ip_call_dict)
+        self.assertEqual(result, None)
+
+    def test_delete_floating_ip_success(self):
+
+        mock_client = Mock()
+        test_neutron_network_service.neutron_client.Client = Mock(return_value=mock_client)
+
+        test_floating_ip = '1.2.3.4'
+        test_floating_ip_id = 'test_floating_id'
+
+        mock_list_result_dict = {'floatingips': [{'id': test_floating_ip_id}]}
+        mock_client.list_floatingips = Mock(return_value=mock_list_result_dict)
+
+        mock_client.delete_floatingip = Mock()
+
+        result = self.network_service.delete_floating_ip(openstack_session=self.openstack_session,
+                                                         floating_ip=test_floating_ip,
+                                                         logger=self.mock_logger)
+
+        mock_client.delete_floatingip.assert_called_with(test_floating_ip_id)
+        self.assertTrue(result)
+
+    def test_delete_floating_ip_false(self):
+
+        mock_client = Mock()
+        test_neutron_network_service.neutron_client.Client = Mock(return_value=mock_client)
+
+        test_floating_ip = ''
+
+        mock_client.delete_floatingip = Mock()
+
+        result = self.network_service.delete_floating_ip(openstack_session=self.openstack_session,
+                                                         floating_ip=test_floating_ip,
+                                                         logger=self.mock_logger)
+        mock_client.delete_floatingip.assert_not_called()
+        self.assertFalse(result)

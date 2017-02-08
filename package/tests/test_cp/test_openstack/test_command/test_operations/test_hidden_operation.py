@@ -8,7 +8,9 @@ class TestHiddenOperation(TestCase):
 
     def setUp(self):
         self.instance_service=Mock()
-        self.hidden_operation = HiddenOperation(instance_service=self.instance_service)
+        self.network_service = Mock()
+        self.hidden_operation = HiddenOperation(instance_service=self.instance_service,
+                                                network_service=self.network_service)
         self.hidden_operation.instance_service = Mock()
         self.hidden_operation.instance_waiter = Mock()
 

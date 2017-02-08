@@ -24,7 +24,7 @@ class TestOpenStackShellModelParser(TestCase):
         test_resource.attributes['Reserved Networks'] = '172.22.0.0/16'
         test_resource.attributes['Vlan Type'] = 'vlan'
         test_resource.attributes['Provider Network Interface'] = 'public'
-        test_resource.attributes['External Network UUID'] = 'external_network_uuid'
+        test_resource.attributes['Floating IP Subnet UUID'] = 'floating_ip_subnet_uuid'
         result = self.tested_class.get_resource_model_from_context(test_resource)
 
         self.assertEqual(result.controller_url, 'test url')
@@ -37,7 +37,7 @@ class TestOpenStackShellModelParser(TestCase):
         self.assertEqual(result.reserved_networks, '172.22.0.0/16')
         self.assertEqual(result.vlan_type, 'vlan')
         self.assertEqual(result.provider_network_interface, 'public')
-        self.assertEqual(result.external_network_uuid, 'external_network_uuid')
+        self.assertEqual(result.floating_ip_subnet_uuid, 'floating_ip_subnet_uuid')
         
     @mock.patch("cloudshell.cp.openstack.models.model_parser.jsonpickle")
     @mock.patch("cloudshell.cp.openstack.models.model_parser.DeployOSNovaImageInstanceResourceModel")
@@ -63,7 +63,7 @@ class TestOpenStackShellModelParser(TestCase):
         self.assertEqual(deploy_res_model.add_floating_ip, deploy_data_holder.image.add_floating_ip)
         self.assertEqual(deploy_res_model.autoload, deploy_data_holder.image.autoload)
         self.assertEqual(deploy_res_model.affinity_group_uuid, deploy_data_holder.image.affinity_group_uuid)
-        self.assertEqual(deploy_res_model.external_network_uuid, deploy_data_holder.image.external_network_uuid)
+        self.assertEqual(deploy_res_model.floating_ip_subnet_uuid, deploy_data_holder.image.floating_ip_subnet_uuid)
 
     def test_parse_boolean_return_true(self):
         """Check that method correctly parses True values"""
@@ -106,7 +106,7 @@ class TestOpenStackShellModelParser(TestCase):
         test_resource.attributes['Instance Flavor'] = test_instance_flavor = 'test_instance_flavor'
         test_resource.attributes['Add Floating IP'] = 'True'
         test_resource.attributes['Autoload'] = '1'
-        test_resource.attributes['External Network UUID'] = external_network_uuid = 'external_network_uuid'
+        test_resource.attributes['Floating IP Subnet UUID'] = floating_ip_subnet_uuid = 'floating_ip_subnet_uuid'
         test_resource.attributes['Affinity Group UUID'] = affinity_group_uuid = 'affinity_group_uuid'
 
         deploy_resource_model = self.tested_class.get_deploy_resource_model_from_context_resource(test_resource)
@@ -118,7 +118,7 @@ class TestOpenStackShellModelParser(TestCase):
         self.assertEqual(deploy_resource_model.instance_flavor, test_instance_flavor)
         self.assertEqual(deploy_resource_model.add_floating_ip, parse_boolean_result)
         self.assertEqual(deploy_resource_model.autoload, parse_boolean_result)
-        self.assertEqual(deploy_resource_model.external_network_uuid, external_network_uuid)
+        self.assertEqual(deploy_resource_model.floating_ip_subnet_uuid, floating_ip_subnet_uuid)
         self.assertEqual(deploy_resource_model.affinity_group_uuid, affinity_group_uuid)
 
     @mock.patch("cloudshell.cp.openstack.models.model_parser.OpenStackShellModelParser")
@@ -137,7 +137,7 @@ class TestOpenStackShellModelParser(TestCase):
         test_resource.attributes['Instance Flavor'] = test_instance_flavor = 'test_instance_flavor'
         test_resource.attributes['Add Floating IP'] = 'True'
         test_resource.attributes['Autoload'] = '1'
-        test_resource.attributes['External Network UUID'] = external_network_uuid = 'external_network_uuid'
+        test_resource.attributes['Floating IP Subnet UUID'] = floating_ip_subnet_uuid = 'floating_ip_subnet_uuid'
         test_resource.attributes['Affinity Group UUID'] = affinity_group_uuid = 'affinity_group_uuid'
 
         deploy_resource_model = self.tested_class.get_deploy_resource_model_from_context_resource(test_resource)
@@ -148,5 +148,5 @@ class TestOpenStackShellModelParser(TestCase):
         self.assertEqual(deploy_resource_model.instance_flavor, test_instance_flavor)
         self.assertEqual(deploy_resource_model.add_floating_ip, parse_boolean_result)
         self.assertEqual(deploy_resource_model.autoload, parse_boolean_result)
-        self.assertEqual(deploy_resource_model.external_network_uuid, external_network_uuid)
+        self.assertEqual(deploy_resource_model.floating_ip_subnet_uuid, floating_ip_subnet_uuid)
         self.assertEqual(deploy_resource_model.affinity_group_uuid, affinity_group_uuid)

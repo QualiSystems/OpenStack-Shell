@@ -201,3 +201,50 @@ class NeutronNetworkService(object):
             return None
 
         return cidr
+
+    def create_floating_ip(self, openstack_session, floating_ip_subnet_id, logger):
+        """
+
+        :param openstack_session:
+        :param floating_ip_sunbet_id:
+        :param logger:
+        :return:
+        """
+        client = neutron_client.Client(session=openstack_session)
+
+        # make sure subnet already exists
+        subnet_dict = client.list_subnets(id=floating_ip_subnet_id)
+        if not subnet_dict['subnets']:
+            return None
+
+        subnet = subnet_dict['subnets'][0]
+        floating_network_id = subnet['network_id']
+
+        floating_ip_create_dict = {'floatingip': {'floating_network_id': floating_network_id,
+                                                  'subnet_id': floating_ip_subnet_id}}
+        floating_ip = client.create_floatingip(floating_ip_create_dict)
+
+        if floating_ip:
+            return floating_ip['floatingip']
+        else:
+            return None
+
+    def delete_floating_ip(self, openstack_session, floating_ip, logger):
+        """
+
+        :param openstack_session:
+        :param floating_ip:
+        :param logger:
+        :return:
+        """
+        if not floating_ip:
+            return False
+
+        client = neutron_client.Client(session=openstack_session)
+
+        floating_ips_dict = client.list_floatingips(floating_ip_address=floating_ip)
+        floating_ip_id = floating_ips_dict['floatingips'][0]['id']
+
+        client.delete_floatingip(floating_ip_id)
+
+        return True

@@ -8,8 +8,10 @@ class TestDeployOperation(TestCase):
     def setUp(self):
         self.cancellation_service = Mock()
         self.instance_service = Mock()
+        self.network_service = Mock()
         self.deploy_operation = DeployOperation(cancellation_service=self.cancellation_service,
-                                                instance_service=self.instance_service)
+                                                instance_service=self.instance_service,
+                                                network_service=self.instance_service)
         self.deploy_operation.instance_service = Mock()
         self.deploy_operation.instance_waiter = Mock()
 
@@ -40,6 +42,11 @@ class TestDeployOperation(TestCase):
         test_instance.id = test_id
 
         self.deploy_operation.instance_service.create_instance = Mock(return_value=test_instance)
+
+        mock_floating_ip_str = '1.2.3.4'
+        mock_floating_ip_dict = {'floating_ip_address': mock_floating_ip_str}
+        self.deploy_operation.network_service.create_floating_ip = Mock(return_value=mock_floating_ip_dict)
+
 
         test_deploy_req_model = Mock()
         test_deploy_req_model.cloud_provider = test_cloud_provider
