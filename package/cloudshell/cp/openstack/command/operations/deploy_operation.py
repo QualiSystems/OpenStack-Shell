@@ -10,6 +10,7 @@ from cloudshell.cp.openstack.models.deploy_result_model import DeployResultModel
 
 import traceback
 
+
 class DeployOperation(object):
     def __init__(self, instance_service, network_service, cancellation_service):
         """
@@ -30,7 +31,7 @@ class DeployOperation(object):
         :param ReservationModel reservation:
         :param DeployDataHolder deploy_req_model:
         :param OpenStackResourceModel cp_resource_model:
-        :param cancellation_context:
+        :param cloudshell.shell.core.context.CancellationContext cancellation_context:
         :param LoggingSessionContext logger:
         :rtype DeployResultModel:
         """
@@ -40,20 +41,23 @@ class DeployOperation(object):
         floating_ip_dict = None
         floating_ip_str = ''
         try:
+            # Look for right at the beginning -- ???    
+            self.cancellation_service.check_if_cancelled(cancellation_context=cancellation_context)
+
             instance = self.instance_service.create_instance(openstack_session=os_session,
-                                                         name=name,
-                                                         reservation=reservation,
-                                                         cp_resource_model=cp_resource_model,
-                                                         deploy_req_model=deploy_req_model,
-                                                         cancellation_context=cancellation_context,
-                                                         logger=logger)
+                                                             name=name,
+                                                             reservation=reservation,
+                                                             cp_resource_model=cp_resource_model,
+                                                             deploy_req_model=deploy_req_model,
+                                                             cancellation_context=cancellation_context,
+                                                             logger=logger)
 
             # Actually cannot come here and instance is None. If the previous statement raised an Exception,
             # we'd deal with it in the except cause.
             if instance is None:
                 raise ValueError("Create Instance Returned None")
 
-            logger.info("Deploy Operation Done. Instance Created: {0}:{1}".format(instance.name,instance.id))
+            logger.info("Deploy Operation Done. Instance Created: {0}:{1}".format(instance.name, instance.id))
 
             # Get Private Network
             private_network_name = self.instance_service.get_instance_mgmt_network_name(instance=instance,

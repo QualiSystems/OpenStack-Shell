@@ -136,7 +136,7 @@ class OpenStackShell(object):
         Nova instance
         :param cloudshell.shell.core.context.ResourceCommandContext command_context:
         :param DeployDataHolder deploy_request: Specification of for the instance to be deployed
-        :param cancellation_context:
+        :param cloudshell.shell.core.context.CancellationContext cancellation_context:
         :rtype str:
         """
 

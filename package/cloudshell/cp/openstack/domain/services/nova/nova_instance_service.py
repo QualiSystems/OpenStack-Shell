@@ -4,6 +4,7 @@ Implements InstanceService class, that allows one to
 """
 from novaclient import client as novaclient
 from cloudshell.cp.openstack.common.driver_helper import CloudshellDriverHelper
+from cloudshell.cp.openstack.domain.services.cancellation_services.command_cancellation import CommandCancellationException
 
 import traceback
 import jsonpickle
@@ -22,6 +23,7 @@ class NovaInstanceService(object):
     def create_instance(self, openstack_session, name, reservation,
                         cp_resource_model, deploy_req_model, cancellation_context, logger):
         """
+        :param cloudshell.shell.core.context.CancellationContext cancellation_context:
         :param keystoneauth1.session.Session openstack_session: Keystone Session
         :param str name: Name of Instance
         :param ReservationModel reservation: Reservation Model
@@ -59,8 +61,15 @@ class NovaInstanceService(object):
             server_create_args.update({'scheduler_hints':{'group': affinity_group_id}})
 
         instance = client.servers.create(**server_create_args)
-        self.instance_waiter.wait(instance, state=self.instance_waiter.ACTIVE,
-                                  cancellation_context=cancellation_context, logger=logger)
+
+        try:
+            self.instance_waiter.wait(instance, state=self.instance_waiter.ACTIVE,
+                                      cancellation_context=cancellation_context, logger=logger)
+        except CommandCancellationException:
+            logger.info("Command cancellation Received while waiting for instance {}".format(instance.id))
+            client.servers.delete(instance)
+            raise
+
         return instance
 
     # FIXME: All the instance methods except "get_instance_from_instance_id" should use instance as a parameter and not
