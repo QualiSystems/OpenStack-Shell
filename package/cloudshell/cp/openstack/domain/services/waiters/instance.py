@@ -34,12 +34,9 @@ class InstanceWaiter(object):
         """
         Waits till cancelled.
 
-        :param instance: Instance to be waited on
-        :type instance: novaclient.v2.servers.Server
-        :param state:
-        :type state: str
-        :param cancellation_context:
-        :type cancellation_context:
+        :param novaclient.v2.servers.Server instance: Instance to be waited on
+        :param str state:
+        :param cloudshell.shell.core.context.CancellationContext cancellation_context:
         :return: novaclient.v2.servers.Server (updated)
         """
 

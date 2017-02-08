@@ -18,6 +18,7 @@ class OpenStackShellDriver(ResourceDriverInterface):
 
     def deploy_from_image(self, context, request, cancellation_context):
         """
+        :param cloudshell.shell.core.context.CancellationContext cancellation_context:
         :param cloudshell.shell.core.context.ResourceCommandContext context:
         :param DeployDataHolder request:
         :rtype  : str
