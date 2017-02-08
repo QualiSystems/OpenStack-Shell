@@ -239,7 +239,7 @@
       <AttachedAttributes />
       <AttributeValues />
       <Models>
-        <ResourceModel Description="" ImagePath="OpenStack_VM_Icon.png" Name="OpenStack Deploy From Glance Image" SupportsConcurrentCommands="false">
+        <ResourceModel Description="" ImagePath="OpenStack_VM_Deploy_Icon.png" Name="OpenStack Deploy From Glance Image" SupportsConcurrentCommands="false">
           <AttachedAttributes>
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Availability Zone" UserInput="true">
               <AllowedValues />
