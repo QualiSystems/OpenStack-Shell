@@ -17,22 +17,23 @@ class HiddenOperation(object):
         instance_id = deployed_app_resource.vmdetails.uid
 
         instance = self.instance_service.get_instance_from_instance_id(openstack_session=openstack_session,
-                                                                       instance_id=instance_id)
-        if not instance:
-            logger.info("Instance with Instance ID Not found {}. Not deleting".format(instance_id))
+                                                                       instance_id=instance_id,
+                                                                       logger=logger)
 
-        if not floating_ip:
-            return
+        if floating_ip:
+            if instance:
+                self.instance_service.detach_floating_ip(openstack_session=openstack_session,
+                                                         floating_ip=floating_ip,
+                                                         instance=instance,
+                                                         logger=logger)
 
-        self.instance_service.detach_floating_ip(openstack_session=openstack_session,
-                                                 floating_ip=floating_ip,
-                                                 instance=instance,
-                                                 logger=logger)
+            self.network_service.delete_floating_ip(openstack_session=openstack_session,
+                                                    floating_ip=floating_ip,
+                                                    logger=logger)
 
-        self.network_service.delete_floating_ip(openstack_session=openstack_session,
-                                                floating_ip=floating_ip)
-
-        self.instance_service.terminate_instance(openstack_session=openstack_session,
+        if instance:
+            self.instance_service.terminate_instance(openstack_session=openstack_session,
                                                  instance_id=instance_id,
-                                                 floating_ip=floating_ip,
                                                  logger=logger)
+        else:
+            logger.info("Instance with Instance ID Not found {}. Not deleting".format(instance_id))

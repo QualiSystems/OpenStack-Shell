@@ -292,10 +292,12 @@ class NovaInstanceService(object):
         :return: None
         """
 
+        if not instance:
+            return False
+
         if not floating_ip:
             return False
 
-        client = novaclient.Client(self.API_VERSION, session=openstack_session)
-
         instance.remove_floating_ip(floating_ip)
+
         return True
