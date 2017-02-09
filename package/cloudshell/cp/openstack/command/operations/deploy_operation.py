@@ -77,7 +77,6 @@ class DeployOperation(object):
                 floating_ip_dict = self.network_service.create_floating_ip(floating_ip_subnet_id=floating_ip_subnet_uuid,
                                                                         openstack_session=os_session,
                                                                         logger=logger)
-                print floating_ip_dict
                 if floating_ip_dict:
                     floating_ip_str = floating_ip_dict['floating_ip_address']
                 if floating_ip_str:
