@@ -67,7 +67,7 @@
       </Rules>
     </AttributeInfo>
 
-    <AttributeInfo DefaultValue="" Description="External Network UUID for Floating IP. The UUID of the (External) Network to be used for assigning Floating IP." IsReadOnly="false" Name="External Network UUID" Type="String">
+    <AttributeInfo DefaultValue="" Description="UUID Of the Subnet for Floating IP. This subnet should be connected to an External Network" IsReadOnly="false" Name="Floating IP Subnet UUID" Type="String">
       <Rules>
         <Rule Name="Configuration" />
         <Rule Name="Setting" />
@@ -171,7 +171,7 @@
                 <AllowedValue>VXLAN</AllowedValue>
               </AllowedValues>
             </AttachedAttribute>
-             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="External Network UUID" UserInput="true">
+             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Floating IP Subnet UUID" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Provider Network Interface" UserInput="true">
@@ -259,7 +259,7 @@
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Affinity Group UUID" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
-            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="External Network UUID" UserInput="false">
+            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Floating IP Subnet UUID" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
           </AttachedAttributes>

@@ -9,5 +9,5 @@ class DeployOSNovaImageInstanceResourceModel(object):
         self.instance_flavor = ''
         self.add_floating_ip = False
         self.autoload = False
-        self.external_network_uuid = ''
+        self.floating_ip_subnet_uuid = ''
         self.affinity_group_uuid = ''

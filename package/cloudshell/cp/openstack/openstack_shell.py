@@ -58,8 +58,10 @@ class OpenStackShell(object):
         self.autoload_operation = AutoLoadOperation(cp_validator_service=self.cp_validator_service)
         self.connectivity_operation = ConnectivityOperation(connectivity_service=self.vlan_connectivity_service)
         self.deploy_operation = DeployOperation(instance_service=self.instance_service,
+                                                network_service=self.network_service,
                                                 cancellation_service=self.cancellation_service)
-        self.hidden_operation = HiddenOperation(instance_service=self.instance_service)
+        self.hidden_operation = HiddenOperation(instance_service=self.instance_service,
+                                                network_service=self.network_service)
         self.power_operation = PowerOperation(instance_service=self.instance_service)
         self.refresh_ip_operation = RefreshIPOperation(instance_service=self.instance_service)
 

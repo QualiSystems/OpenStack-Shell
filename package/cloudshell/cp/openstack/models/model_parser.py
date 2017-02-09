@@ -27,7 +27,7 @@ class OpenStackShellModelParser(object):
         os_res_model.reserved_networks = attrs['Reserved Networks']
         os_res_model.vlan_type = attrs['Vlan Type']
         os_res_model.provider_network_interface = attrs['Provider Network Interface']
-        os_res_model.external_network_uuid = attrs['External Network UUID']
+        os_res_model.floating_ip_subnet_uuid = attrs['Floating IP Subnet UUID']
         return os_res_model
 
     @staticmethod
@@ -41,7 +41,7 @@ class OpenStackShellModelParser(object):
         deploy_res_model.instance_flavor = data_holder.image.instance_flavor
         deploy_res_model.add_floating_ip = data_holder.image.add_floating_ip
         deploy_res_model.autoload = data_holder.image.autoload
-        deploy_res_model.external_network_uuid = data_holder.image.external_network_uuid
+        deploy_res_model.floating_ip_subnet_uuid = data_holder.image.floating_ip_subnet_uuid
         deploy_res_model.affinity_group_uuid = data_holder.image.affinity_group_uuid
 
         app_name = data_holder.app_name
@@ -61,7 +61,7 @@ class OpenStackShellModelParser(object):
         deploy_resource_model.instance_flavor = attrs['Instance Flavor']
         deploy_resource_model.add_floating_ip = OpenStackShellModelParser.parse_boolean(attrs['Add Floating IP'])
         deploy_resource_model.autoload = OpenStackShellModelParser.parse_boolean(attrs['Autoload'])
-        deploy_resource_model.external_network_uuid = attrs['External Network UUID']
+        deploy_resource_model.floating_ip_subnet_uuid = attrs['Floating IP Subnet UUID']
         deploy_resource_model.affinity_group_uuid = attrs['Affinity Group UUID']
         return deploy_resource_model
 

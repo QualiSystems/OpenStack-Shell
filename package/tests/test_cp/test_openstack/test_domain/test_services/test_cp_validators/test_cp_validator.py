@@ -80,17 +80,22 @@ class TestOpenStackSessionProvider(TestCase):
                                                       logger=self.mock_logger)
         self.assertTrue(context)
 
-    def test_validate_external_network(self):
+    def test_validate_floating_ip_subnet(self):
 
         test_net_client = Mock()
 
-        net_list = {'networks': [{'router:external': True}]}
+        test_network_id = 'test_network_id'
+        mock_subnet_result = {'subnet': {'network_id':test_network_id}}
+        test_net_client.show_subnet = Mock(return_value=mock_subnet_result)
+
+        test_floating_ip_subnet_id = 'test_floating_ip_subnet'
+
+        net_list = {'networks': [{'router:external':True}]}
         test_net_client.list_networks = Mock(return_value=net_list)
 
-        test_external_network_id = 'test_external_net'
 
-        result = self.cp_validator.validate_external_network(net_client=test_net_client,
-                                                             external_network_id=test_external_network_id,
+        result = self.cp_validator.validate_floating_ip_subnet(net_client=test_net_client,
+                                                             floating_ip_subnet_id=test_floating_ip_subnet_id,
                                                              logger=self.mock_logger)
 
         self.assertTrue(result)
@@ -99,14 +104,13 @@ class TestOpenStackSessionProvider(TestCase):
 
         test_net_client = Mock()
 
+        test_net_client.show_subnet = Mock(side_effect=Exception)
 
-        test_net_client.list_networks = Mock(side_effect=Exception)
-
-        test_external_network_id = 'test_external_net'
+        test_floating_ip_subnet_id = 'test_external_net'
 
         with self.assertRaises(Exception) as context:
-            self.cp_validator.validate_external_network(net_client=test_net_client,
-                                                             external_network_id=test_external_network_id,
+            self.cp_validator.validate_floating_ip_sunbet(net_client=test_net_client,
+                                                             floating_ip_subnet_id=test_floating_ip_subnet_id,
                                                              logger=self.mock_logger)
 
         self.assertTrue(context)
@@ -206,7 +210,7 @@ class TestOpenStackSessionProvider(TestCase):
     def test_validate_network_attributes(self):
         mock_cp_resource_model = Mock()
         mock_cp_resource_model.qs_mgmt_os_net_uuid = 'test-mgmt-uuid'
-        mock_cp_resource_model.external_network_uuid = 'test-ext-uuid'
+        mock_cp_resource_model.floating_ip_subnet_uuid = 'test-subnet-uuid'
         mock_cp_resource_model.vlan_type = 'vlan'
         mock_cp_resource_model.reserved_networks = 'reserved-networks'
         mock_cp_resource_model.provider_network_interface = 'test-if'
@@ -218,7 +222,7 @@ class TestOpenStackSessionProvider(TestCase):
         test_cp_validator.neutron_client.Client = Mock(return_value=mock_net_client)
 
         self.cp_validator.validate_mgmt_network = Mock(return_value=True)
-        self.cp_validator.validate_external_network = Mock(return_value=True)
+        self.cp_validator.validate_floating_ip_subnet = Mock(return_value=True)
         self.cp_validator.validate_vlan_type = Mock(return_value=True)
         self.cp_validator.validate_reserved_networks = Mock(return_value=True)
 
@@ -226,7 +230,7 @@ class TestOpenStackSessionProvider(TestCase):
                                                       cp_resource_model=mock_cp_resource_model,
                                                       logger=self.mock_logger)
 
-        self.cp_validator.validate_external_network.assert_called_with(mock_net_client, 'test-ext-uuid',
+        self.cp_validator.validate_floating_ip_subnet.assert_called_with(mock_net_client, 'test-subnet-uuid',
                                                                        self.mock_logger)
         self.cp_validator.validate_mgmt_network.assert_called_with(mock_net_client, 'test-mgmt-uuid',
                                                                        self.mock_logger)
@@ -357,10 +361,10 @@ class TestOpenStackSessionProvider(TestCase):
         net_list = {'networks': []}
         test_net_client.list_networks = Mock(return_value=net_list)
 
-        test_mgmt_network_id = ''
+        test_floating_ip_subnet_id = ''
         with self.assertRaises(ValueError) as context:
-            result = self.cp_validator.validate_external_network(net_client=test_net_client,
-                                                             external_network_id=test_mgmt_network_id,
+            result = self.cp_validator.validate_floating_ip_subnet(net_client=test_net_client,
+                                                             floating_ip_subnet_id=test_floating_ip_subnet_id,
                                                              logger=self.mock_logger)
 
         self.assertTrue(context)
@@ -368,13 +372,16 @@ class TestOpenStackSessionProvider(TestCase):
     def test_external_network_not_external(self):
         test_net_client = Mock()
 
+        mock_subnet_return_value = {'subnet':{'network_id': 'test_network_id'}}
+        test_net_client.show_subnet = Mock(return_value=mock_subnet_return_value)
+
         net_list = {'networks': [{'router:external':False}]}
         test_net_client.list_networks = Mock(return_value=net_list)
 
-        test_mgmt_network_id = 'test_mgmt_net'
+        test_floating_ip_subnet_id = 'test_floating_ip_subnet_id'
         with self.assertRaises(ValueError) as context:
-            result = self.cp_validator.validate_external_network(net_client=test_net_client,
-                                                             external_network_id=test_mgmt_network_id,
+            result = self.cp_validator.validate_floating_ip_subnet(net_client=test_net_client,
+                                                             floating_ip_subnet_id=test_floating_ip_subnet_id,
                                                              logger=self.mock_logger)
 
         self.assertTrue(context)
