@@ -113,7 +113,8 @@ class DeployOperation(object):
                                                          floating_ip=floating_ip_str,
                                                          logger=logger)
                 self.network_service.delete_floating_ip(openstack_session=os_session,
-                                                        floating_ip=floating_ip_str)
+                                                        floating_ip=floating_ip_str,
+                                                        logger=logger)
                 self.instance_service.terminate_instance(openstack_session=os_session,
                                                          instance_id=instance_id,
                                                          floating_ip=floating_ip_str,
