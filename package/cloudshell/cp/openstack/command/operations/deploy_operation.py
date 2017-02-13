@@ -117,7 +117,6 @@ class DeployOperation(object):
                                                         logger=logger)
                 self.instance_service.terminate_instance(openstack_session=os_session,
                                                          instance_id=instance_id,
-                                                         floating_ip=floating_ip_str,
                                                          logger=logger)
             # Re-raise for the UI
             raise
