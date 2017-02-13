@@ -48,15 +48,18 @@ class NovaInstanceService(object):
         # Quali Network - Quali Network UUID is a OpenStack Resource Model attribute
         qnet_dict = {'net-id': cp_resource_model.qs_mgmt_os_net_uuid}
 
-        # get affinity_group_by_name
-
         uniq = CloudshellDriverHelper.get_uuid() #str(uuid.uuid4()).split("-")[0]
         name = name + "-" + uniq
 
         server_create_args = {'name': name, 'image':img_obj, 'flavor':flavor_obj, 'nics': [qnet_dict]}
 
-        affinity_group_id = deploy_req_model.affinity_group_uuid
+        # availability zone
+        avail_zone = deploy_req_model.cp_avail_zone
+        if avail_zone:
+            server_create_args.update({'availability_zone': avail_zone})
 
+        # get affinity_group_by_name
+        affinity_group_id = deploy_req_model.affinity_group_uuid
         if affinity_group_id:
             server_create_args.update({'scheduler_hints':{'group': affinity_group_id}})
 
