@@ -2,8 +2,8 @@
 
 import time
 
-class InstanceWaiterTimeoutException(Exception):
-    pass
+from cloudshell.cp.openstack.models.exceptions import InstanceErrorStateException
+
 
 class InstanceWaiter(object):
     """An instance waiter class that implements a synchronous waiter that
@@ -22,13 +22,10 @@ class InstanceWaiter(object):
 
     def __init__(self, cancellation_service, delay=10):
         """
-        :param delay: Time in seconds between each poll
-        :type delay: int
-        :param timeout: Timeout after which Exception will be raised
-        :type timeout: int
+        :param int delay: Time in seconds between each poll
         """
         self.cancellation_service = cancellation_service
-        self.delay = delay
+        self._delay = delay
 
     def wait(self, instance, state, cancellation_context, logger):
         """
@@ -43,10 +40,13 @@ class InstanceWaiter(object):
         if state not in self.INSTANCE_STATES:
             raise ValueError('Unsupported Instance State {0}'.format(state))
 
-        while instance.status != state:
+        while instance.status not in [state, self.ERROR]:
             instance.get()
             if cancellation_context is not None:
                 self.cancellation_service.check_if_cancelled(cancellation_context=cancellation_context)
-            time.sleep(self.delay)
+            time.sleep(self._delay)
+
+        if instance.status == self.ERROR:
+            raise InstanceErrorStateException(format(instance.fault['message']))
 
         return instance
