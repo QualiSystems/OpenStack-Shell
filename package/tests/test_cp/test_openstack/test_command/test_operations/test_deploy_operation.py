@@ -156,6 +156,7 @@ class TestDeployOperation(TestCase):
 
         test_deploy_req_model = Mock()
         test_deploy_req_model.cloud_provider = test_cloud_provider
+        test_deploy_req_model.add_floating_ip = True
         test_deploy_req_model.floating_ip_subnet_uuid = ''
 
         mock_cancellation_context = Mock()
