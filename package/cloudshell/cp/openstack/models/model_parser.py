@@ -20,7 +20,6 @@ class OpenStackShellModelParser(object):
         os_res_model.controller_url = attrs['Controller URL']
         os_res_model.os_domain_name = attrs['OpenStack Domain Name']
         os_res_model.os_project_name = attrs['OpenStack Project Name']
-        os_res_model.os_region = attrs['OpenStack Region']
         os_res_model.os_user_name = attrs['OpenStack User Name']
         os_res_model.os_user_password = attrs['OpenStack User Password']
         os_res_model.qs_mgmt_os_net_uuid = attrs['Quali Management Network UUID']

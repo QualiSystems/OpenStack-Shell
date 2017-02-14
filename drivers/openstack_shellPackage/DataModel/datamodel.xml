@@ -22,12 +22,6 @@
         <Rule Name="Setting" />
       </Rules>
     </AttributeInfo>
-     <AttributeInfo DefaultValue="" Description="In a multi-region deployment name of the region where resources will be deployed. Leave blank for single region." IsReadOnly="false" Name="OpenStack Region" Type="String">
-      <Rules>
-        <Rule Name="Configuration" />
-        <Rule Name="Setting" />
-      </Rules>
-    </AttributeInfo>
     <AttributeInfo DefaultValue="" Description="OpenStack User Name" IsReadOnly="false" Name="OpenStack User Name" Type="String">
       <Rules>
         <Rule Name="Configuration" />
@@ -151,9 +145,6 @@
               <AllowedValues />
             </AttachedAttribute>
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Quali Management Network UUID" UserInput="true">
-              <AllowedValues />
-            </AttachedAttribute>
-            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="OpenStack Region" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="OpenStack User Password" UserInput="true">
