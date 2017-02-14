@@ -142,7 +142,7 @@ class TestDeployOperation(TestCase):
         test_floating_ip = '4.3.2.1'
         test_deployed_app_attrs = {'Public IP': 'test_public_ip'}
 
-        self.deploy_operation.instance_service.get_instance_mgmt_network_name = Mock(return_value=None)
+        self.deploy_operation.instance_service.get_instance_mgmt_network_name = Mock(return_value=test_name)
 
         test_instance = Mock()
         test_instance.name = test_name
