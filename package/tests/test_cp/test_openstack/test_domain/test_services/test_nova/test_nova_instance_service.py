@@ -5,7 +5,8 @@ from cloudshell.cp.openstack.domain.services.nova.nova_instance_service import N
 import cloudshell.cp.openstack.domain.services.nova.nova_instance_service as test_nova_instance_service
 from cloudshell.cp.openstack.common.driver_helper import CloudshellDriverHelper
 
-from cloudshell.cp.openstack.domain.services.cancellation_services.command_cancellation import CommandCancellationException
+from cloudshell.cp.openstack.models.exceptions import CommandCancellationException, InstanceErrorStateException
+
 
 class TestNovaInstanceService(TestCase):
     def setUp(self):
@@ -97,7 +98,7 @@ class TestNovaInstanceService(TestCase):
 
         self.instance_service.instance_waiter = Mock()
         self.instance_service.instance_waiter.wait = Mock(side_effect=CommandCancellationException)
-        with self.assertRaises(CommandCancellationException) as context:
+        with self.assertRaises(CommandCancellationException):
             result = self.instance_service.create_instance(openstack_session=self.openstack_session,
                                                            name=test_name,
                                                            reservation=Mock(),
@@ -105,8 +106,8 @@ class TestNovaInstanceService(TestCase):
                                                            deploy_req_model=Mock(),
                                                            cancellation_context=mock_cancellation_context,
                                                            logger=self.mock_logger)
-        self.assertTrue(context)
 
+        mock_client2.servers.delete.assert_called_once_with(mocked_inst)
 
     def test_instance_create_success_affinity_group(self):
         test_name = 'test'
@@ -166,7 +167,7 @@ class TestNovaInstanceService(TestCase):
 
         mock_instance = Mock()
         test_instance_id = '1234-56'
-        test_floating_ip =  '1.2.3.4'
+        test_floating_ip = '1.2.3.4'
         self.instance_service.get_instance_from_instance_id = Mock(return_value=mock_instance)
         self.instance_service.detach_and_delete_floating_ip = Mock()
         self.instance_service.terminate_instance(openstack_session=self.openstack_session,
@@ -174,7 +175,6 @@ class TestNovaInstanceService(TestCase):
                                                  logger=self.mock_logger)
 
         mock_client2.servers.delete.assert_called_with(mock_instance)
-
 
     def test_instance_power_off_success(self):
         mock_client2 = Mock()
@@ -255,8 +255,8 @@ class TestNovaInstanceService(TestCase):
 
         with self.assertRaises(ValueError) as context:
             self.instance_service.instance_power_off(openstack_session=self.openstack_session,
-                                                    instance_id=test_instance_id,
-                                                    logger=self.mock_logger)
+                                                     instance_id=test_instance_id,
+                                                     logger=self.mock_logger)
 
         self.instance_service.get_instance_from_instance_id.assert_called_with(
                 openstack_session=self.openstack_session,
@@ -275,9 +275,9 @@ class TestNovaInstanceService(TestCase):
 
         test_instance_id = '1234'
         result = self.instance_service.get_instance_from_instance_id(openstack_session=self.openstack_session,
-                                                            instance_id=test_instance_id,
-                                                            logger=self.mock_logger,
-                                                            client=mock_client2)
+                                                                     instance_id=test_instance_id,
+                                                                     logger=self.mock_logger,
+                                                                     client=mock_client2)
         self.assertEqual(result, mock_instance)
 
     def test_get_instance_from_instance_id_not_found_on_nova(self):
@@ -328,8 +328,8 @@ class TestNovaInstanceService(TestCase):
         expected_port_id = 'test_port_id'
         expected_ip_address = 'test_ip_address'
         mock_result_dict = {'mac_addr': expected_test_mac,
-                            'port_id' : expected_port_id,
-                            'fixed_ips' : [{'ip_address': expected_ip_address}]}
+                            'port_id': expected_port_id,
+                            'fixed_ips': [{'ip_address': expected_ip_address}]}
         mock_iface_attach_result.to_dict = Mock(return_value=mock_result_dict)
         self.instance_service.get_instance_from_instance_id = Mock(return_value=mock_instance)
 
@@ -337,14 +337,13 @@ class TestNovaInstanceService(TestCase):
                                                          net_id='test_net_id',
                                                          instance_id='test_instance_id',
                                                          logger=self.mock_logger)
-        expected_result_dict = {'ip_address':expected_ip_address,
+        expected_result_dict = {'ip_address': expected_ip_address,
                                 'port_id': expected_port_id,
-                                'mac_address':expected_test_mac}
+                                'mac_address': expected_test_mac}
 
         self.assertEqual(jsonpickle.loads(result), expected_result_dict)
 
     def test_attach_nic_to_net_failure_no_instance(self):
-
         mock_client = Mock()
         test_nova_instance_service.novaclient.Client = Mock(return_value=mock_client)
 
@@ -356,7 +355,6 @@ class TestNovaInstanceService(TestCase):
         self.assertEqual(result, None)
 
     def test_attach_nic_to_net_failure_exception(self):
-
         mock_client = Mock()
         test_nova_instance_service.novaclient.Client = Mock(return_value=mock_client)
 
@@ -366,14 +364,13 @@ class TestNovaInstanceService(TestCase):
 
         with self.assertRaises(Exception) as context:
             result = self.instance_service.attach_nic_to_net(openstack_session=self.openstack_session,
-                                                         net_id='test_net_id',
-                                                         instance_id='test_instance_id',
-                                                         logger=self.mock_logger)
+                                                             net_id='test_net_id',
+                                                             instance_id='test_instance_id',
+                                                             logger=self.mock_logger)
 
         self.assertTrue(context)
 
     def test_detach_nic_from_net_success(self):
-
         mock_client = Mock()
         test_nova_instance_service.novaclient.Client = Mock(return_value=mock_client)
 
@@ -391,7 +388,6 @@ class TestNovaInstanceService(TestCase):
         self.assertEqual(result, True)
 
     def test_detach_nic_from_net_failure(self):
-
         mock_client = Mock()
         test_nova_instance_service.novaclient.Client = Mock(return_value=mock_client)
 
@@ -415,7 +411,7 @@ class TestNovaInstanceService(TestCase):
         test_net_label = 'test-net'
 
         mock_net_obj = Mock()
-        mock_net_obj.to_dict = Mock(return_value={'id':test_external_nw_id, 'label': test_net_label})
+        mock_net_obj.to_dict = Mock(return_value={'id': test_external_nw_id, 'label': test_net_label})
 
         mock_client.networks.list = Mock(return_value=[mock_net_obj])
 
@@ -456,7 +452,7 @@ class TestNovaInstanceService(TestCase):
         test_cp_resource_model.qs_mgmt_os_net_uuid = test_net_id
 
         mock_net_obj = Mock()
-        mock_net_obj.to_dict = Mock(return_value={'id':test_net_id, 'label':'test_returned_net'})
+        mock_net_obj.to_dict = Mock(return_value={'id': test_net_id, 'label': 'test_returned_net'})
 
         mock_client.networks = Mock()
         mock_client.networks.list = Mock(return_value=[mock_net_obj])
@@ -487,3 +483,39 @@ class TestNovaInstanceService(TestCase):
                                                                       cp_resource_model=test_cp_resource_model)
 
         self.assertEqual(result, None)
+
+    def test_instance_create_error_state(self):
+        test_name = 'test'
+        CloudshellDriverHelper.get_uuid = Mock(return_value='1234')
+        test_uniq_name = 'test-1234'
+        mock_client2 = Mock()
+
+        test_nova_instance_service.novaclient.Client = Mock(return_value=mock_client2)
+        # mock_client.Client = Mock(return_vaule=mock_client2)
+        mock_image = Mock()
+        mock_flavor = Mock()
+        mock_client2.images.find = Mock(return_value=mock_image)
+        mock_client2.flavors.find = Mock(return_value=mock_flavor)
+
+        mock_cp_resource_model = Mock()
+        mock_cp_resource_model.qs_mgmt_os_net_uuid = '1234'
+
+        mock_cancellation_context = Mock()
+
+        mock_client2.servers = Mock()
+        mocked_inst = Mock()
+        mock_client2.servers.create = Mock(return_value=mocked_inst)
+        mock_qnet_dict = {'net-id': mock_cp_resource_model.qs_mgmt_os_net_uuid}
+
+        self.instance_service.instance_waiter = Mock()
+        self.instance_service.instance_waiter.wait = Mock(side_effect=InstanceErrorStateException)
+        with self.assertRaises(InstanceErrorStateException):
+            result = self.instance_service.create_instance(openstack_session=self.openstack_session,
+                                                           name=test_name,
+                                                           reservation=Mock(),
+                                                           cp_resource_model=mock_cp_resource_model,
+                                                           deploy_req_model=Mock(),
+                                                           cancellation_context=mock_cancellation_context,
+                                                           logger=self.mock_logger)
+
+        mock_client2.servers.delete.assert_called_once_with(mocked_inst)
