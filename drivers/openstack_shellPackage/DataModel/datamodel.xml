@@ -171,7 +171,7 @@
                 <AllowedValue>VXLAN</AllowedValue>
               </AllowedValues>
             </AttachedAttribute>
-             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Floating IP Subnet UUID" UserInput="true">
+             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Floating IP Subnet UUID" UserInput="false">
               <AllowedValues />
             </AttachedAttribute>
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Provider Network Interface" UserInput="true">
