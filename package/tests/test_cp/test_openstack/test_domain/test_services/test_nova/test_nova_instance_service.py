@@ -43,6 +43,7 @@ class TestNovaInstanceService(TestCase):
 
         mock_deploy_req_model = Mock()
         mock_deploy_req_model.affinity_group_uuid = ''
+        mock_deploy_req_model.cp_avail_zone = 'test-avail-zone'
 
         mock_cp_resource_model = Mock()
         mock_cp_resource_model.qs_mgmt_os_net_uuid = '1234'
@@ -64,6 +65,7 @@ class TestNovaInstanceService(TestCase):
         mock_client2.servers.create.assert_called_with(name=test_uniq_name,
                                                        image=mock_image,
                                                        flavor=mock_flavor,
+                                                       availability_zone='test-avail-zone',
                                                        nics=[mock_qnet_dict])
         self.assertEquals(result, mocked_inst)
         self.instance_service.instance_waiter.wait.assert_called_with(mocked_inst,
@@ -122,6 +124,7 @@ class TestNovaInstanceService(TestCase):
 
         mock_deploy_req_model = Mock()
         mock_deploy_req_model.affinity_group_uuid = 'test_affinity_group_id'
+        mock_deploy_req_model.cp_avail_zone = ''
 
         mock_cp_resource_model = Mock()
         mock_cp_resource_model.qs_mgmt_os_net_uuid = '1234'
