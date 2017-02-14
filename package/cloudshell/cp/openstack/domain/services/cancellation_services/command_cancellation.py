@@ -1,12 +1,7 @@
-
-class CommandCancellationException(Exception):
-    """
-    This exception is raised when command is cancelled.
-    """
-    pass
+from cloudshell.cp.openstack.models.exceptions import CommandCancellationException
 
 
-class CommandCancellationService(object ):
+class CommandCancellationService(object):
 
     def check_if_cancelled(self, cancellation_context):
         """

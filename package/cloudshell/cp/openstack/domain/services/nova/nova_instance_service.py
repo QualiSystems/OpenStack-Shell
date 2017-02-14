@@ -2,12 +2,13 @@
 Implements InstanceService class, that allows one to
 \'start/stop/delete/terminate\' OpenStack instances.
 """
-from novaclient import client as novaclient
-from cloudshell.cp.openstack.common.driver_helper import CloudshellDriverHelper
-from cloudshell.cp.openstack.domain.services.cancellation_services.command_cancellation import CommandCancellationException
-
 import traceback
+
 import jsonpickle
+from novaclient import client as novaclient
+
+from cloudshell.cp.openstack.common.driver_helper import CloudshellDriverHelper
+from cloudshell.cp.openstack.models.exceptions import *
 
 
 class NovaInstanceService(object):
@@ -29,7 +30,7 @@ class NovaInstanceService(object):
         :param ReservationModel reservation: Reservation Model
         :param OpenStackResourceModel cp_resource_model:
         :param DeployOSNovaImageInstanceResourceModel deploy_req_model: Details of the Image to be deployed
-        :param LoggingSessionContext logger:
+        :param logging.Logger logger:
         :rtype novaclient.Client.servers.Server:
         """
 
@@ -53,12 +54,12 @@ class NovaInstanceService(object):
         uniq = CloudshellDriverHelper.get_uuid() #str(uuid.uuid4()).split("-")[0]
         name = name + "-" + uniq
 
-        server_create_args = {'name': name, 'image':img_obj, 'flavor':flavor_obj, 'nics': [qnet_dict]}
+        server_create_args = {'name': name, 'image': img_obj, 'flavor':flavor_obj, 'nics': [qnet_dict]}
 
         affinity_group_id = deploy_req_model.affinity_group_uuid
 
         if affinity_group_id:
-            server_create_args.update({'scheduler_hints':{'group': affinity_group_id}})
+            server_create_args.update({'scheduler_hints': {'group': affinity_group_id}})
 
         instance = client.servers.create(**server_create_args)
 
@@ -67,6 +68,10 @@ class NovaInstanceService(object):
                                       cancellation_context=cancellation_context, logger=logger)
         except CommandCancellationException:
             logger.info("Command cancellation Received while waiting for instance {}".format(instance.id))
+            client.servers.delete(instance)
+            raise
+        except InstanceErrorStateException:
+            logger.exception("Instance deployed with state ERROR, deleting the faulted instance.")
             client.servers.delete(instance)
             raise
 
