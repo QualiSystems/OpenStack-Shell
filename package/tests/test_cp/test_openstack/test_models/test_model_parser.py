@@ -104,8 +104,8 @@ class TestOpenStackShellModelParser(TestCase):
         test_resource.attributes['Instance Flavor'] = test_instance_flavor = 'test_instance_flavor'
         test_resource.attributes['Add Floating IP'] = 'True'
         test_resource.attributes['Autoload'] = '1'
-        test_resource.attributes['Floating IP Subnet UUID'] = floating_ip_subnet_uuid = 'floating_ip_subnet_uuid'
-        test_resource.attributes['Affinity Group UUID'] = affinity_group_uuid = 'affinity_group_uuid'
+        test_resource.attributes['Floating IP Subnet ID'] = floating_ip_subnet_uuid = 'floating_ip_subnet_uuid'
+        test_resource.attributes['Affinity Group ID'] = affinity_group_uuid = 'affinity_group_uuid'
         test_resource.attributes['Auto udev'] = 'True'
 
         deploy_resource_model = self.tested_class.get_deploy_resource_model_from_context_resource(test_resource)
@@ -136,8 +136,8 @@ class TestOpenStackShellModelParser(TestCase):
         test_resource.attributes['Instance Flavor'] = test_instance_flavor = 'test_instance_flavor'
         test_resource.attributes['Add Floating IP'] = 'True'
         test_resource.attributes['Autoload'] = '1'
-        test_resource.attributes['Floating IP Subnet UUID'] = floating_ip_subnet_uuid = 'floating_ip_subnet_uuid'
-        test_resource.attributes['Affinity Group UUID'] = affinity_group_uuid = 'affinity_group_uuid'
+        test_resource.attributes['Floating IP Subnet ID'] = floating_ip_subnet_uuid = 'floating_ip_subnet_uuid'
+        test_resource.attributes['Affinity Group ID'] = affinity_group_uuid = 'affinity_group_uuid'
         test_resource.attributes['Auto udev'] = 'True'
 
         deploy_resource_model = self.tested_class.get_deploy_resource_model_from_context_resource(test_resource)

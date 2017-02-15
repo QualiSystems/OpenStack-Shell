@@ -62,8 +62,8 @@ class OpenStackShellModelParser(object):
         deploy_resource_model.instance_flavor = attrs['Instance Flavor']
         deploy_resource_model.add_floating_ip = OpenStackShellModelParser.parse_boolean(attrs['Add Floating IP'])
         deploy_resource_model.autoload = OpenStackShellModelParser.parse_boolean(attrs['Autoload'])
-        deploy_resource_model.floating_ip_subnet_uuid = attrs['Floating IP Subnet UUID']
-        deploy_resource_model.affinity_group_uuid = attrs['Affinity Group UUID']
+        deploy_resource_model.floating_ip_subnet_uuid = attrs['Floating IP Subnet ID']
+        deploy_resource_model.affinity_group_uuid = attrs['Affinity Group ID']
         deploy_resource_model.auto_udev = OpenStackShellModelParser.parse_boolean(attrs['Auto udev'])
         return deploy_resource_model
 
