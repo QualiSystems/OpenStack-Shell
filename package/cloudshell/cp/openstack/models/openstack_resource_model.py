@@ -6,7 +6,6 @@ class OpenStackResourceModel:
         self.controller_url = ''
         self.os_domain_name = ''
         self.os_project_name = ''
-        self.os_region = ''
         self.os_user_name = ''
         self.os_user_password = ''
         self.qs_mgmt_os_net_uuid = ''

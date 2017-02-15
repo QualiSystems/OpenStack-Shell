@@ -246,13 +246,8 @@ class OpenStackCPValidator(object):
                                             cp_resource_model=cp_resource_model,
                                             logger=logger)
 
-        self.validate_region(openstack_session=openstack_session,
-                             cs_session=cs_session,
-                             cp_resource_model=cp_resource_model,
-                             logger=logger)
-
         self.validate_network_attributes(openstack_session=openstack_session,
                                          cp_resource_model=cp_resource_model,
                                          logger=logger)
 
-        return AutoLoadDetails([],[])
+        return AutoLoadDetails([], [])

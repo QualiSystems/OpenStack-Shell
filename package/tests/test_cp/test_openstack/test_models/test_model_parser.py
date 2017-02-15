@@ -29,7 +29,6 @@ class TestOpenStackShellModelParser(TestCase):
         self.assertEqual(result.controller_url, 'test url')
         self.assertEqual(result.os_domain_name, 'test_domain')
         self.assertEqual(result.os_project_name, 'test_project')
-        self.assertEqual(result.os_region, 'test_region')
         self.assertEqual(result.os_user_name, 'test_user')
         self.assertEqual(result.os_user_password, 'test_pass')
         self.assertEqual(result.qs_mgmt_os_net_uuid, '1234-56-78')
