@@ -16,15 +16,14 @@ class TestOpenStackShellModelParser(TestCase):
         test_resource.attributes['Controller URL'] = 'test url'
         test_resource.attributes['OpenStack Domain Name'] = 'test_domain'
         test_resource.attributes['OpenStack Project Name'] = 'test_project'
-        test_resource.attributes['OpenStack Region'] = 'test_region'
-        test_resource.attributes['OpenStack User Name']  = 'test_user'
-        test_resource.attributes['OpenStack User Password'] = 'test_pass'
-        test_resource.attributes['Quali Management Network UUID'] = '1234-56-78'
-        test_resource.attributes['Floating IP Pool']  = '10.0.0.100-10.0.0.101'
-        test_resource.attributes['Reserved Networks'] = '172.22.0.0/16'
+        test_resource.attributes['User Name'] = 'test_user'
+        test_resource.attributes['Password'] = 'test_pass'
+        test_resource.attributes['OpenStack Management Network ID'] = '1234-56-78'
+        test_resource.attributes['Floating IP Pool'] = '10.0.0.100-10.0.0.101'
+        test_resource.attributes['OpenStack Reserved Networks'] = '172.22.0.0/16'
         test_resource.attributes['Vlan Type'] = 'vlan'
         test_resource.attributes['Provider Network Interface'] = 'public'
-        test_resource.attributes['Floating IP Subnet UUID'] = 'floating_ip_subnet_uuid'
+        test_resource.attributes['Floating IP Subnet ID'] = 'floating_ip_subnet_uuid'
         result = self.tested_class.get_resource_model_from_context(test_resource)
 
         self.assertEqual(result.controller_url, 'test url')
@@ -106,7 +105,7 @@ class TestOpenStackShellModelParser(TestCase):
         test_resource.attributes['Instance Flavor'] = test_instance_flavor = 'test_instance_flavor'
         test_resource.attributes['Add Floating IP'] = 'True'
         test_resource.attributes['Autoload'] = '1'
-        test_resource.attributes['Floating IP Subnet UUID'] = floating_ip_subnet_uuid = 'floating_ip_subnet_uuid'
+        test_resource.attributes['Floating IP Subnet ID'] = floating_ip_subnet_uuid = 'floating_ip_subnet_uuid'
         test_resource.attributes['Affinity Group UUID'] = affinity_group_uuid = 'affinity_group_uuid'
 
         deploy_resource_model = self.tested_class.get_deploy_resource_model_from_context_resource(test_resource)
@@ -137,7 +136,7 @@ class TestOpenStackShellModelParser(TestCase):
         test_resource.attributes['Instance Flavor'] = test_instance_flavor = 'test_instance_flavor'
         test_resource.attributes['Add Floating IP'] = 'True'
         test_resource.attributes['Autoload'] = '1'
-        test_resource.attributes['Floating IP Subnet UUID'] = floating_ip_subnet_uuid = 'floating_ip_subnet_uuid'
+        test_resource.attributes['Floating IP Subnet ID'] = floating_ip_subnet_uuid = 'floating_ip_subnet_uuid'
         test_resource.attributes['Affinity Group UUID'] = affinity_group_uuid = 'affinity_group_uuid'
 
         deploy_resource_model = self.tested_class.get_deploy_resource_model_from_context_resource(test_resource)

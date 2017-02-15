@@ -10,16 +10,17 @@
                 <Description>Checks that the inputs are valid for the target OpenStack</Description>
              </AutoLoad>
             <Attributes>
-              <Attribute Name="Controller URL" Value="http://[controller-ip]:5000/v3"/>
+              <Attribute Name="Controller URL" Value="http://controller:5000/v3"/>
               <Attribute Name="OpenStack Domain Name" Value="default"/>
               <Attribute Name="OpenStack Project Name" Value=""/>
-              <Attribute Name="OpenStack User Name" Value=""/>
-              <Attribute Name="OpenStack User Password" Value=""/>
-              <Attribute Name="Reserved Networks" Value="" />
-              <Attribute Name="Quali Management Network UUID" Value=""/>
+              <Attribute Name="User Name" Value=""/>
+              <Attribute Name="Password" Value=""/>
+              <Attribute Name="OpenStack Reserved Networks" Value="" />
+              <Attribute Name="OpenStack Management Network ID" Value=""/>
               <Attribute Name="Vlan Type" Value=""/>
-              <Attribute Name="Provider Network Interface" Value=""/>
-              <Attribute Name="Floating IP Subnet UUID" Value=""/>
+              <Attribute Name="OpenStack Physical Interface Name" Value=""/>
+              <Attribute Name="Floating IP Subnet ID" Value=""/>
+              <Attribute Value="" Name="Execution Server Selector"/>
             </Attributes>
         </ResourceTemplate>
     </ResourceTemplates>
