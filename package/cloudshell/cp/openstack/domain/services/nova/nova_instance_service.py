@@ -9,6 +9,7 @@ from novaclient import client as novaclient
 
 from cloudshell.cp.openstack.common.driver_helper import CloudshellDriverHelper
 from cloudshell.cp.openstack.models.exceptions import *
+from cloudshell.cp.openstack.domain.services.nova.udev_rules import udev_rules_str
 
 
 class NovaInstanceService(object):
@@ -63,6 +64,10 @@ class NovaInstanceService(object):
         affinity_group_id = deploy_req_model.affinity_group_uuid
         if affinity_group_id:
             server_create_args.update({'scheduler_hints': {'group': affinity_group_id}})
+
+        # user data
+        if deploy_req_model.auto_udev:
+            server_create_args.update({'userdata':udev_rules_str})
 
         instance = client.servers.create(**server_create_args)
 

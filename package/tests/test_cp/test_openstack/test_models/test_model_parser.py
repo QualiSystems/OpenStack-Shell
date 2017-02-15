@@ -106,6 +106,7 @@ class TestOpenStackShellModelParser(TestCase):
         test_resource.attributes['Autoload'] = '1'
         test_resource.attributes['Floating IP Subnet ID'] = floating_ip_subnet_uuid = 'floating_ip_subnet_uuid'
         test_resource.attributes['Affinity Group ID'] = affinity_group_uuid = 'affinity_group_uuid'
+        test_resource.attributes['Auto udev'] = 'True'
 
         deploy_resource_model = self.tested_class.get_deploy_resource_model_from_context_resource(test_resource)
 
@@ -137,6 +138,7 @@ class TestOpenStackShellModelParser(TestCase):
         test_resource.attributes['Autoload'] = '1'
         test_resource.attributes['Floating IP Subnet ID'] = floating_ip_subnet_uuid = 'floating_ip_subnet_uuid'
         test_resource.attributes['Affinity Group ID'] = affinity_group_uuid = 'affinity_group_uuid'
+        test_resource.attributes['Auto udev'] = 'True'
 
         deploy_resource_model = self.tested_class.get_deploy_resource_model_from_context_resource(test_resource)
 
@@ -148,3 +150,4 @@ class TestOpenStackShellModelParser(TestCase):
         self.assertEqual(deploy_resource_model.autoload, parse_boolean_result)
         self.assertEqual(deploy_resource_model.floating_ip_subnet_uuid, floating_ip_subnet_uuid)
         self.assertEqual(deploy_resource_model.affinity_group_uuid, affinity_group_uuid)
+        self.assertEqual(deploy_resource_model.auto_udev, parse_boolean_result)
