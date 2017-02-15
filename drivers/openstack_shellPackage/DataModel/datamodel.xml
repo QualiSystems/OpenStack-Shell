@@ -63,38 +63,38 @@
     </AttributeInfo>
 
     <!-- attributes used in deployed app -->
-    <AttributeInfo DefaultValue="" Description="Availability Zone." IsReadOnly="false" Name="Availability Zone" Type="String">
+    <AttributeInfo DefaultValue="" Description="Optional. Name of availability zone the VM will be associated with. Availability zone used to group network nodes for making network resources highly available." IsReadOnly="false" Name="Availability Zone" Type="String">
       <Rules>
         <Rule Name="Configuration" />
         <Rule Name="Setting" />
       </Rules>
     </AttributeInfo>
-    <AttributeInfo DefaultValue="" Description="UUID of the image to be used for deployment. Check Horizon UI for Image ID" IsReadOnly="false" Name="Image UUID" Type="String">
+    <AttributeInfo DefaultValue="" Description="The UUID of the Glance image to use. The UUID can be found under the Horizon user interface." IsReadOnly="false" Name="Image ID" Type="String">
       <Rules>
         <Rule Name="Configuration" />
         <Rule Name="Setting" />
       </Rules>
     </AttributeInfo>
-    <AttributeInfo DefaultValue="" Description="Flavor of the compute Instance. Check Horizon UI for supported flavors" IsReadOnly="false" Name="Instance Flavor" Type="String">
+    <AttributeInfo DefaultValue="" Description="Optional. The OpenStack instance Flavor. The instance flavor determines the CPU, memory and networking capacity of the VM. For example: “m1.tiny”." IsReadOnly="false" Name="Instance Flavor" Type="String">
       <Rules>
         <Rule Name="Configuration" />
         <Rule Name="Setting" />
       </Rules>
     </AttributeInfo>
-    <AttributeInfo DefaultValue="false" Description="Should the Floating IP be Added to the instance." IsReadOnly="false" Name="Add Floating IP" Type="Boolean">
+    <AttributeInfo DefaultValue="false" Description="Use a floating IP to set a static IP using Neutron L3 agent and not using a DHCP service. Floating IP is commonly used for accessing a machine from public networks while private IP will be used by other instances in the same private networks." IsReadOnly="false" Name="Add Floating IP" Type="Boolean">
       <Rules>
         <Rule Name="Configuration" />
         <Rule Name="Setting" />
       </Rules>
     </AttributeInfo>
 
-    <AttributeInfo DefaultValue="" Description="Specifies which Affinity Group this App belongs to. Right now supported affinity type is 'affinity'." IsReadOnly="false" Name="Affinity Group UUID" Type="String">
+    <AttributeInfo DefaultValue="" Description="Optional. The UUID of the affinity group the VM will be associated with. Affinity Groups will determine if a VMs are placed on the same compute node or on different nodes." IsReadOnly="false" Name="Affinity Group ID" Type="String">
       <Rules>
         <Rule Name="Configuration" />
         <Rule Name="Setting" />
       </Rules>
     </AttributeInfo>
-    <AttributeInfo DefaultValue="false" Description="Enables the automatic execution of the Autoload command during reservation Setup.." IsReadOnly="false" Name="Autoload"  Type="Boolean">
+    <AttributeInfo DefaultValue="false" Description="Enables the automatic execution of the Autoload command during reservation Setup." IsReadOnly="false" Name="Autoload"  Type="Boolean">
         <Rules>
             <Rule Name="Configuration" />
             <Rule Name="Setting" />
@@ -124,6 +124,13 @@
         <Rule Name="Configuration" />
         <Rule Name="Setting" />
         <Rule Name="Execution Server Selector" />
+      </Rules>
+    </AttributeInfo>
+
+    <AttributeInfo DefaultValue="true" IsReadOnly="false" Name="Auto udev" Description="Enable Linux udev rules to allow new interfaces to be recognized by the OS automatically. When using Windows machines this attribute should be set to false." Type="Boolean">
+      <Rules>
+          <Rule Name="Configuration" />
+          <Rule Name="Setting" />
       </Rules>
     </AttributeInfo>
 
@@ -240,7 +247,7 @@
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Availability Zone" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
-            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Image UUID" UserInput="true">
+            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Image ID" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Instance Flavor" UserInput="true">
@@ -252,7 +259,7 @@
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Autoload" UserInput="false">
               <AllowedValues />
             </AttachedAttribute>
-            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Affinity Group UUID" UserInput="true">
+            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Affinity Group ID" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Floating IP Subnet ID" UserInput="true">

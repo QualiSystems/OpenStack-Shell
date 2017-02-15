@@ -101,12 +101,12 @@ class TestOpenStackShellModelParser(TestCase):
         test_resource.attributes = {}
         test_resource.attributes['Cloud Provider'] = test_cloud_provider = 'test_cloud_provider'
         test_resource.attributes['Availability Zone'] = test_availability_zone = 'test_availability_zone'
-        test_resource.attributes['Image UUID'] = test_image_uuid = 'test_image_uuid'
+        test_resource.attributes['Image ID'] = test_image_uuid = 'test_image_uuid'
         test_resource.attributes['Instance Flavor'] = test_instance_flavor = 'test_instance_flavor'
         test_resource.attributes['Add Floating IP'] = 'True'
         test_resource.attributes['Autoload'] = '1'
         test_resource.attributes['Floating IP Subnet ID'] = floating_ip_subnet_uuid = 'floating_ip_subnet_uuid'
-        test_resource.attributes['Affinity Group UUID'] = affinity_group_uuid = 'affinity_group_uuid'
+        test_resource.attributes['Affinity Group ID'] = affinity_group_uuid = 'affinity_group_uuid'
 
         deploy_resource_model = self.tested_class.get_deploy_resource_model_from_context_resource(test_resource)
 
@@ -132,12 +132,12 @@ class TestOpenStackShellModelParser(TestCase):
         test_resource = mock.MagicMock()
         test_resource.attributes = {}
         test_resource.attributes['Availability Zone'] = test_availability_zone = 'test_availability_zone'
-        test_resource.attributes['Image UUID'] = test_image_uuid = 'test_image_uuid'
+        test_resource.attributes['Image ID'] = test_image_uuid = 'test_image_uuid'
         test_resource.attributes['Instance Flavor'] = test_instance_flavor = 'test_instance_flavor'
         test_resource.attributes['Add Floating IP'] = 'True'
         test_resource.attributes['Autoload'] = '1'
         test_resource.attributes['Floating IP Subnet ID'] = floating_ip_subnet_uuid = 'floating_ip_subnet_uuid'
-        test_resource.attributes['Affinity Group UUID'] = affinity_group_uuid = 'affinity_group_uuid'
+        test_resource.attributes['Affinity Group ID'] = affinity_group_uuid = 'affinity_group_uuid'
 
         deploy_resource_model = self.tested_class.get_deploy_resource_model_from_context_resource(test_resource)
 

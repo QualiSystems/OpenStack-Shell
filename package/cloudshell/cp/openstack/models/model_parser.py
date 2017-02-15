@@ -56,12 +56,12 @@ class OpenStackShellModelParser(object):
         else:
             deploy_resource_model.cloud_provider = None
         deploy_resource_model.cp_avail_zone = attrs['Availability Zone']
-        deploy_resource_model.img_uuid = attrs['Image UUID']
+        deploy_resource_model.img_uuid = attrs['Image ID']
         deploy_resource_model.instance_flavor = attrs['Instance Flavor']
         deploy_resource_model.add_floating_ip = OpenStackShellModelParser.parse_boolean(attrs['Add Floating IP'])
         deploy_resource_model.autoload = OpenStackShellModelParser.parse_boolean(attrs['Autoload'])
         deploy_resource_model.floating_ip_subnet_uuid = attrs['Floating IP Subnet ID']
-        deploy_resource_model.affinity_group_uuid = attrs['Affinity Group UUID']
+        deploy_resource_model.affinity_group_uuid = attrs['Affinity Group ID']
         return deploy_resource_model
 
 
