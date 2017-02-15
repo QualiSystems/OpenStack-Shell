@@ -20,13 +20,13 @@ class OpenStackShellModelParser(object):
         os_res_model.controller_url = attrs['Controller URL']
         os_res_model.os_domain_name = attrs['OpenStack Domain Name']
         os_res_model.os_project_name = attrs['OpenStack Project Name']
-        os_res_model.os_user_name = attrs['OpenStack User Name']
-        os_res_model.os_user_password = attrs['OpenStack User Password']
-        os_res_model.qs_mgmt_os_net_uuid = attrs['Quali Management Network UUID']
-        os_res_model.reserved_networks = attrs['Reserved Networks']
+        os_res_model.os_user_name = attrs['User Name']
+        os_res_model.os_user_password = attrs['Password']
+        os_res_model.qs_mgmt_os_net_uuid = attrs['OpenStack Management Network ID']
+        os_res_model.reserved_networks = attrs['OpenStack Reserved Networks']
         os_res_model.vlan_type = attrs['Vlan Type']
-        os_res_model.provider_network_interface = attrs['Provider Network Interface']
-        os_res_model.floating_ip_subnet_uuid = attrs['Floating IP Subnet UUID']
+        os_res_model.provider_network_interface = attrs['OpenStack Physical Interface Name']
+        os_res_model.floating_ip_subnet_uuid = attrs['Floating IP Subnet ID']
         return os_res_model
 
     @staticmethod
@@ -56,12 +56,12 @@ class OpenStackShellModelParser(object):
         else:
             deploy_resource_model.cloud_provider = None
         deploy_resource_model.cp_avail_zone = attrs['Availability Zone']
-        deploy_resource_model.img_uuid = attrs['Image UUID']
+        deploy_resource_model.img_uuid = attrs['Image ID']
         deploy_resource_model.instance_flavor = attrs['Instance Flavor']
         deploy_resource_model.add_floating_ip = OpenStackShellModelParser.parse_boolean(attrs['Add Floating IP'])
         deploy_resource_model.autoload = OpenStackShellModelParser.parse_boolean(attrs['Autoload'])
-        deploy_resource_model.floating_ip_subnet_uuid = attrs['Floating IP Subnet UUID']
-        deploy_resource_model.affinity_group_uuid = attrs['Affinity Group UUID']
+        deploy_resource_model.floating_ip_subnet_uuid = attrs['Floating IP Subnet ID']
+        deploy_resource_model.affinity_group_uuid = attrs['Affinity Group ID']
         return deploy_resource_model
 
 
