@@ -4,64 +4,58 @@
     <AttributeInfo DefaultValue="" Description="" IsReadOnly="false" Name="Generic Input" Type="String">
       <Rules/>
     </AttributeInfo>
-    <AttributeInfo DefaultValue="http://controller:5000/v3" Description="Public Endpoint of the Keystone Controller URL for the OpenStack deployment. Typically this will be of the form http://controler-ip:5000/v3" IsReadOnly="false" Name="Controller URL" Type="String">
+    <AttributeInfo DefaultValue="http://controller:5000/v3" Description="OpenStack Keystone Controller URL endpoint address. For example: http://controler:5000/v3" IsReadOnly="false" Name="Controller URL" Type="String">
       <Rules>
         <Rule Name="Configuration" />
         <Rule Name="Setting" />
       </Rules>
     </AttributeInfo>
-    <AttributeInfo DefaultValue="default" Description="OpenStack domain used for authentication." IsReadOnly="false" Name="OpenStack Domain Name" Type="String">
+    <AttributeInfo DefaultValue="default" Description="OpenStack domain name to use." IsReadOnly="false" Name="OpenStack Domain Name" Type="String">
       <Rules>
         <Rule Name="Configuration" />
         <Rule Name="Setting" />
       </Rules>
     </AttributeInfo>
-    <AttributeInfo DefaultValue="" Description="Project name (tenant name) inside the OpenStack domain for which the deployment will be done." IsReadOnly="false" Name="OpenStack Project Name" Type="String">
+    <AttributeInfo DefaultValue="" Description="OpenStack project in which CloudShell will create the instances." IsReadOnly="false" Name="OpenStack Project Name" Type="String">
       <Rules>
         <Rule Name="Configuration" />
         <Rule Name="Setting" />
       </Rules>
     </AttributeInfo>
-    <AttributeInfo DefaultValue="" Description="OpenStack User Name" IsReadOnly="false" Name="OpenStack User Name" Type="String">
+    <AttributeInfo DefaultValue="" Description="" IsReadOnly="false" Name="User Name" Type="String">
       <Rules>
         <Rule Name="Configuration" />
         <Rule Name="Setting" />
       </Rules>
     </AttributeInfo>
-    <AttributeInfo DefaultValue="" Description="" IsReadOnly="false" Name="OpenStack User Password" Type="Password">
-      <Rules>
-        <Rule Name="Configuration" />
-        <Rule Name="Setting" />
-      </Rules>
-    </AttributeInfo>
-
-    <AttributeInfo DefaultValue="" Description="Network ID of Quali Management Network." IsReadOnly="false" Name="Quali Management Network UUID" Type="String">
+      
+    <AttributeInfo DefaultValue="" Description="The UUID of the Management Network to use. This network will be used to configure the communication between the Sandbox instances and the CloudShell components. The UUID can be found under the Horizon user interface. For example: c14241d2-376c-4fb3-8d1e-61f5c1408448." IsReadOnly="false" Name="OpenStack Management Network ID" Type="String">
       <Rules>
         <Rule Name="Configuration" />
         <Rule Name="Setting" />
       </Rules>
     </AttributeInfo>
 
-    <AttributeInfo DefaultValue="" Description="Type of the provider network deployed. Supported values are VLAN and VxLAN" IsReadOnly="false" Name="Vlan Type" Type="String">
+    <AttributeInfo DefaultValue="" Description="The VLAN technology to use for connectivity for this Cloud Provider." IsReadOnly="false" Name="Vlan Type" Type="String">
       <Rules>
         <Rule Name="Configuration" />
         <Rule Name="Setting" />
       </Rules>
     </AttributeInfo>
-    <AttributeInfo DefaultValue="" Description="Provider Network Interface Name." IsReadOnly="false" Name="Provider Network Interface" Type="String">
+    <AttributeInfo DefaultValue="" Description="The physical interface mapping name to use when configuring OpenStack connectivity. The physical interface can be found under the connectivity provider configuration. For example, for OpenStack deployments that use the Linux-Bridge plugin, the physical interface name is located in the linuxbridge_agent.ini file under the “physical_interface_mappings” attribute." IsReadOnly="false" Name="OpenStack Physical Interface Name" Type="String">
       <Rules>
         <Rule Name="Configuration" />
         <Rule Name="Setting" />
       </Rules>
     </AttributeInfo>
-    <AttributeInfo DefaultValue="" Description="Reserved Networks: A Comma separated List of CIDRs that are not to be used by the Subnet CIDR during App connectivity" IsReadOnly="false" Name="Reserved Networks" Type="String">
+    <AttributeInfo DefaultValue="" Description="Reserved networks separated by comma(,), vNICs configured to those networks won't be used for VM connectivity." IsReadOnly="false" Name="OpenStack Reserved Networks" Type="String">
       <Rules>
         <Rule Name="Configuration" />
         <Rule Name="Setting" />
       </Rules>
     </AttributeInfo>
 
-    <AttributeInfo DefaultValue="" Description="UUID Of the Subnet for Floating IP. This subnet should be connected to an External Network" IsReadOnly="false" Name="Floating IP Subnet UUID" Type="String">
+    <AttributeInfo DefaultValue="" Description="The UUID of the subnet to use for Floating IPs." IsReadOnly="false" Name="Floating IP Subnet ID" Type="String">
       <Rules>
         <Rule Name="Configuration" />
         <Rule Name="Setting" />
@@ -69,32 +63,32 @@
     </AttributeInfo>
 
     <!-- attributes used in deployed app -->
-    <AttributeInfo DefaultValue="" Description="Availability Zone." IsReadOnly="false" Name="Availability Zone" Type="String">
+    <AttributeInfo DefaultValue="" Description="Optional. Name of availability zone the VM will be associated with. Availability zone used to group network nodes for making network resources highly available." IsReadOnly="false" Name="Availability Zone" Type="String">
       <Rules>
         <Rule Name="Configuration" />
         <Rule Name="Setting" />
       </Rules>
     </AttributeInfo>
-    <AttributeInfo DefaultValue="" Description="UUID of the image to be used for deployment. Check Horizon UI for Image ID" IsReadOnly="false" Name="Image UUID" Type="String">
+    <AttributeInfo DefaultValue="" Description="The UUID of the Glance image to use. The UUID can be found under the Horizon user interface." IsReadOnly="false" Name="Image ID" Type="String">
       <Rules>
         <Rule Name="Configuration" />
         <Rule Name="Setting" />
       </Rules>
     </AttributeInfo>
-    <AttributeInfo DefaultValue="" Description="Flavor of the compute Instance. Check Horizon UI for supported flavors" IsReadOnly="false" Name="Instance Flavor" Type="String">
+    <AttributeInfo DefaultValue="" Description="Optional. The OpenStack instance Flavor. The instance flavor determines the CPU, memory and networking capacity of the VM. For example: “m1.tiny”." IsReadOnly="false" Name="Instance Flavor" Type="String">
       <Rules>
         <Rule Name="Configuration" />
         <Rule Name="Setting" />
       </Rules>
     </AttributeInfo>
-    <AttributeInfo DefaultValue="false" Description="Should the Floating IP be Added to the instance." IsReadOnly="false" Name="Add Floating IP" Type="Boolean">
+    <AttributeInfo DefaultValue="false" Description="Use a floating IP to set a static IP using Neutron L3 agent and not using a DHCP service. Floating IP is commonly used for accessing a machine from public networks while private IP will be used by other instances in the same private networks." IsReadOnly="false" Name="Add Floating IP" Type="Boolean">
       <Rules>
         <Rule Name="Configuration" />
         <Rule Name="Setting" />
       </Rules>
     </AttributeInfo>
 
-    <AttributeInfo DefaultValue="" Description="Specifies which Affinity Group this App belongs to. Right now supported affinity type is 'affinity'." IsReadOnly="false" Name="Affinity Group UUID" Type="String">
+    <AttributeInfo DefaultValue="" Description="Optional. The UUID of the affinity group the VM will be associated with. Affinity Groups will determine if a VMs are placed on the same compute node or on different nodes." IsReadOnly="false" Name="Affinity Group ID" Type="String">
       <Rules>
         <Rule Name="Configuration" />
         <Rule Name="Setting" />
@@ -132,6 +126,21 @@
         </Rules>
     </AttributeInfo>
 
+    <AttributeInfo DefaultValue="" Description="This attribute points to a pre-define group of execution servers. Usually used for different sites or domains." IsReadOnly="false" Name="Execution Server Selector" Type="String">
+      <Rules>
+        <Rule Name="Configuration" />
+        <Rule Name="Setting" />
+        <Rule Name="Execution Server Selector" />
+      </Rules>
+    </AttributeInfo>
+
+    <AttributeInfo DefaultValue="true" IsReadOnly="false" Name="Auto udev" Description="Enable Linux udev rules to allow new interfaces to be recognized by the OS automatically. When using Windows machines this attribute should be set to false." Type="Boolean">
+      <Rules>
+          <Rule Name="Configuration" />
+          <Rule Name="Setting" />
+      </Rules>
+    </AttributeInfo>
+
   </Attributes>
 
   <!-- information about Resource Families -->
@@ -151,16 +160,16 @@
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="OpenStack Project Name" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
-            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Quali Management Network UUID" UserInput="true">
+            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="OpenStack Management Network ID" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
-            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="OpenStack User Password" UserInput="true">
+            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Password" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
-            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="OpenStack User Name" UserInput="true">
+            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="User Name" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
-            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Reserved Networks" UserInput="true">
+            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="OpenStack Reserved Networks" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Vlan Type" UserInput="true">
@@ -169,10 +178,13 @@
                 <AllowedValue>VXLAN</AllowedValue>
               </AllowedValues>
             </AttachedAttribute>
-             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Floating IP Subnet UUID" UserInput="false">
+             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Floating IP Subnet ID" UserInput="false">
               <AllowedValues />
             </AttachedAttribute>
-            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Provider Network Interface" UserInput="true">
+            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="OpenStack Physical Interface Name" UserInput="true">
+              <AllowedValues />
+            </AttachedAttribute>
+            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Execution Server Selector">
               <AllowedValues />
             </AttachedAttribute>
 
@@ -242,7 +254,7 @@
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Availability Zone" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
-            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Image UUID" UserInput="true">
+            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Image ID" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Instance Flavor" UserInput="true">
@@ -254,10 +266,10 @@
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Autoload" UserInput="false">
               <AllowedValues />
             </AttachedAttribute>
-            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Affinity Group UUID" UserInput="true">
+            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Affinity Group ID" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
-            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Floating IP Subnet UUID" UserInput="true">
+            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Floating IP Subnet ID" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Auto udev" UserInput="true">

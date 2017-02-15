@@ -78,7 +78,7 @@ class OpenStackCPValidator(object):
         # we do not wrap this in try because we assume - we have validated credentials already
 
         if len(mgmt_network_id) == 0:
-            raise ValueError("Quali Management Network UUID Cannot be empty")
+            raise ValueError("OpenStack Management Network ID Cannot be empty")
 
         _ = self._get_network_from_id(net_client, mgmt_network_id)
 
@@ -87,7 +87,7 @@ class OpenStackCPValidator(object):
     def validate_floating_ip_subnet(self, net_client, floating_ip_subnet_id, logger):
 
         if len(floating_ip_subnet_id) == 0:
-            raise ValueError("Floating IP Subnet UUID Cannot be Empty")
+            raise ValueError("Floating IP Subnet ID Cannot be Empty")
 
         subnet = net_client.show_subnet(floating_ip_subnet_id)
 
