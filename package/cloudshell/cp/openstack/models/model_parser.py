@@ -25,7 +25,7 @@ class OpenStackShellModelParser(object):
         os_res_model.qs_mgmt_os_net_uuid = attrs['OpenStack Management Network ID']
         os_res_model.reserved_networks = attrs['OpenStack Reserved Networks']
         os_res_model.vlan_type = attrs['Vlan Type']
-        os_res_model.provider_network_interface = attrs['Provider Network Interface']
+        os_res_model.provider_network_interface = attrs['OpenStack Physical Interface Name']
         os_res_model.floating_ip_subnet_uuid = attrs['Floating IP Subnet ID']
         return os_res_model
 

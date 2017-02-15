@@ -149,9 +149,6 @@
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="OpenStack Management Network ID" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
-            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="OpenStack Region" UserInput="true">
-              <AllowedValues />
-            </AttachedAttribute>
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Password" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>

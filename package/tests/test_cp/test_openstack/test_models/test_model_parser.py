@@ -22,7 +22,7 @@ class TestOpenStackShellModelParser(TestCase):
         test_resource.attributes['Floating IP Pool'] = '10.0.0.100-10.0.0.101'
         test_resource.attributes['OpenStack Reserved Networks'] = '172.22.0.0/16'
         test_resource.attributes['Vlan Type'] = 'vlan'
-        test_resource.attributes['Provider Network Interface'] = 'public'
+        test_resource.attributes['OpenStack Physical Interface Name'] = 'public'
         test_resource.attributes['Floating IP Subnet ID'] = 'floating_ip_subnet_uuid'
         result = self.tested_class.get_resource_model_from_context(test_resource)
 
