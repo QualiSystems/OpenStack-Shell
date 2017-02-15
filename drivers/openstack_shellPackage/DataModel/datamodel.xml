@@ -133,14 +133,7 @@
         <Rule Name="Execution Server Selector" />
       </Rules>
     </AttributeInfo>
-
-    <AttributeInfo DefaultValue="true" IsReadOnly="false" Name="Auto udev" Description="Enable Linux udev rules to allow new interfaces to be recognized by the OS automatically. When using Windows machines this attribute should be set to false." Type="Boolean">
-      <Rules>
-          <Rule Name="Configuration" />
-          <Rule Name="Setting" />
-      </Rules>
-    </AttributeInfo>
-
+    
   </Attributes>
 
   <!-- information about Resource Families -->
