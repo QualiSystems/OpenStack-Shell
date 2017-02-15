@@ -11,3 +11,4 @@ class DeployOSNovaImageInstanceResourceModel(object):
         self.autoload = False
         self.floating_ip_subnet_uuid = ''
         self.affinity_group_uuid = ''
+        self.auto_udev = True

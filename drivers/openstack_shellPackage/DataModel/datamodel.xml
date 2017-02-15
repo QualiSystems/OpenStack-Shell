@@ -100,6 +100,13 @@
         <Rule Name="Setting" />
       </Rules>
     </AttributeInfo>
+
+    <AttributeInfo DefaultValue="true" Description="Configure Linux udev rules to allow new interfaces to be recognized by the OS automatically. When using Windows machines this attribute should be set to false." IsReadOnly="false" Name="Auto udev" Type="Boolean">
+      <Rules>
+        <Rule Name="Configuration" />
+        <Rule Name="Setting" />
+      </Rules>
+    </AttributeInfo>
     <AttributeInfo DefaultValue="false" Description="Enables the automatic execution of the Autoload command during reservation Setup.." IsReadOnly="false" Name="Autoload"  Type="Boolean">
         <Rules>
             <Rule Name="Configuration" />
@@ -251,6 +258,9 @@
               <AllowedValues />
             </AttachedAttribute>
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Floating IP Subnet UUID" UserInput="true">
+              <AllowedValues />
+            </AttachedAttribute>
+            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Auto udev" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
           </AttachedAttributes>

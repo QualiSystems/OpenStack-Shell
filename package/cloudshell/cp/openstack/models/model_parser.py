@@ -42,6 +42,8 @@ class OpenStackShellModelParser(object):
         deploy_res_model.autoload = data_holder.image.autoload
         deploy_res_model.floating_ip_subnet_uuid = data_holder.image.floating_ip_subnet_uuid
         deploy_res_model.affinity_group_uuid = data_holder.image.affinity_group_uuid
+        deploy_res_model.auto_udev = data_holder.image.auto_udev
+
 
         app_name = data_holder.app_name
 
@@ -62,6 +64,7 @@ class OpenStackShellModelParser(object):
         deploy_resource_model.autoload = OpenStackShellModelParser.parse_boolean(attrs['Autoload'])
         deploy_resource_model.floating_ip_subnet_uuid = attrs['Floating IP Subnet UUID']
         deploy_resource_model.affinity_group_uuid = attrs['Affinity Group UUID']
+        deploy_resource_model.auto_udev = OpenStackShellModelParser.parse_boolean(attrs['Auto udev'])
         return deploy_resource_model
 
 
