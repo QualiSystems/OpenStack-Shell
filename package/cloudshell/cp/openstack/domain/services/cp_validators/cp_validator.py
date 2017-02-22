@@ -36,7 +36,7 @@ class OpenStackCPValidator(object):
 
     def validate_openstack_password(self, os_password, logger):
 
-        return self._is_not_empty(os_password, "OpenStack Passwrd")
+        return self._is_not_empty(os_password, "OpenStack Password")
 
     def _is_not_empty(self, value, err_value):
 

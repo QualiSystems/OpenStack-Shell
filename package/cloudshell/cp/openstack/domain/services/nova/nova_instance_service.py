@@ -38,6 +38,8 @@ class NovaInstanceService(object):
         if not openstack_session or not name or not reservation or \
                 not deploy_req_model:
             return None
+        if not deploy_req_model.instance_flavor:
+            raise ValueError("Instance flavor cannot be empty.")
 
         client = novaclient.Client(self.API_VERSION, session=openstack_session)
 

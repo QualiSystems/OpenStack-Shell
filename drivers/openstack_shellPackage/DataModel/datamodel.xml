@@ -42,7 +42,7 @@
         <Rule Name="Setting" />
       </Rules>
     </AttributeInfo>
-    <AttributeInfo DefaultValue="" Description="The physical interface mapping name to use when configuring OpenStack connectivity. The physical interface can be found under the connectivity provider configuration. For example, for OpenStack deployments that use the Linux-Bridge plugin, the physical interface name is located in the linuxbridge_agent.ini file under the “physical_interface_mappings” attribute." IsReadOnly="false" Name="OpenStack Physical Interface Name" Type="String">
+    <AttributeInfo DefaultValue="" Description="The physical interface mapping name to use when configuring OpenStack connectivity. The physical interface can be found under the connectivity provider configuration. If VXLAN is set as the 'VLAN Type' this attribute is not required. For example, for OpenStack deployments that use the Linux-Bridge plugin, the physical interface name is located in the linuxbridge_agent.ini file under the “physical_interface_mappings” attribute." IsReadOnly="false" Name="OpenStack Physical Interface Name" Type="String">
       <Rules>
         <Rule Name="Configuration" />
         <Rule Name="Setting" />
@@ -95,7 +95,7 @@
       </Rules>
     </AttributeInfo>
 
-    <AttributeInfo DefaultValue="true" Description="Configure Linux udev rules to allow new interfaces to be recognized by the OS automatically. When using Windows machines this attribute should be set to false." IsReadOnly="false" Name="Auto udev" Type="Boolean">
+    <AttributeInfo DefaultValue="true" Description="Enable Linux udev rules to allow new interfaces to be recognized by the OS automatically. When using Windows machines this attribute should be set to false." IsReadOnly="false" Name="Auto udev" Type="Boolean">
       <Rules>
         <Rule Name="Configuration" />
         <Rule Name="Setting" />
