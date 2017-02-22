@@ -32,7 +32,7 @@ class DeployOperation(object):
         :param DeployDataHolder deploy_req_model:
         :param OpenStackResourceModel cp_resource_model:
         :param cloudshell.shell.core.context.CancellationContext cancellation_context:
-        :param LoggingSessionContext logger:
+        :param logging.Logger logger:
         :rtype DeployResultModel:
         """
         logger.info("Inside Deploy Operation.")
@@ -73,9 +73,10 @@ class DeployOperation(object):
                 else:
                     floating_ip_subnet_uuid = cp_resource_model.floating_ip_subnet_uuid
 
-                floating_ip_dict = self.network_service.create_floating_ip(floating_ip_subnet_id=floating_ip_subnet_uuid,
-                                                                        openstack_session=os_session,
-                                                                        logger=logger)
+                floating_ip_dict = self.network_service.create_floating_ip(
+                    floating_ip_subnet_id=floating_ip_subnet_uuid,
+                    openstack_session=os_session,
+                    logger=logger)
                 if floating_ip_dict:
                     floating_ip_str = floating_ip_dict['floating_ip_address']
                 if floating_ip_str:
@@ -104,18 +105,40 @@ class DeployOperation(object):
         # If any Exception is raised during deploy or assign floating IP - clean up OpenStack side and re-raise
         except Exception as e:
             logger.error(traceback.format_exc())
-            if instance:
-                instance_id = instance.id
-                # This calls detach and delete floating IP and instance terminate (handles empty floating IP)
-                self.instance_service.detach_floating_ip(openstack_session=os_session,
-                                                         instance=instance,
-                                                         floating_ip=floating_ip_str,
-                                                         logger=logger)
-                self.network_service.delete_floating_ip(openstack_session=os_session,
-                                                        floating_ip=floating_ip_str,
-                                                        logger=logger)
-                self.instance_service.terminate_instance(openstack_session=os_session,
-                                                         instance_id=instance_id,
-                                                         logger=logger)
+
+            self._rollback_failed_instance(logger=logger,
+                                           os_session=os_session,
+                                           floating_ip=floating_ip_str,
+                                           instance=instance)
+
             # Re-raise for the UI
             raise
+
+    def _rollback_failed_instance(self, logger, os_session, floating_ip, instance):
+        """
+
+        :param logging.Logger logger:
+        :param keystoneauth1.session.Session os_session:
+        :param str floating_ip:
+        :param novaclient.Client.servers.Server instance:
+        :return:
+        """
+        if not instance:
+            return
+        instance_id = instance.id
+
+        # This calls detach and delete floating IP and instance terminate (handles empty floating IP)
+        try:
+            self.instance_service.detach_floating_ip(openstack_session=os_session,
+                                                     instance=instance,
+                                                     floating_ip=floating_ip,
+                                                     logger=logger)
+            self.network_service.delete_floating_ip(openstack_session=os_session,
+                                                    floating_ip=floating_ip,
+                                                    logger=logger)
+        except Exception:
+            logger.exception("Failed to remove floating ip {}. ".format(floating_ip))
+
+        self.instance_service.terminate_instance(openstack_session=os_session,
+                                                 instance_id=instance_id,
+                                                 logger=logger)
