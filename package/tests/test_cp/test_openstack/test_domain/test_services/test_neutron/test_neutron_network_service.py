@@ -77,10 +77,18 @@ class TestNeutronNetworkService(TestCase):
         test_neutron_network_service.neutron_client.Client = Mock(return_value=mock_client)
         mock_client.create_subnet = Mock(return_value={'subnet':'subnet success'})
 
-        self.network_service._get_unused_cidr = Mock(return_value = '10.0.0.0/24')
+        mock_return_subnets = {'subnets':[{'cidr': '192.168.1.0/24', 'id':'test-id-1'},
+                               {'cidr': '192.168.1.0/24', 'id': 'test-id-2'}]}
+
+        test_reserved_subnets = '10.0.0.0/16, 172.16.0.0/12, 192.168.0.0/24'
+        mock_client.list_subnets = Mock(return_value=mock_return_subnets)
+
+        cp_resource_model = Mock()
+        cp_resource_model.reserved_networks = test_reserved_subnets
+        # self.network_service._get_unused_cidr = Mock(return_value = '10.0.0.0/24')
 
         result = self.network_service.create_and_attach_subnet_to_net(openstack_session=self.openstack_session,
-                                                                      cp_resource_model=Mock(),
+                                                                      cp_resource_model=cp_resource_model,
                                                                       net_id=test_net_id,
                                                                       logger=self.mock_logger)
         self.assertEqual(result, 'subnet success')
