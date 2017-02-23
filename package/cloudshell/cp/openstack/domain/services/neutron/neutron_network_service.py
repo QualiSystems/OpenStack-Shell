@@ -3,7 +3,7 @@ from neutronclient.common.exceptions import Conflict as NetCreateConflict
 
 import traceback
 import time
-
+import ipaddress
 
 class NeutronNetworkService(object):
     """
@@ -155,56 +155,73 @@ class NeutronNetworkService(object):
         :return str:
         """
 
-        # Algorithm below is a very simplistic one where we choose one of the three prefixes and then use
-        # /24 networks starting with that prefix. This algorithm will break if all three 10.X, 192.168.X and 172.X
-        # networks are used in a given On Prem Network.
-
+        # We basically start with a 10.0. network to find a subnet that does not overlap with
+        # either the reserved_cidrs or currently allocated CIDRs
+        # currently supports /24 subnets
         logger.debug("reserved CIDRs: {0}".format(cp_resvd_cidrs))
 
-        candidate_prefixes = {'10': '10.0', '192.168': '192.168', '172': '172.0'}
-        cp_resvd_cidrs = cp_resvd_cidrs.split(",")
-        possible_prefixes = filter(lambda x: any(map(lambda y: not y.strip().startswith(x), cp_resvd_cidrs)),
-                                   candidate_prefixes.keys())
-        logger.debug("Possible Prefixes that can be used: {0}".format(possible_prefixes))
-        if not possible_prefixes:
+        blacklist_cidrs = map(lambda x: x.strip(), cp_resvd_cidrs.split(","))
+
+        current_subnets = client.list_subnets(fields=['cidr', 'id'])['subnets']
+        current_subnets_cidrs = map(lambda x: unicode(x.get('cidr')), current_subnets)
+
+        # Total CIDRs we don't care about are - reserved + currently allocated
+
+        blacklist_cidrs += current_subnets_cidrs
+        blacklist_cidrs = map(lambda x: unicode(x), blacklist_cidrs)
+        blacklist_subnets = map(lambda x: ipaddress.IPv4Network(x), blacklist_cidrs)
+
+        # start with a 10 subnet
+        found_subnet = None
+        first_octet = 10
+        for i in range(256):
+            second_octet = i
+            for j in range(256):
+                third_octet = j
+                subnet_str = '{0}.{1}.{2}.0/24'.format(first_octet, second_octet, third_octet)
+                u_subnet_str = unicode(subnet_str)
+                u_subnet = ipaddress.IPv4Network(u_subnet_str)
+                # print u_subnet, blacklist_subnets
+                if not any(map(lambda x: u_subnet.overlaps(x), blacklist_subnets)):
+                    found_subnet = u_subnet
+                    break
+            if found_subnet:
+                break
+
+        if not found_subnet:
+            first_octet = 172
+            for i in range(16, 32):
+                second_octet = i
+                for j in range(256):
+                    third_octet = j
+                    subnet_str = '{0}.{1}.{2}.0/24'.format(first_octet, second_octet, third_octet)
+                    u_subnet_str = unicode(subnet_str)
+                    u_subnet = ipaddress.IPv4Network(u_subnet_str)
+                    if not any(map(lambda x: u_subnet.overlaps(x), blacklist_subnets)):
+                        found_subnet = u_subnet
+                        break
+                if found_subnet:
+                    break
+
+        if not found_subnet:
+            first_octet = 192
+            second_octet = 168
+            for j in range(256):
+                third_octet = j
+                subnet_str = '{0}.{1}.{2}.0/24'.format(first_octet, second_octet, third_octet)
+                u_subnet_str = unicode(subnet_str)
+                u_subnet = ipaddress.IPv4Network(u_subnet_str)
+                if not any(map(lambda x: u_subnet.overlaps(x), blacklist_subnets)):
+                    found_subnet = u_subnet
+                    break
+
+        if not found_subnet:
             return None
 
-        prefix = possible_prefixes[0]
-        subnet_prefix = candidate_prefixes[prefix]
-
-        # Get all subnets that start with 'our prefix'
-        subnets = client.list_subnets(fields=['cidr', 'id'])['subnets']
-        subnet_cidrs = map(lambda x: x.get('cidr'), subnets)
-
-        allocated_subnets = []
-        for subnet in subnets:
-            if subnet['cidr'].startswith(prefix):
-                allocated_subnets.append(subnet['cidr'])
-
-        allocated_subnets.sort()
-        logger.debug("Allocated Subnets: {0}".format(",".join(allocated_subnets)))
-
-        if not allocated_subnets:
-            subnet_num = 0
-        else:
-            last_subnet = allocated_subnets[-1]
-            subnet_num = int(last_subnet.split("/")[0].split(".")[2])
-            subnet_num += 1
-        if subnet_num == 255:
-            subnet_num = 0
-            cidr = ".".join([subnet_prefix, str(subnet_num), "0/24"])
-            while cidr in subnet_cidrs:
-                subnet_num += 1
-                cidr = ".".join([subnet_prefix, str(subnet_num), "0/24"])
-        else:
-            cidr = ".".join([subnet_prefix,str(subnet_num), "0/24"])
-
-        logger.debug("Found {0} CIDR".format(cidr))
-
-        if subnet_num == 255:
-            return None
+        cidr = str(found_subnet)
 
         return cidr
+
 
     def create_floating_ip(self, openstack_session, floating_ip_subnet_id, logger):
         """
