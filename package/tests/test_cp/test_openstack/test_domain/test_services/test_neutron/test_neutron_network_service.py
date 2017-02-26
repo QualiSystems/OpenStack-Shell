@@ -86,7 +86,7 @@ class TestNeutronNetworkService(TestCase):
                                                        logger=self.mock_logger)
         self.assertEqual(result, '10.0.2.0/24')
 
-    def none_cidr_returned(self):
+    def test_none_cidr_returned(self):
         mock_client = Mock()
         test_neutron_network_service.neutron_client.Client = Mock(return_value=mock_client)
         mock_client.create_subnet = Mock(return_value={'subnet': 'subnet success'})
@@ -94,12 +94,42 @@ class TestNeutronNetworkService(TestCase):
         mock_return_subnets = {'subnets': [{'cidr': '10.0.0.0/24', 'id': 'test-id-1'},
                                            {'cidr': '10.0.1.0/24', 'id': 'test-id-2'}]}
 
-        test_reserved_subnets = '10.0.0.0/8, 172.16.0.0/12 , 192.168.0.0/24'
+        test_reserved_subnets = '10.0.0.0/8, 172.16.0.0/12 , 192.168.0.0/16'
         mock_client.list_subnets = Mock(return_value=mock_return_subnets)
         result = self.network_service._get_unused_cidr(client=mock_client,
                                                        cp_resvd_cidrs=test_reserved_subnets,
                                                        logger=self.mock_logger)
         self.assertEqual(result, None)
+
+    def test_empty_reserved_networks(self):
+        mock_client = Mock()
+        test_neutron_network_service.neutron_client.Client = Mock(return_value=mock_client)
+        mock_client.create_subnet = Mock(return_value={'subnet': 'subnet success'})
+
+        mock_return_subnets = {'subnets': [{'cidr': '10.0.0.0/24', 'id': 'test-id-1'},
+                                           {'cidr': '10.0.1.0/24', 'id': 'test-id-2'}]}
+
+        test_reserved_subnets = ''
+        mock_client.list_subnets = Mock(return_value=mock_return_subnets)
+        result = self.network_service._get_unused_cidr(client=mock_client,
+                                                       cp_resvd_cidrs=test_reserved_subnets,
+                                                       logger=self.mock_logger)
+        self.assertEqual(result, '10.0.2.0/24')
+
+    def test_reserved_networks_one_empty_entry(self):
+        mock_client = Mock()
+        test_neutron_network_service.neutron_client.Client = Mock(return_value=mock_client)
+        mock_client.create_subnet = Mock(return_value={'subnet': 'subnet success'})
+
+        mock_return_subnets = {'subnets': [{'cidr': '10.0.0.0/24', 'id': 'test-id-1'},
+                                           {'cidr': '10.0.1.0/24', 'id': 'test-id-2'}]}
+
+        test_reserved_subnets = '172.16.0.0/12,,192.168.0.0/16'
+        mock_client.list_subnets = Mock(return_value=mock_return_subnets)
+        result = self.network_service._get_unused_cidr(client=mock_client,
+                                                       cp_resvd_cidrs=test_reserved_subnets,
+                                                       logger=self.mock_logger)
+        self.assertEqual(result, '10.0.2.0/24')
 
     def test_create_and_attach_subnet_to_net_success(self):
 

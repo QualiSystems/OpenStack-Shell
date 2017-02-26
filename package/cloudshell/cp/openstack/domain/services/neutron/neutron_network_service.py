@@ -160,7 +160,8 @@ class NeutronNetworkService(object):
         # currently supports /24 subnets
         logger.debug("reserved CIDRs: {0}".format(cp_resvd_cidrs))
 
-        blacklist_cidrs = map(lambda x: x.strip(), cp_resvd_cidrs.split(","))
+        # Empty reserved_addresses generates a list with single empty string
+        blacklist_cidrs = filter(lambda x: len(x) > 0, map(lambda x: x.strip(), cp_resvd_cidrs.split(",")))
 
         current_subnets = client.list_subnets(fields=['cidr', 'id'])['subnets']
         current_subnets_cidrs = map(lambda x: unicode(x.get('cidr')), current_subnets)
