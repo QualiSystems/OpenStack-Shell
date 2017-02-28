@@ -35,9 +35,9 @@ class DeployOSNovaImageInstanceDriver(ResourceDriverInterface):
         with LoggingSessionContext(context) as logger:
             with ErrorHandlingContext(logger):
                 with CloudShellSessionContext(context) as session:
-                    logger.debug("Deploy Called for Reservation: {0}".format(context.reservation.reservation_id))
+                    logger.info("Deploy Called for Reservation: {0}".format(context.reservation.reservation_id))
                     # Get CS Session we are going to make an API call using this session
-                    logger.debug("creating session: {0}, {1}, {2}".format(context.connectivity.server_address,
+                    logger.info("creating session: {0}, {1}, {2}".format(context.connectivity.server_address,
                                                                           context.connectivity.admin_auth_token,
                                                                           context.reservation.domain))
 
@@ -48,7 +48,7 @@ class DeployOSNovaImageInstanceDriver(ResourceDriverInterface):
                     app_name = context_json_decoded['name']
                     cloud_provider_name = context_json_decoded["deploymentService"].get("cloudProviderName")
 
-                    logger.debug("cloud_provider_name from context = {0}".format(cloud_provider_name))
+                    logger.info("cloud_provider_name from context = {0}".format(cloud_provider_name))
 
                     if cloud_provider_name:
                         deploy_service_res_model.cloud_provider = str(cloud_provider_name)
@@ -56,9 +56,9 @@ class DeployOSNovaImageInstanceDriver(ResourceDriverInterface):
                     deploy_req = DeployDataHolder({self.APP_NAME: app_name,
                                                    self.IMAGE_PARAM: deploy_service_res_model})
 
-                    logger.debug("Calling the Shell Driver's Deploy method for app: {0}".format(app_name))
+                    logger.info("Calling the Shell Driver's Deploy method for app: {0}".format(app_name))
 
-                    logger.debug("cloud_provider = {0}".format(deploy_service_res_model.cloud_provider))
+                    logger.info("cloud_provider = {0}".format(deploy_service_res_model.cloud_provider))
                     # Calls command on the OpenStack cloud provider
                     result = session.ExecuteCommand(context.reservation.reservation_id,
                                                     deploy_service_res_model.cloud_provider,

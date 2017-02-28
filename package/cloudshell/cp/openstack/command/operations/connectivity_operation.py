@@ -17,7 +17,7 @@ class ConnectivityOperation(object):
         :param keystoneauth1.session.Session openstack_session:
         :param OpenStackResourceModel cp_resource_model:
         :param str conn_request: Connectivty Request JSON
-        :param LoggingSessionContext logger:
+        :param logging.Logger logger:
         :return DriverResponseRoot:
         """
 
