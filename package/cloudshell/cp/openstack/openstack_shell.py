@@ -1,3 +1,5 @@
+import jsonpickle
+
 from cloudshell.cp.openstack.common.driver_helper import CloudshellDriverHelper
 
 # Model
@@ -89,7 +91,7 @@ class OpenStackShell(object):
                     deployed_app_resource = self.model_parser.deployed_app_resource_from_context_remote(context_remote)
                     deployed_app_fullname = context_remote.fullname
 
-                    logger.info(deployed_app_resource)
+                    logger.debug(jsonpickle.dumps(deployed_app_resource, unpicklable=False))
 
                     os_session = self.os_session_provider.get_openstack_session(cs_session, resource_model, logger)
                     self.power_operation.power_on(openstack_session=os_session,
@@ -261,8 +263,6 @@ class OpenStackShell(object):
                                                                                          cp_resource_model=cp_resource_model,
                                                                                          conn_request=connectivity_request,
                                                                                          logger=logger)
-                    logger.info(connectivity_result)
-
                     return self.command_result_parser.set_command_result(connectivity_result)
 
     # Connectivity Operations End

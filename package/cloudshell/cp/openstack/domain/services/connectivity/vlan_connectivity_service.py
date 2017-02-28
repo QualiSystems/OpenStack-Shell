@@ -61,9 +61,9 @@ class VLANConnectivityService(object):
 
             action_id = action.actionId
             deployed_app_res_name = action.actionTarget.fullName
-            logger.debug("Processing action id {0} for target {1}".format(action_id, deployed_app_res_name))
+            logger.info("Processing action id {0} for target {1}".format(action_id, deployed_app_res_name))
             action_resource_info = self.get_action_resource_info(deployed_app_res_name, action_id, action)
-            logger.debug("Action resource info: {}".format(action_resource_info))
+            logger.info("Action resource info: {}".format(action_resource_info))
 
             action_vlanid = action.connectionParams.vlanId
             if action_vlanid in curr_dict.keys():
@@ -92,6 +92,8 @@ class VLANConnectivityService(object):
         driver_response_root = DriverResponseRoot()
         driver_response_root.driverResponse = driver_response
 
+        logger.info(jsonpickle.dumps(driver_response, unpicklable=False))
+
         return driver_response_root
 
     def _format_err_msg_for_exception(self, e):
@@ -116,13 +118,13 @@ class VLANConnectivityService(object):
         # For each VLAN ID (create VLAN network)
         results = []
 
-        logger.debug("We have {0} 'set vlan' actions to process".format(len(vlan_actions)))
+        logger.info("We have {0} 'set vlan' actions to process".format(len(vlan_actions)))
 
         for vlan_id, values in vlan_actions.iteritems():
             net = None
             net_err_msg = ''
             try:
-                logger.debug("creating or getting network with segmentation id {}".format(vlan_id))
+                logger.info("creating or getting network with segmentation id {}".format(vlan_id))
                 net = self.network_service.create_or_get_network_with_segmentation_id(
                     openstack_session=openstack_session,
                     cp_resource_model=cp_resource_model,
@@ -187,12 +189,12 @@ class VLANConnectivityService(object):
         :return:
         """
 
-        logger.debug("We have {0} 'remove vlan' actions to process".format(len(vlan_actions)))
+        logger.info("We have {0} 'remove vlan' actions to process".format(len(vlan_actions)))
 
         results = []
 
         for vlan_id, values in vlan_actions.iteritems():
-            logger.debug("Finding network with segmentation id {}".format(vlan_id))
+            logger.info("Finding network with segmentation id {}".format(vlan_id))
             net = self.network_service.get_network_with_segmentation_id(openstack_session=openstack_session,
                                                                         segmentation_id=int(vlan_id), logger=logger)
             if not net:
@@ -204,7 +206,7 @@ class VLANConnectivityService(object):
                 net_id = net['id']
 
                 remove_results = []
-                logger.debug("Detaching nics from network {}".format(net_id))
+                logger.info("Detaching nics from network {}".format(net_id))
                 for val in values:
                     action_result = self.detach_nic_from_instance_action_result(openstack_session=openstack_session,
                                                                                 action_resource_info=val,
@@ -311,7 +313,7 @@ class VLANConnectivityService(object):
         result_err_msg = ''
         try:
             instance_id = action_resource_info.vm_uuid
-            logger.debug("Attaching instance {0} to net {1}".format(instance_id, net_id))
+            logger.info("Attaching instance {0} to net {1}".format(instance_id, net_id))
             result = self.instance_service.attach_nic_to_net(openstack_session=openstack_session,
                                                              instance_id=instance_id, net_id=net_id, logger=logger)
         except Exception as e:

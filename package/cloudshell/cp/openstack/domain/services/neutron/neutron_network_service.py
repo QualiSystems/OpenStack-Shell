@@ -41,7 +41,7 @@ class NeutronNetworkService(object):
 
         try:
             request = {'network': create_nw_json}
-            logger.debug("Calling neutron client create_network with request: {}".format(request))
+            logger.info("Calling neutron client create_network with request: {}".format(request))
             new_net = client.create_network(request)
             new_net = new_net['network']
         except NetCreateConflict as e:
@@ -53,7 +53,7 @@ class NeutronNetworkService(object):
                 raise
             new_net = networks_res['networks'][0]
 
-        logger.debug("Got network: {}".format(new_net))
+        logger.info("Got network: {}".format(new_net))
 
         return new_net
 
@@ -100,10 +100,10 @@ class NeutronNetworkService(object):
                               'gateway_ip': None}
 
         request = {'subnet': create_subnet_json}
-        logger.debug("Calling neutron client create_subnet with request: {}".format(request))
+        logger.info("Calling neutron client create_subnet with request: {}".format(request))
         new_subnet = client.create_subnet(request)
         new_subnet = new_subnet['subnet']
-        logger.debug("Created new subnet: {}".format(new_subnet))
+        logger.info("Created new subnet: {}".format(new_subnet))
 
         return new_subnet
 
@@ -134,11 +134,13 @@ class NeutronNetworkService(object):
                 else:
                     break
 
-            logger.debug("Found {0} ports".format(network_ports))
+            logger.info("Found {0} ports: {1}".format(len(network_ports), network_ports))
             if len(network_ports) <= 1:
                 for subnet in network['subnets']:
+                    logger.info("Deleting subnet {}".format(subnet))
                     client.delete_subnet(subnet)
 
+                logger.info("Deleting network {}".format(network))
                 client.delete_network(network['id'])
 
             else:
@@ -164,7 +166,7 @@ class NeutronNetworkService(object):
         # We basically start with a 10.0. network to find a subnet that does not overlap with
         # either the reserved_cidrs or currently allocated CIDRs
         # currently supports /24 subnets
-        logger.debug("reserved CIDRs: {0}".format(cp_resvd_cidrs))
+        logger.info("reserved CIDRs: {0}".format(cp_resvd_cidrs))
 
         # Empty reserved_addresses generates a list with single empty string
         blacklist_cidrs = filter(lambda x: len(x) > 0, map(lambda x: x.strip(), cp_resvd_cidrs.split(",")))
@@ -176,7 +178,7 @@ class NeutronNetworkService(object):
 
         blacklist_cidrs += current_subnets_cidrs
         blacklist_cidrs = map(lambda x: unicode(x), blacklist_cidrs)
-        logger.debug("blacklist CIDRs: {0}".format(blacklist_cidrs))
+        logger.info("blacklist CIDRs: {0}".format(blacklist_cidrs))
         blacklist_subnets = map(lambda x: ipaddress.IPv4Network(x), blacklist_cidrs)
 
         # start with a 10 subnet
@@ -227,7 +229,7 @@ class NeutronNetworkService(object):
             return None
 
         cidr = str(found_subnet)
-        logger.debug("Resolved CIDR: {}".format(cidr))
+        logger.info("Resolved CIDR: {}".format(cidr))
 
         return cidr
 
