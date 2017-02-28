@@ -21,7 +21,7 @@ class NeutronNetworkService(object):
         :param keystoneauth1.session.Session openstack_session:
         :param OpenStackResourceModel cp_resource_model:
         :param int segmentation_id:
-        :param LoggingSessionContext logger:
+        :param logging.Logger logger:
         :return dict :
         """
 
@@ -40,15 +40,20 @@ class NeutronNetworkService(object):
             create_nw_json.update({'provider:physical_network': interface_name})
 
         try:
-            new_net = client.create_network({'network': create_nw_json})
+            request = {'network': create_nw_json}
+            logger.info("Calling neutron client create_network with request: {}".format(request))
+            new_net = client.create_network(request)
             new_net = new_net['network']
         except NetCreateConflict as e:
             logger.error(traceback.format_exc())
             networks_res = client.list_networks(**{'provider:segmentation_id': segmentation_id})
             networks = networks_res['networks']
             if not networks:
+                logger.error("Network with segmentation id {0} not found and couldnt be created".format(segmentation_id))
                 raise
             new_net = networks_res['networks'][0]
+
+        logger.info("Got network: {}".format(new_net))
 
         return new_net
 
@@ -76,6 +81,7 @@ class NeutronNetworkService(object):
         :param keystoneauth1.session.Session openstack_session:
         :param OpenStackResourceModel cp_resource_model:
         :param str net_id: UUID string
+        :param logging.Logger logger:
         :return dict:
         """
 
@@ -93,8 +99,11 @@ class NeutronNetworkService(object):
                               'name': subnet_name,
                               'gateway_ip': None}
 
-        new_subnet = client.create_subnet({'subnet':create_subnet_json})
+        request = {'subnet': create_subnet_json}
+        logger.info("Calling neutron client create_subnet with request: {}".format(request))
+        new_subnet = client.create_subnet(request)
         new_subnet = new_subnet['subnet']
+        logger.info("Created new subnet: {}".format(new_subnet))
 
         return new_subnet
 
@@ -103,16 +112,13 @@ class NeutronNetworkService(object):
 
         :param keystoneauth1.session.Session openstack_session:
         :param dict network:
-        :param LoggingSessionContext logger:
+        :param logging.Logger logger:
         :return:
         """
 
-        # FIXME: What happens if multiple threads call this?
         client = neutron_client.Client(session=openstack_session)
 
         try:
-            #  FIXME: This whole block should be synchronized.
-
             # Get a list of all ports for this network. If there's any port with device owner other than DHCP,
             # You won't be able to delete the network or subnet. Retry it a few times (sometimes seen that when
             # this call happens, some 'ports' are still there.
@@ -128,11 +134,13 @@ class NeutronNetworkService(object):
                 else:
                     break
 
-            logger.debug("Found {0} ports".format(network_ports))
+            logger.info("Found {0} ports: {1}".format(len(network_ports), network_ports))
             if len(network_ports) <= 1:
                 for subnet in network['subnets']:
+                    logger.info("Deleting subnet {}".format(subnet))
                     client.delete_subnet(subnet)
 
+                logger.info("Deleting network {}".format(network))
                 client.delete_network(network['id'])
 
             else:
@@ -158,7 +166,7 @@ class NeutronNetworkService(object):
         # We basically start with a 10.0. network to find a subnet that does not overlap with
         # either the reserved_cidrs or currently allocated CIDRs
         # currently supports /24 subnets
-        logger.debug("reserved CIDRs: {0}".format(cp_resvd_cidrs))
+        logger.info("reserved CIDRs: {0}".format(cp_resvd_cidrs))
 
         # Empty reserved_addresses generates a list with single empty string
         blacklist_cidrs = filter(lambda x: len(x) > 0, map(lambda x: x.strip(), cp_resvd_cidrs.split(",")))
@@ -170,6 +178,7 @@ class NeutronNetworkService(object):
 
         blacklist_cidrs += current_subnets_cidrs
         blacklist_cidrs = map(lambda x: unicode(x), blacklist_cidrs)
+        logger.info("blacklist CIDRs: {0}".format(blacklist_cidrs))
         blacklist_subnets = map(lambda x: ipaddress.IPv4Network(x), blacklist_cidrs)
 
         # start with a 10 subnet
@@ -220,6 +229,7 @@ class NeutronNetworkService(object):
             return None
 
         cidr = str(found_subnet)
+        logger.info("Resolved CIDR: {}".format(cidr))
 
         return cidr
 

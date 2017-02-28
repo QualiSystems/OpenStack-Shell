@@ -32,7 +32,7 @@ class VLANConnectivityService(object):
         :param keystoneauth1.session.Session openstack_session:
         :param OpenStackResourceModel cp_resource_model:
         :param str connection_request:
-        :param LoggingSessionContext logger:
+        :param logging.Logger logger:
         :return:
         """
 
@@ -48,8 +48,9 @@ class VLANConnectivityService(object):
         set_vlan_actions_dict = {}
         remove_vlan_actions_dict = {}
 
+        logger.info("Processing {0} actions and creating mapping between vlan ids to actions".format(len(actions)))
+
         # Add more description
-        # TODO : implement remove actions dict
         for action in actions:
 
             curr_dict = self._get_curr_actions_dict(action_type=action.type,
@@ -58,9 +59,11 @@ class VLANConnectivityService(object):
             if curr_dict is None:
                 raise ValueError("Unknown action: Action not one of 'setVlan' or 'removeVlan'.")
 
-            actionid = action.actionId
+            action_id = action.actionId
             deployed_app_res_name = action.actionTarget.fullName
-            action_resource_info = self.get_action_resource_info(deployed_app_res_name, actionid, action)
+            logger.info("Processing action id {0} for target {1}".format(action_id, deployed_app_res_name))
+            action_resource_info = self.get_action_resource_info(deployed_app_res_name, action_id, action)
+            logger.info("Action resource info: {}".format(action_resource_info))
 
             action_vlanid = action.connectionParams.vlanId
             if action_vlanid in curr_dict.keys():
@@ -89,6 +92,8 @@ class VLANConnectivityService(object):
         driver_response_root = DriverResponseRoot()
         driver_response_root.driverResponse = driver_response
 
+        logger.info(jsonpickle.dumps(driver_response, unpicklable=False))
+
         return driver_response_root
 
     def _format_err_msg_for_exception(self, e):
@@ -106,17 +111,20 @@ class VLANConnectivityService(object):
         :param keystoneauth1.session.Session openstack_session:
         :param OpenStackResourceModel cp_resource_model:
         :param dict vlan_actions:
-        :param LoggingSessionContext logger:
-        :return ConnectivityActionResult List :
+        :param logging.Logger logger:
+        :rtype: ConnectivityActionResult[]
         """
 
         # For each VLAN ID (create VLAN network)
         results = []
 
+        logger.info("We have {0} 'set vlan' actions to process".format(len(vlan_actions)))
+
         for vlan_id, values in vlan_actions.iteritems():
             net = None
             net_err_msg = ''
             try:
+                logger.info("creating or getting network with segmentation id {}".format(vlan_id))
                 net = self.network_service.create_or_get_network_with_segmentation_id(
                     openstack_session=openstack_session,
                     cp_resource_model=cp_resource_model,
@@ -125,6 +133,7 @@ class VLANConnectivityService(object):
             except Exception as e:
                 logger.error(traceback.format_exc())
                 net_err_msg = self._format_err_msg_for_exception(e)
+
             if not net:
                 fail_results = self.set_fail_results(values=values,
                                                      action_type='setVlan',
@@ -138,6 +147,7 @@ class VLANConnectivityService(object):
                     net_id = net['id']
                     subnet = net['subnets']
                     if not subnet:
+                        logger.info("Its a new network without a subnet so will allocate new CIDR")
                         with self.subnet_lock:
                             subnet = self.network_service.create_and_attach_subnet_to_net(
                                 openstack_session=openstack_session,
@@ -150,6 +160,7 @@ class VLANConnectivityService(object):
                 except Exception as e:
                     logger.error(traceback.format_exc())
                     subnet_err_msg = self._format_err_msg_for_exception(e)
+
                 if not subnet:
                     fail_results = self.set_fail_results(values=values,
                                                          action_type='setVlan',
@@ -158,6 +169,7 @@ class VLANConnectivityService(object):
                     results += fail_results
                 else:
                     attach_results = []
+                    logger.info("Attaching nics to instances")
                     for val in values:
                         action_result = self.attach_nic_to_instance_action_result(openstack_session=openstack_session,
                                                                                   action_resource_info=val,
@@ -173,24 +185,28 @@ class VLANConnectivityService(object):
         :param keystoneauth1.session.Session openstack_session:
         :param OpenStckResourceModel cp_resource_model:
         :param dict vlan_actions:
-        :param LoggingSessionContext logger:
+        :param logging.Logger logger:
         :return:
         """
 
+        logger.info("We have {0} 'remove vlan' actions to process".format(len(vlan_actions)))
+
         results = []
 
-        for k, values in vlan_actions.iteritems():
+        for vlan_id, values in vlan_actions.iteritems():
+            logger.info("Finding network with segmentation id {}".format(vlan_id))
             net = self.network_service.get_network_with_segmentation_id(openstack_session=openstack_session,
-                                                                        segmentation_id=int(k), logger=logger)
+                                                                        segmentation_id=int(vlan_id), logger=logger)
             if not net:
                 fail_results = self.set_fail_results(values=values,
                                                      action_type='removeVlan',
-                                                     failure_text="Failed to get Network with VLAN ID {0}".format(k))
+                                                     failure_text="Failed to get Network with VLAN ID {0}".format(vlan_id))
                 results += fail_results
             else:
                 net_id = net['id']
 
                 remove_results = []
+                logger.info("Detaching nics from network {}".format(net_id))
                 for val in values:
                     action_result = self.detach_nic_from_instance_action_result(openstack_session=openstack_session,
                                                                                 action_resource_info=val,
@@ -250,7 +266,7 @@ class VLANConnectivityService(object):
         :param str deployed_app_resource_name:
         :param str actionid:
         :param action: action obtained from JSON
-        :return ConnectivityActionResourceInfo:
+        :rtype: ConnectivityActionResourceInfo
 
         """
 
@@ -288,7 +304,7 @@ class VLANConnectivityService(object):
         :param keystoneauth1.session.Session openstack_session:
         :param ConnectivityActionResourceInfo action_resource_info:
         :param str net_id:
-        :param LoggingSessionContext logger:
+        :param logging.Logger logger:
         :return ConnectivityActionResultModel:
         """
         action_result = ConnectivityActionResultModel()
@@ -297,11 +313,13 @@ class VLANConnectivityService(object):
         result_err_msg = ''
         try:
             instance_id = action_resource_info.vm_uuid
+            logger.info("Attaching instance {0} to net {1}".format(instance_id, net_id))
             result = self.instance_service.attach_nic_to_net(openstack_session=openstack_session,
                                                              instance_id=instance_id, net_id=net_id, logger=logger)
         except Exception as e:
             result_err_msg = self._format_err_msg_for_exception(e)
             logger.error(result_err_msg)
+
         if not result:
             action_result.success = "False"
             action_result.actionId = action_resource_info.actionid
