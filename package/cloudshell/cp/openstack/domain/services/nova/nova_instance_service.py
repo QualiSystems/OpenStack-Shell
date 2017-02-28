@@ -9,7 +9,7 @@ from novaclient import client as novaclient
 
 from cloudshell.cp.openstack.common.driver_helper import CloudshellDriverHelper
 from cloudshell.cp.openstack.models.exceptions import *
-from cloudshell.cp.openstack.domain.services.nova.udev_rules import udev_rules_str
+from cloudshell.cp.openstack.domain.services.nova.udev_rules import udev_rules_sh_str
 
 
 class NovaInstanceService(object):
@@ -69,7 +69,7 @@ class NovaInstanceService(object):
 
         # user data
         if deploy_req_model.auto_udev:
-            server_create_args.update({'userdata':udev_rules_str})
+            server_create_args.update({'userdata':udev_rules_sh_str})
 
         instance = client.servers.create(**server_create_args)
 
