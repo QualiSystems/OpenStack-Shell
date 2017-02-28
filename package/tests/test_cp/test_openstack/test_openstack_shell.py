@@ -29,7 +29,8 @@ class TestOpenStackShell(TestCase):
         self.os_shell_api.model_parser.get_resource_model_from_context = Mock(return_value=OpenStackResourceModel)
         self.os_shell_api.os_session_provider.get_openstack_session = Mock(return_value=Mock())
 
-    def test_power_on(self):
+    @patch('cloudshell.cp.openstack.openstack_shell.jsonpickle.dumps')
+    def test_power_on(self, json_dumps):
         """
 
         :return:
