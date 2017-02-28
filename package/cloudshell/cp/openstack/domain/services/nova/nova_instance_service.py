@@ -229,14 +229,14 @@ class NovaInstanceService(object):
         :param openstack_session:
         :param instance_id:
         :param net_id:
-        :param logger:
+        :param logging.Logger logger:
         :return:
         """
 
         instance = self.get_instance_from_instance_id(openstack_session=openstack_session,
                                                       instance_id=instance_id,
                                                       logger=logger)
-        if instance is None :
+        if instance is None:
             return None
 
         try:
@@ -250,8 +250,6 @@ class NovaInstanceService(object):
         except Exception as e:
             logger.error("Exception: {0} during interface attach.".format(e))
             raise
-
-        return None
 
     def detach_nic_from_instance(self, openstack_session, instance_id, port_id, logger):
         """

@@ -261,6 +261,7 @@ class OpenStackShell(object):
                                                                                          cp_resource_model=cp_resource_model,
                                                                                          conn_request=connectivity_request,
                                                                                          logger=logger)
+                    logger.info(connectivity_result)
 
                     return self.command_result_parser.set_command_result(connectivity_result)
 
