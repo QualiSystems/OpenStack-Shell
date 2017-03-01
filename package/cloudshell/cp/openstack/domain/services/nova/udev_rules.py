@@ -41,4 +41,9 @@ logger -i -s --tag $LOGGER_TAG "Disabling device name change."
 logger -i -s --tag $LOGGER_TAG  "Calling udevadm control"
 /sbin/udevadm control --reload && /sbin/udevadm trigger --subsystem-match=net
 
+## Rebooting
+
+logger -i -s --tag $LOGGER_TAG "Rebooting for the rules to take effect!"
+shutdown -r
+
 '''
