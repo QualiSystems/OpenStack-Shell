@@ -46,4 +46,6 @@ logger -i -s --tag $LOGGER_TAG  "Calling udevadm control"
 logger -i -s --tag $LOGGER_TAG "Rebooting for the rules to take effect!"
 shutdown -r
 
+
+
 '''
