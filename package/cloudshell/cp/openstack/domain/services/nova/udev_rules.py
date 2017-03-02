@@ -43,9 +43,13 @@ logger -i -s --tag $LOGGER_TAG  "Calling udevadm control"
 
 ## Rebooting
 
-logger -i -s --tag $LOGGER_TAG "Rebooting for the rules to take effect!"
-shutdown -r
-
-
+if [ -e /etc/lsb-release ]; then
+    grep -qi "Ubuntu" /etc/lsb-release
+    if [ $? -eq 0 ]; then
+        # Ubuntu it is - go and reboot
+        logger -i -s --tag $LOGGER_TAG "Rebooting for the rules to take effect!"
+        reboot
+    fi
+fi
 
 '''
