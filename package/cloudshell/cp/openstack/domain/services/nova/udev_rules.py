@@ -48,7 +48,7 @@ if [ -e /etc/lsb-release ]; then
     if [ $? -eq 0 ]; then
         # Ubuntu it is - go and reboot
         logger -i -s --tag $LOGGER_TAG "Rebooting for the rules to take effect!"
-        reboot
+        /sbin/reboot
     fi
 fi
 
