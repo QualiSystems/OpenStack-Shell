@@ -43,5 +43,5 @@ class TestOpenStackSessionProvider(TestCase):
                                                          user_domain_id=self.os_res_model.os_domain_name,
                                                          project_domain_id=self.os_res_model.os_domain_name)
 
-        keystone_session.Session.assert_called_with(auth=mock_auth)
+        keystone_session.Session.assert_called_with(auth=mock_auth, verify=False)
         self.assertTrue(result, mock_session)
