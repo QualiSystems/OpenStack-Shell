@@ -56,4 +56,4 @@ class OpenStackSessionProvider(object):
                                             user_domain_id=user_domain_id,
                                             project_domain_id=proj_domain_id)
 
-        return keystone_session.Session(auth=auth)
+        return keystone_session.Session(auth=auth, verify=False)

@@ -41,7 +41,7 @@ class NovaInstanceService(object):
         if not deploy_req_model.instance_flavor:
             raise ValueError("Instance flavor cannot be empty.")
 
-        client = novaclient.Client(self.API_VERSION, session=openstack_session)
+        client = novaclient.Client(self.API_VERSION, session=openstack_session, insecure=True)
 
         logger.info("Creating OpenStack Instance for Image: {0}, Flavor: {1}".format(deploy_req_model.img_uuid,
                                                                                      deploy_req_model.instance_flavor))
@@ -102,7 +102,7 @@ class NovaInstanceService(object):
         if not openstack_session or not instance_id or not logger:
             raise ValueError("Any of openstack_session, instance_id can be None")
 
-        client = novaclient.Client(self.API_VERSION, session=openstack_session)
+        client = novaclient.Client(self.API_VERSION, session=openstack_session, insecure=True)
         instance = self.get_instance_from_instance_id(openstack_session=openstack_session,
                                                       instance_id=instance_id,
                                                       logger=logger,
@@ -121,7 +121,7 @@ class NovaInstanceService(object):
         :param LoggingSessionContext logger:
         :rtype None:
         """
-        client = novaclient.Client(self.API_VERSION, session=openstack_session)
+        client = novaclient.Client(self.API_VERSION, session=openstack_session, insecure=True)
         instance = self.get_instance_from_instance_id(openstack_session=openstack_session,
                                                       instance_id=instance_id,
                                                       logger=logger,
@@ -146,7 +146,7 @@ class NovaInstanceService(object):
         :param LoggingSessionContext logger:
         :rtype None:
         """
-        client = novaclient.Client(self.API_VERSION, session=openstack_session)
+        client = novaclient.Client(self.API_VERSION, session=openstack_session, insecure=True)
         instance = self.get_instance_from_instance_id(openstack_session=openstack_session,
                                                       instance_id=instance_id,
                                                       logger=logger,
@@ -171,7 +171,7 @@ class NovaInstanceService(object):
         :rtype str: Network Name
         """
 
-        client = novaclient.Client(self.API_VERSION, session=openstack_session)
+        client = novaclient.Client(self.API_VERSION, session=openstack_session, insecure=True)
 
         for net in client.networks.list():
             net_dict = net.to_dict()
@@ -211,7 +211,7 @@ class NovaInstanceService(object):
         :rtype: novaclient.Client.servers.Server
         """
         if client is None:
-            client = novaclient.Client(self.API_VERSION, session=openstack_session)
+            client = novaclient.Client(self.API_VERSION, session=openstack_session, insecure=True)
         try:
             instance = client.servers.find(id=instance_id)
             return instance

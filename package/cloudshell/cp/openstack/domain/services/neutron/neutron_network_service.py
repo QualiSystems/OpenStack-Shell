@@ -25,7 +25,7 @@ class NeutronNetworkService(object):
         :return dict :
         """
 
-        client = neutron_client.Client(session=openstack_session)
+        client = neutron_client.Client(session=openstack_session, insecure=True)
 
         interface_name = cp_resource_model.provider_network_interface
         network_type = cp_resource_model.vlan_type.lower()
@@ -66,7 +66,7 @@ class NeutronNetworkService(object):
         :return:
         """
 
-        client = neutron_client.Client(session=openstack_session)
+        client = neutron_client.Client(session=openstack_session, insecure=True)
 
         net = client.list_networks(**{'provider:segmentation_id': segmentation_id})
         if net['networks']:
@@ -85,7 +85,7 @@ class NeutronNetworkService(object):
         :return dict:
         """
 
-        client = neutron_client.Client(session=openstack_session)
+        client = neutron_client.Client(session=openstack_session, insecure=True)
 
         cidr = self._get_unused_cidr(client=client, cp_resvd_cidrs=cp_resource_model.reserved_networks, logger=logger)
         if cidr is None:
@@ -116,7 +116,7 @@ class NeutronNetworkService(object):
         :return:
         """
 
-        client = neutron_client.Client(session=openstack_session)
+        client = neutron_client.Client(session=openstack_session, insecure=True)
 
         try:
             # Get a list of all ports for this network. If there's any port with device owner other than DHCP,
@@ -242,7 +242,7 @@ class NeutronNetworkService(object):
         :param logger:
         :return:
         """
-        client = neutron_client.Client(session=openstack_session)
+        client = neutron_client.Client(session=openstack_session, insecure=True)
 
         # make sure subnet already exists
         subnet_dict = client.list_subnets(id=floating_ip_subnet_id)
@@ -272,7 +272,7 @@ class NeutronNetworkService(object):
         if not floating_ip:
             return False
 
-        client = neutron_client.Client(session=openstack_session)
+        client = neutron_client.Client(session=openstack_session, insecure=True)
 
         floating_ips_dict = client.list_floatingips(floating_ip_address=floating_ip)
         floating_ip_id = floating_ips_dict['floatingips'][0]['id']
