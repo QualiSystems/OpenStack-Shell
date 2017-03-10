@@ -120,7 +120,9 @@ class VLANConnectivityService(object):
 
         logger.info("We have {0} 'set vlan' actions to process".format(len(vlan_actions)))
 
-        for vlan_id, values in vlan_actions.iteritems():
+        # First we'd generate the required networks and subnets
+        action_networks_dict = {}
+        for vlan_id, values in vlan_actions.keys():
             net = None
             net_err_msg = ''
             try:
@@ -168,15 +170,36 @@ class VLANConnectivityService(object):
                                                                       "Error: {1}".format(net_id, subnet_err_msg))
                     results += fail_results
                 else:
-                    attach_results = []
-                    logger.info("Attaching nics to instances")
-                    for val in values:
-                        action_result = self.attach_nic_to_instance_action_result(openstack_session=openstack_session,
-                                                                                  action_resource_info=val,
-                                                                                  net_id=net_id,
-                                                                                  logger=logger)
-                        attach_results.append(action_result)
-                    results += attach_results
+                    action_networks_dict[vlan] = net_id
+
+        # Also append 'holding network' to the action_networks_dict
+        ## TODO : get the values below using APIs and CP Attribute Holding network subnet ID
+        action_networks_dict[holding_vlan_id] = holding_net_id
+
+        # We will now do 'attach' for each VM - so first let's collect VMs by UUID and vnic_name
+
+        vm_attach_values = sorted(vlan_action.values(), key=lambda x:(x.vm_uuid, x.vnic_name))
+
+        # Generate VM networks dict
+        # key: VM UUID
+        # values: 'sorted' list of VLAN IDs to attach
+        vm_attach_networks_dict = self.generate_vm_attach_networks_dict(vm_attach_values, holding_network)
+
+        for k, net_vlan_values in vm_attach_netorks_dict.iteritems():
+            for net_vlan in net_values:
+                action_result = self.attach_nic_to_instance(instance_id=k, action_networks_dict[net_vlan])
+
+        ## We don't need code below
+
+        attach_results = []
+        logger.info("Attaching nics to instances")
+        for val in vm_attach_values:
+            action_result = self.attach_nic_to_instance_action_result(openstack_session=openstack_session,
+                                                                      action_resource_info=val,
+                                                                      net_id=net_id,
+                                                                      logger=logger)
+            attach_results.append(action_result)
+            results += attach_results
         return results
 
     def remove_vlan_actions(self, openstack_session, cp_resource_model, vlan_actions, logger):
@@ -188,6 +211,9 @@ class VLANConnectivityService(object):
         :param logging.Logger logger:
         :return:
         """
+
+        ## TODO : Revisit for changes for Vnic Name if any (eg. We might have added holding networks -
+        ##        we should detach those from instance but not delete from neutron)
 
         logger.info("We have {0} 'remove vlan' actions to process".format(len(vlan_actions)))
 
@@ -271,11 +297,16 @@ class VLANConnectivityService(object):
         """
 
         custom_action_attributes = action.customActionAttributes
+        vlan_id = action.connectionParams.vlanId
         vm_uuid = None
 
+        vnic_name = None
         for cust_attr in custom_action_attributes:
             if cust_attr.attributeName == 'VM_UUID':
                 vm_uuid = cust_attr.attributeValue
+            if cust_attr.attributeName == 'Vnic Name':
+                vnic_name = cust_attr.attributeValue
+
 
         connector_attributes = action.connectorAttributes
 
@@ -296,7 +327,9 @@ class VLANConnectivityService(object):
                                               vm_uuid=vm_uuid,
                                               interface_ip=iface_ip,
                                               interface_port_id=iface_port_id,
-                                              interface_mac=iface_mac)
+                                              interface_mac=iface_mac,
+                                              vlan_id=vlan_id,
+                                              vnic_name=vnic_name)
 
     def attach_nic_to_instance_action_result(self, openstack_session, action_resource_info, net_id, logger):
         """
