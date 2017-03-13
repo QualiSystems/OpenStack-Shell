@@ -42,14 +42,6 @@ TOEND
 /sbin/udevadm control --reload && /sbin/udevadm trigger --subsystem-match=net
 
 ## Rebooting
-
-if [ -e /etc/lsb-release ]; then
-    grep -qi "Ubuntu" /etc/lsb-release
-    if [ $? -eq 0 ]; then
-        # Ubuntu it is - go and reboot
-        /usr/bin/logger -i -s --tag $LOGGER_TAG "Rebooting for the rules to take effect!"
-        /sbin/reboot
-    fi
-fi
-
+/usr/bin/logger -i -s --tag $LOGGER_TAG "Rebooting for the rules to take effect!"
+/sbin/reboot
 '''
