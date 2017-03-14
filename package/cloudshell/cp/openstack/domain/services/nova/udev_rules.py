@@ -13,13 +13,13 @@ OS_TYPE=`$PYTHON -c 'import sys;print(sys.platform)'`
 LOGGER_TAG="ADD_QS_TAG"
 
 if [ $OS_TYPE != 'linux2' -a $OS_TYPE != 'linux' ]; then
-    logger -i -s --tag ${LOGGER_TAG} "Platform $OS_TYPE is not supported for Udev rules."
+    /usr/bin/logger -i -s --tag ${LOGGER_TAG} "Platform $OS_TYPE is not supported for Udev rules."
     exit 1
 fi
 
 QS_UDEV_FILE='/etc/udev/rules.d/70-a-qs-connectivity.rules'
 
-logger -i -s --tag ${LOGGER_TAG}  "Creating UDEV Entries in file $QS_UDEV_FILE"
+/usr/bin/logger -i -s --tag ${LOGGER_TAG}  "Creating UDEV Entries in file $QS_UDEV_FILE"
 cat <<TOEND > $QS_UDEV_FILE
 # Udev Rules for Quali Systems Apply Connectivity
 
@@ -33,12 +33,15 @@ SUBSYSTEM=="net", ACTION=="add", KERNEL=="en*", RUN+="/sbin/ifconfig %k up", RUN
 TOEND
 
 # We are going to stop renaming of the devices - this messes things up. Everything will be eth0->ethN
-logger -i -s --tag $LOGGER_TAG "Disabling device name change."
+/usr/bin/logger -i -s --tag $LOGGER_TAG "Disabling device name change."
 /bin/ln -s /dev/null /etc/udev/rules.d/80-net-name-slot.rules
 /bin/ln -s /dev/null /etc/udev/rules.d/80-net-setup-link.rules
 
 
-logger -i -s --tag $LOGGER_TAG  "Calling udevadm control"
+/usr/bin/logger -i -s --tag $LOGGER_TAG  "Calling udevadm control"
 /sbin/udevadm control --reload && /sbin/udevadm trigger --subsystem-match=net
 
+## Rebooting
+/usr/bin/logger -i -s --tag $LOGGER_TAG "Rebooting for the rules to take effect!"
+/sbin/reboot
 '''

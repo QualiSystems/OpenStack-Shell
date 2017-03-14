@@ -149,7 +149,7 @@ class OpenStackCPValidator(object):
             return True
 
         try:
-            ks_client = keystone_client.Client(session=openstack_session)
+            ks_client = keystone_client.Client(session=openstack_session, insecure=True)
             ks_client.regions.get(region_name)
 
         except keystoneauth1.exceptions.http.NotFound:
@@ -168,7 +168,7 @@ class OpenStackCPValidator(object):
         :param logger:
         :return:
         """
-        net_client = neutron_client.Client(session=openstack_session)
+        net_client = neutron_client.Client(session=openstack_session, insecure=True)
 
         self.validate_mgmt_network(net_client, cp_resource_model.qs_mgmt_os_net_uuid, logger)
 
@@ -208,7 +208,7 @@ class OpenStackCPValidator(object):
             return False
 
         try:
-            compute_client = nova_client.Client(version='2.0', session=openstack_session)
+            compute_client = nova_client.Client(version='2.0', session=openstack_session, insecure=True)
             # An API Call to Validate Credentials
             _ = compute_client.servers.list()
 

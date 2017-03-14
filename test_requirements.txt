@@ -5,3 +5,4 @@ mock
 teamcity-messages
 jsonpickle
 nose-exclude
+requests~=2.11.0
