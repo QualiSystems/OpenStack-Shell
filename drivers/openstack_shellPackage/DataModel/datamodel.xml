@@ -138,7 +138,7 @@
 
   <!-- information about Resource Families -->
   <ResourceFamilies>
-    <ResourceFamily Description="" IsAdminOnly="true" IsSearchable="true" Name="Cloud Provider">
+    <ResourceFamily Description="" IsAdminOnly="true" IsSearchable="true" Name="Cloud Provider" AllowRemoteConnection="false">
       <AttachedAttributes />
       <AttributeValues />
       <Models>
