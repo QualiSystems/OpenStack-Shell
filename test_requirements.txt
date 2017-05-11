@@ -6,3 +6,4 @@ teamcity-messages
 jsonpickle
 nose-exclude
 requests~=2.11.0
+babel!=2.4.0
