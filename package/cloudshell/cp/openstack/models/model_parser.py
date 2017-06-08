@@ -32,26 +32,16 @@ class OpenStackShellModelParser(object):
     @staticmethod
     def deploy_res_model_appname_from_deploy_req(deploy_req):
         data = jsonpickle.decode(deploy_req)
-        data_holder = DeployDataHolder(data)
-        deploy_res_model = DeployOSNovaImageInstanceResourceModel()
-        deploy_res_model.cloud_provider = data_holder.image.cloud_provider
-        deploy_res_model.cp_avail_zone = data_holder.image.cp_avail_zone
-        deploy_res_model.img_uuid = data_holder.image.img_uuid
-        deploy_res_model.instance_flavor = data_holder.image.instance_flavor
-        deploy_res_model.add_floating_ip = data_holder.image.add_floating_ip
-        deploy_res_model.autoload = data_holder.image.autoload
-        deploy_res_model.floating_ip_subnet_uuid = data_holder.image.floating_ip_subnet_uuid
-        deploy_res_model.affinity_group_uuid = data_holder.image.affinity_group_uuid
-        deploy_res_model.auto_udev = data_holder.image.auto_udev
-
-
-        app_name = data_holder.app_name
-
-        return deploy_res_model, app_name
+        deploy_res_model=OpenStackShellModelParser._get_deployment_by_attributes(data['Attributes'])
+        return deploy_res_model, data['AppName']
 
     @staticmethod
     def get_deploy_resource_model_from_context_resource(resource):
         attrs = resource.attributes
+        return OpenStackShellModelParser._get_deployment_by_attributes(attrs)
+
+    @staticmethod
+    def _get_deployment_by_attributes(attrs):
         deploy_resource_model = DeployOSNovaImageInstanceResourceModel()
         if 'Cloud Provider' in attrs:
             deploy_resource_model.cloud_provider = attrs['Cloud Provider']
@@ -66,7 +56,6 @@ class OpenStackShellModelParser(object):
         deploy_resource_model.affinity_group_uuid = attrs['Affinity Group ID']
         deploy_resource_model.auto_udev = OpenStackShellModelParser.parse_boolean(attrs['Auto udev'])
         return deploy_resource_model
-
 
     @staticmethod
     def parse_boolean(value):

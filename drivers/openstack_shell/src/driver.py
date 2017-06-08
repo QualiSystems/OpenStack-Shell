@@ -14,12 +14,18 @@ class OpenStackShellDriver(ResourceDriverInterface):
         self.os_shell = OpenStackShell()
         pass
 
-    def Deploy(self, context, request=None, cancelation_context=None):
+    def Deploy(self, context, request=None, cancellation_context=None):
+        """
+        :param cloudshell.shell.core.context.ResourceCommandContext context:
+        :param DeployDataHolder request:
+        :param cloudshell.shell.core.context.CancellationContext cancellation_context:
+        :return:
+        """
         app_request = jsonpickle.decode(request)
         deployment_name = app_request['DeploymentServiceName']
+
         if deployment_name in self.deployments.keys():
-            deploy_method = self.deployments[deployment_name]
-            return deploy_method(context, request, cancelation_context)
+            return self.deployments[deployment_name](context, request, cancellation_context)
         else:
             raise Exception('Could not find the deployment')
 
