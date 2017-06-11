@@ -1,14 +1,32 @@
+import jsonpickle
 from cloudshell.shell.core.resource_driver_interface import ResourceDriverInterface
 
 from cloudshell.cp.openstack.openstack_shell import OpenStackShell
+
 
 class OpenStackShellDriver(ResourceDriverInterface):
     def __init__(self):
         """
         ctor must be without arguments, it is created with reflection at run time
         """
+        self.deployments = dict()
+        self.deployments['OpenStack Deploy From Glance Image'] = self.deploy_from_image
         self.os_shell = OpenStackShell()
-        pass
+
+    def Deploy(self, context, request=None, cancellation_context=None):
+        """
+        :param cloudshell.shell.core.context.ResourceCommandContext context:
+        :param DeployDataHolder request:
+        :param cloudshell.shell.core.context.CancellationContext cancellation_context:
+        :return:
+        """
+        app_request = jsonpickle.decode(request)
+        deployment_name = app_request['DeploymentServiceName']
+
+        if deployment_name in self.deployments.keys():
+            return self.deployments[deployment_name](context, request, cancellation_context)
+        else:
+            raise Exception('Could not find the deployment')
 
     def initialize(self, context):
         pass
