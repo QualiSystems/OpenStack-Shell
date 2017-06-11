@@ -1,6 +1,8 @@
 from unittest import TestCase
 
 import mock
+from cloudshell.cp.openstack.models.deploy_os_nova_image_instance_resource_model import \
+    DeployOSNovaImageInstanceResourceModel
 
 from cloudshell.cp.openstack.models.model_parser import OpenStackShellModelParser
 
@@ -38,30 +40,25 @@ class TestOpenStackShellModelParser(TestCase):
         self.assertEqual(result.floating_ip_subnet_uuid, 'floating_ip_subnet_uuid')
         
     @mock.patch("cloudshell.cp.openstack.models.model_parser.jsonpickle")
-    @mock.patch("cloudshell.cp.openstack.models.model_parser.DeployOSNovaImageInstanceResourceModel")
-    @mock.patch("cloudshell.cp.openstack.models.model_parser.DeployDataHolder")
-    def test_deploy_res_model_appname_from_deploy_req(self, deploy_data_holder_class,
-                                                      deploy_os_nova_image_instance_resource_model_class,
-                                                      jsonpickle):
+    def test_deploy_res_model_appname_from_deploy_req(self, jsonpickle):
         """Check that method returns DeployOSNovaImageInstanceResourceModel instance with attrs from DeployDataHolder"""
         test_deploy_req = mock.MagicMock()
-        deploy_data_holder = mock.MagicMock()
-        deploy_os_nova_image_instance_resource_model = mock.MagicMock()
-        deploy_data_holder_class.return_value = deploy_data_holder
-        deploy_os_nova_image_instance_resource_model_class.return_value = deploy_os_nova_image_instance_resource_model
-
+        attr = mock.MagicMock()
+        data = {'Attributes': attr, 'AppName': 'app_name'}
+        jsonpickle.decode.return_value = data
         deploy_res_model, app_name = self.tested_class.deploy_res_model_appname_from_deploy_req(test_deploy_req)
 
-        self.assertEqual(app_name, deploy_data_holder.app_name)
-        self.assertIs(deploy_res_model, deploy_os_nova_image_instance_resource_model)
-        self.assertEqual(deploy_res_model.cloud_provider, deploy_data_holder.image.cloud_provider)
-        self.assertEqual(deploy_res_model.cp_avail_zone, deploy_data_holder.image.cp_avail_zone)
-        self.assertEqual(deploy_res_model.img_uuid, deploy_data_holder.image.img_uuid)
-        self.assertEqual(deploy_res_model.instance_flavor, deploy_data_holder.image.instance_flavor)
-        self.assertEqual(deploy_res_model.add_floating_ip, deploy_data_holder.image.add_floating_ip)
-        self.assertEqual(deploy_res_model.autoload, deploy_data_holder.image.autoload)
-        self.assertEqual(deploy_res_model.affinity_group_uuid, deploy_data_holder.image.affinity_group_uuid)
-        self.assertEqual(deploy_res_model.floating_ip_subnet_uuid, deploy_data_holder.image.floating_ip_subnet_uuid)
+        self.assertEqual(app_name, data['AppName'])
+        self.assertTrue(deploy_res_model, isinstance(deploy_res_model, DeployOSNovaImageInstanceResourceModel))
+        self.assertEqual(deploy_res_model.cloud_provider, None)
+        self.assertEqual(deploy_res_model.cp_avail_zone, attr['Availability Zone'])
+        self.assertEqual(deploy_res_model.img_uuid, attr['Image ID'])
+        self.assertEqual(deploy_res_model.instance_flavor, attr['Instance Flavor'])
+        self.assertEqual(deploy_res_model.add_floating_ip, OpenStackShellModelParser.parse_boolean(attr['Add Floating IP']))
+        self.assertEqual(deploy_res_model.autoload, OpenStackShellModelParser.parse_boolean(attr['Autoload']))
+        self.assertEqual(deploy_res_model.affinity_group_uuid, attr['Affinity Group ID'])
+        self.assertEqual(deploy_res_model.floating_ip_subnet_uuid, attr['Floating IP Subnet ID'])
+        self.assertEqual(deploy_res_model.autoload, OpenStackShellModelParser.parse_boolean(attr['Auto udev']))
 
     def test_parse_boolean_return_true(self):
         """Check that method correctly parses True values"""
@@ -87,15 +84,13 @@ class TestOpenStackShellModelParser(TestCase):
 
         self.assertIs(result, deploy_data_holder)
 
-    @mock.patch("cloudshell.cp.openstack.models.model_parser.OpenStackShellModelParser")
+    # @mock.patch("cloudshell.cp.openstack.models.model_parser.OpenStackShellModelParser")
     @mock.patch("cloudshell.cp.openstack.models.model_parser.DeployOSNovaImageInstanceResourceModel")
-    def test_get_deploy_resource_model_from_context_resource(self, deploy_os_nova_image_instance_resource_model_class,
-                                                             openstack_shell_model_parser_class):
+    def test_get_deploy_resource_model_from_context_resource(self, deploy_os_nova_image_instance_resource_model_class):
         """Check that method returns DeployOSNovaImageInstanceResourceModel instance with correct attributes"""
         deploy_os_nova_image_instance_resource_model = mock.MagicMock()
         parse_boolean_result = mock.MagicMock()
         deploy_os_nova_image_instance_resource_model_class.return_value = deploy_os_nova_image_instance_resource_model
-        openstack_shell_model_parser_class.parse_boolean.return_value = parse_boolean_result
         test_resource = mock.MagicMock()
         test_resource.attributes = {}
         test_resource.attributes['Cloud Provider'] = test_cloud_provider = 'test_cloud_provider'
@@ -110,25 +105,23 @@ class TestOpenStackShellModelParser(TestCase):
 
         deploy_resource_model = self.tested_class.get_deploy_resource_model_from_context_resource(test_resource)
 
-        self.assertIs(deploy_resource_model, deploy_os_nova_image_instance_resource_model)
         self.assertEqual(deploy_resource_model.cloud_provider, test_cloud_provider)
         self.assertEqual(deploy_resource_model.cp_avail_zone, test_availability_zone)
         self.assertEqual(deploy_resource_model.img_uuid, test_image_uuid)
         self.assertEqual(deploy_resource_model.instance_flavor, test_instance_flavor)
-        self.assertEqual(deploy_resource_model.add_floating_ip, parse_boolean_result)
-        self.assertEqual(deploy_resource_model.autoload, parse_boolean_result)
+        self.assertEqual(deploy_resource_model.add_floating_ip, True)
+        self.assertEqual(deploy_resource_model.autoload, True)
         self.assertEqual(deploy_resource_model.floating_ip_subnet_uuid, floating_ip_subnet_uuid)
         self.assertEqual(deploy_resource_model.affinity_group_uuid, affinity_group_uuid)
 
-    @mock.patch("cloudshell.cp.openstack.models.model_parser.OpenStackShellModelParser")
+    # @mock.patch("cloudshell.cp.openstack.models.model_parser.OpenStackShellModelParser")
     @mock.patch("cloudshell.cp.openstack.models.model_parser.DeployOSNovaImageInstanceResourceModel")
-    def test_get_deploy_resource_model_from_context_resource_without_cloud_provider_attribute(self, deploy_os_nova_image_instance_resource_model_class,
-                                                             openstack_shell_model_parser_class):
+    def test_get_deploy_resource_model_from_context_resource_without_cloud_provider_attribute(self, deploy_os_nova_image_instance_resource_model_class):
         """Check that method returns DeployOSNovaImageInstanceResourceModel instance with correct attributes"""
         deploy_os_nova_image_instance_resource_model = mock.MagicMock()
         parse_boolean_result = mock.MagicMock()
         deploy_os_nova_image_instance_resource_model_class.return_value = deploy_os_nova_image_instance_resource_model
-        openstack_shell_model_parser_class.parse_boolean.return_value = parse_boolean_result
+        # openstack_shell_model_parser_class.parse_boolean.return_value = parse_boolean_result
         test_resource = mock.MagicMock()
         test_resource.attributes = {}
         test_resource.attributes['Availability Zone'] = test_availability_zone = 'test_availability_zone'
@@ -142,12 +135,11 @@ class TestOpenStackShellModelParser(TestCase):
 
         deploy_resource_model = self.tested_class.get_deploy_resource_model_from_context_resource(test_resource)
 
-        self.assertIs(deploy_resource_model, deploy_os_nova_image_instance_resource_model)
         self.assertEqual(deploy_resource_model.cp_avail_zone, test_availability_zone)
         self.assertEqual(deploy_resource_model.img_uuid, test_image_uuid)
         self.assertEqual(deploy_resource_model.instance_flavor, test_instance_flavor)
-        self.assertEqual(deploy_resource_model.add_floating_ip, parse_boolean_result)
-        self.assertEqual(deploy_resource_model.autoload, parse_boolean_result)
+        self.assertEqual(deploy_resource_model.add_floating_ip, True)
+        self.assertEqual(deploy_resource_model.autoload, True)
         self.assertEqual(deploy_resource_model.floating_ip_subnet_uuid, floating_ip_subnet_uuid)
         self.assertEqual(deploy_resource_model.affinity_group_uuid, affinity_group_uuid)
-        self.assertEqual(deploy_resource_model.auto_udev, parse_boolean_result)
+        self.assertEqual(deploy_resource_model.auto_udev, True)

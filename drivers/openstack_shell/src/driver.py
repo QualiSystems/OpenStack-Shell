@@ -12,7 +12,6 @@ class OpenStackShellDriver(ResourceDriverInterface):
         self.deployments = dict()
         self.deployments['OpenStack Deploy From Glance Image'] = self.deploy_from_image
         self.os_shell = OpenStackShell()
-        pass
 
     def Deploy(self, context, request=None, cancellation_context=None):
         """
