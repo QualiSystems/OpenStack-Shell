@@ -1,4 +1,4 @@
-<Driver Description="Deploy From Glance Image" MainClass="driver.DeployOSNovaImageInstanceDriver" Name="Deploy From Glance Image" Version="1.0.1">
+<Driver Description="Deploy From Glance Image" MainClass="driver.DeployOSNovaImageInstanceDriver" Name="Deploy From Glance Image" Version="1.1.0">
     <Layout>
         <Category Name="App Management">
             <Command Description="" DisplayName="Deploy" Name="Deploy" Tags="allow_shared" />
