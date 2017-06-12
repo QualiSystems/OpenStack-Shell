@@ -258,7 +258,6 @@
     </ResourceFamily>
   </ResourceFamilies>
   <DriverDescriptors>
-      <DriverDescriptor Name="OpenStack Shell Driver" DriverType="PythonDriver" />
-      <DriverDescriptor Name="Deploy From Glance Image" DriverType="PythonDriver" />
+      <DriverDescriptor Name="OpenStack Shell Driver" DriverType="PythonDriver" />     
   </DriverDescriptors>
 </DataModelInfo>
