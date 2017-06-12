@@ -250,9 +250,7 @@
             <AttributeValue Name="Autoload" Value="true"/>
           </AttributeValues>
           <ParentModels />
-          <Drivers>
-            <DriverName>Deploy From Glance Image</DriverName>
-          </Drivers>
+          <Drivers/>
         </ResourceModel>
       </Models>
       <Categories>
