@@ -138,7 +138,7 @@
 
   <!-- information about Resource Families -->
   <ResourceFamilies>
-    <ResourceFamily Description="" IsAdminOnly="true" IsSearchable="true" Name="Cloud Provider">
+    <ResourceFamily Description="" IsAdminOnly="true" IsSearchable="true" Name="Cloud Provider" AllowRemoteConnection="false">
       <AttachedAttributes />
       <AttributeValues />
       <Models>
@@ -250,9 +250,7 @@
             <AttributeValue Name="Autoload" Value="true"/>
           </AttributeValues>
           <ParentModels />
-          <Drivers>
-            <DriverName>Deploy From Glance Image</DriverName>
-          </Drivers>
+          <Drivers/>
         </ResourceModel>
       </Models>
       <Categories>
@@ -260,7 +258,6 @@
     </ResourceFamily>
   </ResourceFamilies>
   <DriverDescriptors>
-      <DriverDescriptor Name="OpenStack Shell Driver" DriverType="PythonDriver" />
-      <DriverDescriptor Name="Deploy From Glance Image" DriverType="PythonDriver" />
+      <DriverDescriptor Name="OpenStack Shell Driver" DriverType="PythonDriver" />     
   </DriverDescriptors>
 </DataModelInfo>
