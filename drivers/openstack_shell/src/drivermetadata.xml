@@ -1,4 +1,4 @@
-<Driver Description="This driver orchestrate all the command that will be executed on OpenStack" MainClass="driver.OpenStackShellDriver" Name="OpenStack Shell Driver" Version="1.0.1">
+<Driver Description="This driver orchestrate all the command that will be executed on OpenStack" MainClass="driver.OpenStackShellDriver" Name="OpenStack Shell Driver" Version="1.0.2">
     <Layout>
         <Category Name="Deployment">
             <Command Description="" DisplayName="Deploy From Image" EnableCancellation="true" Name="deploy_from_image" Tags="allow_unreserved" />
