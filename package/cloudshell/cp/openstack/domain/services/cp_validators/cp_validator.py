@@ -1,4 +1,3 @@
-
 from cloudshell.shell.core.driver_context import AutoLoadDetails
 
 from novaclient import client as nova_client
@@ -6,14 +5,13 @@ from neutronclient.v2_0 import client as neutron_client
 from keystoneclient import client as keystone_client
 
 import keystoneauth1.exceptions
-import novaclient.exceptions
 
 import ipaddress
+from random import randint
 import traceback
 
 
 class OpenStackCPValidator(object):
-
     def __init__(self):
         pass
 
@@ -57,7 +55,7 @@ class OpenStackCPValidator(object):
         try:
             net_list = net_client.list_networks(id=network_id)
 
-            #empty list
+            # empty list
             if not net_list['networks']:
                 raise ValueError("Network with ID {0} Not Found".format(network_id))
 
@@ -105,21 +103,30 @@ class OpenStackCPValidator(object):
         if vlan_type not in ['vlan', 'vxlan']:
             raise ValueError("Vlan Type should be one of \"VLAN\" or \"VXLAN\".")
 
-        try:
+        max_retry = 10
+        retry_count = 0
+        while True:
+            try:
+                create_nw_json = {'provider:network_type': vlan_type,
+                                  'name': 'qs_autoload_validation_net',
+                                  'provider:segmentation_id': randint(100, 4000),
+                                  'admin_state_up': True}
 
-            create_nw_json = {'provider:network_type': vlan_type,
-                              'name': 'qs_autoload_validation_net',
-                              'provider:segmentation_id': 42,
-                              'admin_state_up': True}
+                if vlan_type == 'vlan':
+                    create_nw_json.update({'provider:physical_network': provider_net_interface})
 
-            if vlan_type == 'vlan':
-                create_nw_json.update({'provider:physical_network': provider_net_interface})
-
-            network_dict = net_client.create_network({'network': create_nw_json})
-            net_client.delete_network(network_dict['network']['id'])
-
-        except Exception as e:
-            raise ValueError("Error occurred during creating network. {0}".format(e))
+                network_dict = net_client.create_network({'network': create_nw_json})
+                net_client.delete_network(network_dict['network']['id'])
+                break
+            except neutron_client.exceptions.Conflict as e:
+                # status_code = 409 - conflict creating the network
+                if retry_count < max_retry:
+                    retry_count += 1
+                    continue
+                raise ValueError(
+                    "Error occurred during creating network after {1} retries. {0}".format(e, retry_count))
+            except Exception as e:
+                raise ValueError("Error occurred during creating network. {0}".format(e))
 
         return True
 
