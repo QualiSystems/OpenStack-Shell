@@ -65,3 +65,18 @@ class OpenStackShellModelParser(object):
     def deployed_app_resource_from_context_remote(context_remote):
         deployed_app_json = jsonpickle.decode(context_remote.app_context.deployed_app_json)
         return DeployDataHolder(deployed_app_json)
+
+    @staticmethod
+    def get_attribute_value_by_name_ignoring_namespace(attributes, name):
+        """
+        Finds the attribute value by name ignoring attribute namespaces.
+        :param dict attributes: Attributes key value dict to search on.
+        :param str name: Attribute name to search for.
+        :return: Attribute str value. None if not found.
+        :rtype: str
+        """
+        for key, val in attributes.iteritems():
+            last_part = key.split(".")[-1]  # get last part of namespace.
+            if name == last_part:
+                return val
+        return None
