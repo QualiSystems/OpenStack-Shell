@@ -29,7 +29,8 @@ from cloudshell.cp.openstack.command.command_result_parser import OpenStackShell
 from cloudshell.cp.openstack.domain.services.session_providers.os_session_provider \
     import OpenStackSessionProvider
 
-from cloudshell.cp.openstack.domain.services.cancellation_services.command_cancellation import CommandCancellationService
+from cloudshell.cp.openstack.domain.services.cancellation_services.command_cancellation import \
+    CommandCancellationService
 from cloudshell.cp.openstack.domain.services.nova.nova_instance_service import NovaInstanceService
 from cloudshell.cp.openstack.domain.services.waiters.instance import InstanceWaiter
 from cloudshell.cp.openstack.domain.services.neutron.neutron_network_service import NeutronNetworkService
@@ -201,7 +202,8 @@ class OpenStackShell(object):
                         raise ValueError("Cannot get remote_endpoint for command context: {0}".format(command_context))
 
                     deployed_app_resource = self.model_parser.deployed_app_resource_from_context_remote(context_remote)
-                    floating_ip = context_remote.attributes['Public IP']
+                    floating_ip = self.model_parser.get_attribute_value_by_name_ignoring_namespace(
+                        context_remote.attributes, 'Public IP')
 
                     os_session = self.os_session_provider.get_openstack_session(cs_session, resource_model, logger)
                     self.hidden_operation.delete_instance(openstack_session=os_session,
