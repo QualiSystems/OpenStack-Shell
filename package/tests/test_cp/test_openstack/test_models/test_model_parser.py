@@ -38,7 +38,7 @@ class TestOpenStackShellModelParser(TestCase):
         self.assertEqual(result.vlan_type, 'vlan')
         self.assertEqual(result.provider_network_interface, 'public')
         self.assertEqual(result.floating_ip_subnet_uuid, 'floating_ip_subnet_uuid')
-        
+
     @mock.patch("cloudshell.cp.openstack.models.model_parser.jsonpickle")
     def test_deploy_res_model_appname_from_deploy_req(self, jsonpickle):
         """Check that method returns DeployOSNovaImageInstanceResourceModel instance with attrs from DeployDataHolder"""
@@ -54,7 +54,8 @@ class TestOpenStackShellModelParser(TestCase):
         self.assertEqual(deploy_res_model.cp_avail_zone, attr['Availability Zone'])
         self.assertEqual(deploy_res_model.img_uuid, attr['Image ID'])
         self.assertEqual(deploy_res_model.instance_flavor, attr['Instance Flavor'])
-        self.assertEqual(deploy_res_model.add_floating_ip, OpenStackShellModelParser.parse_boolean(attr['Add Floating IP']))
+        self.assertEqual(deploy_res_model.add_floating_ip,
+                         OpenStackShellModelParser.parse_boolean(attr['Add Floating IP']))
         self.assertEqual(deploy_res_model.autoload, OpenStackShellModelParser.parse_boolean(attr['Autoload']))
         self.assertEqual(deploy_res_model.affinity_group_uuid, attr['Affinity Group ID'])
         self.assertEqual(deploy_res_model.floating_ip_subnet_uuid, attr['Floating IP Subnet ID'])
@@ -116,7 +117,8 @@ class TestOpenStackShellModelParser(TestCase):
 
     # @mock.patch("cloudshell.cp.openstack.models.model_parser.OpenStackShellModelParser")
     @mock.patch("cloudshell.cp.openstack.models.model_parser.DeployOSNovaImageInstanceResourceModel")
-    def test_get_deploy_resource_model_from_context_resource_without_cloud_provider_attribute(self, deploy_os_nova_image_instance_resource_model_class):
+    def test_get_deploy_resource_model_from_context_resource_without_cloud_provider_attribute(self,
+                                                                                              deploy_os_nova_image_instance_resource_model_class):
         """Check that method returns DeployOSNovaImageInstanceResourceModel instance with correct attributes"""
         deploy_os_nova_image_instance_resource_model = mock.MagicMock()
         parse_boolean_result = mock.MagicMock()
@@ -143,3 +145,29 @@ class TestOpenStackShellModelParser(TestCase):
         self.assertEqual(deploy_resource_model.floating_ip_subnet_uuid, floating_ip_subnet_uuid)
         self.assertEqual(deploy_resource_model.affinity_group_uuid, affinity_group_uuid)
         self.assertEqual(deploy_resource_model.auto_udev, True)
+
+    def test_get_attribute_value_by_name_ignoring_namespace_with_namespace(self):
+        # Arrange
+        attr_name = "attr1"
+        attr_dict = {"attr2": "val2", "ns1.ns2.attr1": "val1"}
+
+        # Act
+        val = self.tested_class.get_attribute_value_by_name_ignoring_namespace(attr_dict, attr_name)
+
+        # Assert
+        self.assertEquals(val, "val1")
+
+    def test_get_attribute_value_by_name_ignoring_namespace_with_namespace(self):
+        # Arrange
+        attr_name = "attr1"
+        attr_dict = {"attr2": "val2", "attr1": "val1"}
+
+        # Act
+        val = self.tested_class.get_attribute_value_by_name_ignoring_namespace(attr_dict, attr_name)
+
+        # Assert
+        self.assertEquals(val, "val1")
+
+
+
+
