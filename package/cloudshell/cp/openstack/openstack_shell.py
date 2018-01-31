@@ -1,5 +1,7 @@
 import jsonpickle
 
+from cloudshell.cp.openstack.command.operations.vm_details_operation import VmDetailsOperation
+from cloudshell.cp.openstack.common.deploy_data_holder import DeployDataHolder
 from cloudshell.cp.openstack.common.driver_helper import CloudshellDriverHelper
 
 # Model
@@ -7,6 +9,7 @@ from cloudshell.cp.openstack.common.driver_helper import CloudshellDriverHelper
 #        import DeployOSNovaImageInstanceResourceModel
 # from cloudshell.cp.openstack.models.openstack_resource_model \
 #                                    import OpenStackResourceModel
+from cloudshell.cp.openstack.domain.common.vm_details_provider import VmDetailsProvider
 from cloudshell.cp.openstack.models.reservation_model import ReservationModel
 # Model Parser
 from cloudshell.cp.openstack.models.model_parser import OpenStackShellModelParser
@@ -53,6 +56,7 @@ class OpenStackShell(object):
         self.cancellation_service = CommandCancellationService()
         self.instance_service_waiter = InstanceWaiter(cancellation_service=self.cancellation_service)
         self.instance_service = NovaInstanceService(instance_waiter=self.instance_service_waiter)
+        self.vm_details_provider = VmDetailsProvider(self.instance_service)
         self.network_service = NeutronNetworkService()
         self.cp_validator_service = OpenStackCPValidator()
         self.vlan_connectivity_service = VLANConnectivityService(instance_service=self.instance_service,
@@ -62,7 +66,8 @@ class OpenStackShell(object):
         self.connectivity_operation = ConnectivityOperation(connectivity_service=self.vlan_connectivity_service)
         self.deploy_operation = DeployOperation(instance_service=self.instance_service,
                                                 network_service=self.network_service,
-                                                cancellation_service=self.cancellation_service)
+                                                cancellation_service=self.cancellation_service,
+                                                vm_details_provider=self.vm_details_provider)
         self.hidden_operation = HiddenOperation(instance_service=self.instance_service,
                                                 network_service=self.network_service)
         self.power_operation = PowerOperation(instance_service=self.instance_service)
@@ -70,6 +75,8 @@ class OpenStackShell(object):
 
         self.model_parser = OpenStackShellModelParser()
         self.command_result_parser = OpenStackShellCommandResultParser()
+
+        self.vm_details_operation = VmDetailsOperation(self.vm_details_provider, self.instance_service)
 
     # ## Below all operations are implemented as public methods
     # Power Operations Begin
@@ -158,10 +165,10 @@ class OpenStackShell(object):
 
                     # Get reservation
                     reservation_model = ReservationModel.create_reservation_model_from_context_reservation(
-                            command_context.reservation)
+                        command_context.reservation)
                     # From deploy_request obtain DeployOSNovaImageInstanceResourceModel
                     deploy_req_model, app_name = self.model_parser.deploy_res_model_appname_from_deploy_req(
-                            deploy_request)
+                        deploy_request)
 
                     logger.info("Deploying: App: {0}".format(app_name))
 
@@ -288,3 +295,29 @@ class OpenStackShell(object):
                                                                  openstack_session=os_session,
                                                                  cp_resource_model=cp_resource_model,
                                                                  logger=logger)
+
+    def get_vm_details(self, command_context, cancellation_context, requests_json):
+        """Get vm details for specific deployed app
+
+        :param requests_json:
+        :param cancellation_context:
+        :param command_context: ResourceRemoteCommandContext
+        """
+        with LoggingSessionContext(command_context) as logger:
+            with ErrorHandlingContext(logger):
+                with CloudShellSessionContext(command_context) as cs_session:
+                    logger.info("Starting get_vm_details operation...")
+
+                    requests = DeployDataHolder(jsonpickle.decode(requests_json)).items
+                    cp_resource_model = self.model_parser.get_resource_model_from_context(command_context.resource)
+
+                    logger.debug(cp_resource_model)
+                    management_vlan_id = cp_resource_model.qs_mgmt_os_net_uuid
+
+                    os_session = self.os_session_provider.get_openstack_session(cs_session, cp_resource_model, logger)
+                    vm_details = self.vm_details_operation.get_vm_details(openstack_session=os_session,
+                                                                          requests=requests,
+                                                                          cancellation_context=cancellation_context,
+                                                                          logger=logger,
+                                                                          management_vlan_id=management_vlan_id)
+                    return self.command_result_parser.set_command_result(vm_details)

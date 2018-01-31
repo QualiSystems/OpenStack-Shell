@@ -3,6 +3,7 @@ Implements a concrete DeployOperation class.
 """
 
 # Domain Services
+from cloudshell.cp.openstack.domain.common.vm_details_provider import VmDetailsProvider
 from cloudshell.cp.openstack.domain.services.nova.nova_instance_service import NovaInstanceService
 
 # Results
@@ -12,16 +13,18 @@ import traceback
 
 
 class DeployOperation(object):
-    def __init__(self, instance_service, network_service, cancellation_service):
+    def __init__(self, instance_service, network_service, cancellation_service, vm_details_provider):
         """
 
         :param NovaInstanceService instance_service:
         :param NeutronNetworkService network_service:
         :param cancellation_service:
+        :param cloudshell.cp.openstack.domain.common.vm_details_provider.VmDetailsProvider vm_details_provider:
         """
         self.cancellation_service = cancellation_service
         self.instance_service = instance_service
         self.network_service = network_service
+        self.vm_details_provider = vm_details_provider
 
     def deploy(self, os_session, name, reservation, cp_resource_model, deploy_req_model, cancellation_context, logger):
         """
@@ -95,12 +98,21 @@ class DeployOperation(object):
             # Just make sure we were not cancelled before returning result.
             self.cancellation_service.check_if_cancelled(cancellation_context=cancellation_context)
 
+            management_vlan_id = cp_resource_model.qs_mgmt_os_net_uuid
+
+            logger.info("management_vlan_id is: {0}.".format(management_vlan_id))
+
+            vm_details_data = self.vm_details_provider.create(instance=instance, openstack_session=os_session,
+                                                              management_vlan_id=management_vlan_id,
+                                                              logger=logger)
+
             return DeployResultModel(vm_name=instance.name,
                                      vm_uuid=instance.id,
                                      cloud_provider_name=deploy_req_model.cloud_provider,
                                      deployed_app_ip=private_ip_address,
                                      deployed_app_attributes=deployed_app_attributes,
-                                     floating_ip=floating_ip_str)
+                                     floating_ip=floating_ip_str,
+                                     vm_details_data=vm_details_data)
 
         # If any Exception is raised during deploy or assign floating IP - clean up OpenStack side and re-raise
         except Exception as e:
