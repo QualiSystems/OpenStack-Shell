@@ -39,7 +39,6 @@ class VmDetailsProvider(object):
             AdditionalData('Image', image.name),
             AdditionalData('Flavour', flavor.name),
             AdditionalData('Availability Zone', instance._info['OS-EXT-AZ:availability_zone']),
-            # AdditionalData('Affinity Group', 'todo igor'),
             AdditionalData('CPU', '%s vCPU' % flavor.vcpus),
             AdditionalData('Memory', '%s GB' % flavor.ram),
             AdditionalData('Disk Size', '%s GB' % flavor.disk)
@@ -73,7 +72,6 @@ class VmDetailsProvider(object):
             if addresses:
                 for key, val in addresses.iteritems():
                     if key == network_name:
-                        logger.info(val)
                         floating_ip = filter(lambda x: x['OS-EXT-IPS:type'] == 'floating', val)
                         if floating_ip:
                             network_interface_object["network_data"].append(

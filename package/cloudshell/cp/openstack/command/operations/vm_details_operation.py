@@ -26,7 +26,6 @@ class VmDetailsOperation(object):
                 break
 
             vm_name = request.deployedAppJson.name
-            # deployment_service = request.appRequestJson.deploymentService
             instance_id = request.deployedAppJson.vmdetails.uid
 
             try:
