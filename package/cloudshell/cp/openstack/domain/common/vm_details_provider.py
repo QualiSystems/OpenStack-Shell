@@ -65,7 +65,8 @@ class VmDetailsProvider(object):
                 "interface_id": interface_mac,
                 "network_id": segmentation_id,
                 "network_data": [AdditionalData("IP", instance.networks[network_name][0])],
-                "is_predefined": network_id == management_vlan_id
+                "is_predefined": network_id == management_vlan_id,
+                "is_primary": network_id == management_vlan_id
             }
 
             addresses = instance.to_dict().get('addresses')
