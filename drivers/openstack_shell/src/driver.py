@@ -64,3 +64,6 @@ class OpenStackShellDriver(ResourceDriverInterface):
 
     def get_inventory(self, context):
         return self.os_shell.get_inventory(command_context=context)
+
+    def GetVmDetails(self, context, cancellation_context, requests):
+        return self.os_shell.get_vm_details(context, cancellation_context, requests)

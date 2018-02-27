@@ -22,6 +22,24 @@ class NovaInstanceService(object):
         # in create_instance. This automatically means none of the methods
         # can be called without a proper client object
 
+    def get_image(self, openstack_session, image_id):
+        """
+        :param image_id:
+        :param keystoneauth1.session.Session openstack_session: Keystone Session
+        """
+
+        client = novaclient.Client(self.API_VERSION, session=openstack_session, insecure=True)
+        return client.images.find(id=image_id)
+
+    def get_flavor(self, openstack_session, flavor_id):
+        """
+        :param flavor_name:
+        :param keystoneauth1.session.Session openstack_session: Keystone Session
+        """
+
+        client = novaclient.Client(self.API_VERSION, session=openstack_session, insecure=True)
+        return client.flavors.find(id=flavor_id)
+
     def create_instance(self, openstack_session, name, reservation,
                         cp_resource_model, deploy_req_model, cancellation_context, logger):
         """

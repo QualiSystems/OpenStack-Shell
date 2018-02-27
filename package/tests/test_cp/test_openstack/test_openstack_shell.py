@@ -121,7 +121,8 @@ class TestOpenStackShell(TestCase):
                                                       cloud_provider_name=deploy_res_mock.cloud_provider,
                                                       deployed_app_ip="10.1.1.1",
                                                       deployed_app_attributes={'Public IP':'test_public_ip'},
-                                                      floating_ip="4.3.2.1")
+                                                      floating_ip="4.3.2.1",
+                                                      vm_details_data='')
 
                     self.os_shell_api.deploy_operation.deploy = Mock(return_value=deploy_result)
 
