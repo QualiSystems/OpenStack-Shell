@@ -26,8 +26,9 @@ class PowerOperation(object):
             self.instance_service.instance_power_on(openstack_session=openstack_session,
                                                     instance_id=instance_id,
                                                     logger=logger)
-            cloudshell_session.SetResourceLiveStatus(resource_fullname, "Online", "Active")
+
         except Exception as e:
+            # noam
             cloudshell_session.SetResourceLiveStatus(resource_fullname, "Error", e.message)
             logger.error(traceback.format_exc())
             raise # reraise the exception
@@ -52,8 +53,8 @@ class PowerOperation(object):
             self.instance_service.instance_power_off(openstack_session=openstack_session,
                                                     instance_id=instance_id,
                                                     logger=logger)
-            cloudshell_session.SetResourceLiveStatus(resource_fullname, "Offline", "Powered Off")
         except Exception as e:
+            #noam
             cloudshell_session.SetResourceLiveStatus(resource_fullname, "Error", e.message)
             logger.error(traceback.format_exc())
             raise  # Reraise the exception
