@@ -221,10 +221,10 @@
       <Models>
         <ResourceModel Description="" ImagePath="OpenStack_VM_Deploy_Icon.png" Name="OpenStack Deploy From Glance Image" SupportsConcurrentCommands="false">
           <AttachedAttributes>
-            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Availability Zone" UserInput="true">
+            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Availability Zone" UserInput="true" EditableOnlyInAppTemplate="true">
               <AllowedValues />
             </AttachedAttribute>
-            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Image ID" UserInput="true">
+            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Image ID" UserInput="true" EditableOnlyInAppTemplate="true">
               <AllowedValues />
             </AttachedAttribute>
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Instance Flavor" UserInput="true">
