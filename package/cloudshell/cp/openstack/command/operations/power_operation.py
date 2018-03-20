@@ -28,8 +28,6 @@ class PowerOperation(object):
                                                     logger=logger)
 
         except Exception as e:
-            # noam
-            cloudshell_session.SetResourceLiveStatus(resource_fullname, "Error", e.message)
             logger.error(traceback.format_exc())
             raise # reraise the exception
 
@@ -54,7 +52,5 @@ class PowerOperation(object):
                                                     instance_id=instance_id,
                                                     logger=logger)
         except Exception as e:
-            #noam
-            cloudshell_session.SetResourceLiveStatus(resource_fullname, "Error", e.message)
             logger.error(traceback.format_exc())
             raise  # Reraise the exception
