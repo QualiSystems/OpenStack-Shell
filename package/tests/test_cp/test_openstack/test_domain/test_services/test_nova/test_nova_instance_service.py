@@ -42,8 +42,8 @@ class TestNovaInstanceService(TestCase):
         mock_client2.flavors.find = Mock(return_value=mock_flavor)
 
         mock_deploy_req_model = Mock()
-        mock_deploy_req_model.affinity_group_uuid = ''
-        mock_deploy_req_model.cp_avail_zone = 'test-avail-zone'
+        mock_deploy_req_model.affinity_group_id = ''
+        mock_deploy_req_model.availability_zone = 'test-avail-zone'
 
         test_nova_instance_service.udev_rules_sh_str = 'test_userdata'
 
@@ -126,8 +126,8 @@ class TestNovaInstanceService(TestCase):
         mock_client2.flavors.find = Mock(return_value=mock_flavor)
 
         mock_deploy_req_model = Mock()
-        mock_deploy_req_model.affinity_group_uuid = 'test_affinity_group_id'
-        mock_deploy_req_model.cp_avail_zone = ''
+        mock_deploy_req_model.affinity_group_id = 'test_affinity_group_id'
+        mock_deploy_req_model.availability_zone = ''
         mock_deploy_req_model.auto_udev = False
 
         mock_cp_resource_model = Mock()

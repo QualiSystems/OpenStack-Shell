@@ -3,8 +3,8 @@ A wrapper Model Parser Class OpenStackShellModelParser implementing only
 static methods that return a "Model" from input Dict/Json like data.
 """
 
-from cloudshell.cp.openstack.models.deploy_os_nova_image_instance_resource_model \
-        import DeployOSNovaImageInstanceResourceModel
+from cloudshell.cp.openstack.models.deploy_os_nova_image_instance_deployment_model \
+        import DeployOSNovaImageInstanceDeploymentModel
 from cloudshell.cp.openstack.models.openstack_resource_model import OpenStackResourceModel
 from cloudshell.cp.openstack.common.deploy_data_holder import DeployDataHolder
 import jsonpickle
@@ -42,18 +42,18 @@ class OpenStackShellModelParser(object):
 
     @staticmethod
     def _get_deployment_by_attributes(attrs):
-        deploy_resource_model = DeployOSNovaImageInstanceResourceModel()
+        deploy_resource_model = DeployOSNovaImageInstanceDeploymentModel(attrs)
         if 'Cloud Provider' in attrs:
             deploy_resource_model.cloud_provider = attrs['Cloud Provider']
         else:
             deploy_resource_model.cloud_provider = None
-        deploy_resource_model.cp_avail_zone = attrs['Availability Zone']
-        deploy_resource_model.img_uuid = attrs['Image ID']
+        deploy_resource_model.availability_zone = attrs['Availability Zone']
+        deploy_resource_model.image_id = attrs['Image ID']
         deploy_resource_model.instance_flavor = attrs['Instance Flavor']
         deploy_resource_model.add_floating_ip = OpenStackShellModelParser.parse_boolean(attrs['Add Floating IP'])
         deploy_resource_model.autoload = OpenStackShellModelParser.parse_boolean(attrs['Autoload'])
-        deploy_resource_model.floating_ip_subnet_uuid = attrs['Floating IP Subnet ID']
-        deploy_resource_model.affinity_group_uuid = attrs['Affinity Group ID']
+        deploy_resource_model.floating_ip_subnet_id = attrs['Floating IP Subnet ID']
+        deploy_resource_model.affinity_group_id = attrs['Affinity Group ID']
         deploy_resource_model.auto_udev = OpenStackShellModelParser.parse_boolean(attrs['Auto udev'])
         return deploy_resource_model
 

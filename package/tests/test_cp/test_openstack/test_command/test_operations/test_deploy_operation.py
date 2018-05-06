@@ -4,6 +4,8 @@ from mock import Mock
 from cloudshell.cp.openstack.command.operations.deploy_operation import DeployOperation
 from cloudshell.cp.openstack.models.deploy_result_model import DeployResultModel
 
+import json
+from cloudshell.cp.core.models import *
 
 class TestDeployOperation(TestCase):
     def setUp(self):
@@ -32,7 +34,6 @@ class TestDeployOperation(TestCase):
         test_deployed_app_attrs = {'Public IP': 'test_public_ip'}
         mock_deploy_result = DeployResultModel(vm_name=test_name,
                                                vm_uuid=test_id,
-                                               cloud_provider_name=test_cloud_provider,
                                                deployed_app_ip=test_private_ip,
                                                deployed_app_attributes=test_deployed_app_attrs,
                                                floating_ip=test_floating_ip,
@@ -56,34 +57,76 @@ class TestDeployOperation(TestCase):
         mock_cancellation_context = Mock()
 
         test_result = self.deploy_operation.deploy(os_session=self.openstack_session,
-                                                   name=test_name,
                                                    reservation=self.reservation,
                                                    cp_resource_model=self.cp_resource_model,
-                                                   deploy_req_model=test_deploy_req_model,
+                                                   deploy_app_action=test_deploy_req_model,
                                                    cancellation_context=mock_cancellation_context,
                                                    logger=self.mock_logger)
 
         self.assertEqual(test_result.vm_name, test_name)
         self.assertEqual(test_result.vm_uuid, test_id)
-        self.assertEqual(test_result.cloud_provider_resource_name, test_cloud_provider)
         self.assertEqual(test_result.deployed_app_address, test_private_ip)
 
+    def test_deploy_instance_success_new(self):
+        test_name = 'test name'
+        test_id = '1234'
+        test_cloud_provider = 'test CP'
+        test_private_ip = '1.2.3.4'
+        test_floating_ip = '4.3.2.1'
+        test_deployed_app_attrs = {'Public IP': 'test_public_ip'}
+        mock_deploy_result = DeployResultModel(vm_name=test_name,
+                                               vm_uuid=test_id,
+                                               deployed_app_ip=test_private_ip,
+                                               deployed_app_attributes=test_deployed_app_attrs,
+                                               floating_ip=test_floating_ip,
+                                               vm_details_data='')
+
+        self.deploy_operation.instance_service.get_private_ip = Mock(return_value=test_private_ip)
+
+        test_instance = Mock()
+        test_instance.name = test_name
+        test_instance.id = test_id
+
+        self.deploy_operation.instance_service.create_instance = Mock(return_value=test_instance)
+
+        mock_floating_ip_str = '1.2.3.4'
+        mock_floating_ip_dict = {'floating_ip_address': mock_floating_ip_str}
+        self.deploy_operation.network_service.create_floating_ip = Mock(return_value=mock_floating_ip_dict)
+
+        test_deploy_req_model = Mock()
+        test_deploy_req_model.cloud_provider = test_cloud_provider
+
+        mock_cancellation_context = Mock()
+
+        test_result = self.deploy_operation.deploy(os_session=self.openstack_session,
+                                                   reservation=self.reservation,
+                                                   cp_resource_model=self.cp_resource_model,
+                                                   deploy_app_action=test_deploy_req_model,
+                                                   cancellation_context=mock_cancellation_context,
+                                                   logger=self.mock_logger)
+
+        self.assertEqual(test_result.vm_name, test_name)
+        self.assertEqual(test_result.vm_uuid, test_id)
+        self.assertEqual(test_result.deployed_app_address, test_private_ip)
     def test_deploy_instance_create_instance_none(self):
         self.deploy_operation.instance_service.create_instance = Mock(return_value=None)
 
         test_name = 'test'
         test_deploy_req_model = Mock()
         mock_cancellation_context = Mock()
-        with self.assertRaises(ValueError) as context:
-            self.deploy_operation.deploy(os_session=self.openstack_session,
-                                         name=test_name,
+        result = self.deploy_operation.deploy(os_session=self.openstack_session,
                                          reservation=self.reservation,
                                          cp_resource_model=self.cp_resource_model,
-                                         deploy_req_model=test_deploy_req_model,
+                                         deploy_app_action=test_deploy_req_model,
                                          cancellation_context=mock_cancellation_context,
                                          logger=self.mock_logger)
 
-        self.assertTrue(context)
+        self.assertIsInstance(result,DeployAppResult)
+
+        self.assertEqual(result.errorMessage ,"Create Instance Returned None")
+        print json.dumps(result, default=lambda o: o.__dict__, sort_keys=True, indent=4)
+
+
 
     def test_deploy_instance_no_mgmt_network_ip(self):
         test_name = 'test name'
@@ -116,10 +159,9 @@ class TestDeployOperation(TestCase):
 
         with self.assertRaises(ValueError) as context:
             self.deploy_operation.deploy(os_session=self.openstack_session,
-                                         name=test_name,
                                          reservation=self.reservation,
                                          cp_resource_model=self.cp_resource_model,
-                                         deploy_req_model=test_deploy_req_model,
+                                         deploy_app_action=test_deploy_req_model,
                                          cancellation_context=mock_cancellation_context,
                                          logger=self.mock_logger)
 
@@ -170,10 +212,9 @@ class TestDeployOperation(TestCase):
 
         with self.assertRaises(ValueError) as context:
             self.deploy_operation.deploy(os_session=self.openstack_session,
-                                         name=test_name,
                                          reservation=self.reservation,
                                          cp_resource_model=self.cp_resource_model,
-                                         deploy_req_model=test_deploy_req_model,
+                                         deploy_app_action=test_deploy_req_model,
                                          cancellation_context=mock_cancellation_context,
                                          logger=self.mock_logger)
 

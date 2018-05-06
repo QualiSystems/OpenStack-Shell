@@ -6,7 +6,7 @@ from cloudshell.cp.openstack.common.driver_helper import CloudshellDriverHelper
 
 # Model
 # from cloudshell.cp.openstack.models.deploy_os_nova_image_instance_resource_model \
-#        import DeployOSNovaImageInstanceResourceModel
+#        import DeployOSNovaImageInstanceDeploymentModel
 # from cloudshell.cp.openstack.models.openstack_resource_model \
 #                                    import OpenStackResourceModel
 from cloudshell.cp.openstack.domain.common.vm_details_provider import VmDetailsProvider
@@ -39,7 +39,9 @@ from cloudshell.cp.openstack.domain.services.waiters.instance import InstanceWai
 from cloudshell.cp.openstack.domain.services.neutron.neutron_network_service import NeutronNetworkService
 from cloudshell.cp.openstack.domain.services.cp_validators.cp_validator import OpenStackCPValidator
 from cloudshell.cp.openstack.domain.services.connectivity.vlan_connectivity_service import VLANConnectivityService
+from cloudshell.cp.core.models import *
 
+from cloudshell.cp.core.converters import DriverRequestParser
 
 class OpenStackShell(object):
     """
@@ -140,12 +142,12 @@ class OpenStackShell(object):
 
     # Deploy Operations Begin
 
-    def deploy_instance_from_image(self, command_context, deploy_request, cancellation_context):
+    def deploy_instance_from_image(self, command_context, deploy_app_action, cancellation_context):
         """
         Deploys an image with specification provided by deploy_request on a
         Nova instance
         :param cloudshell.shell.core.context.ResourceCommandContext command_context:
-        :param DeployDataHolder deploy_request: Specification of for the instance to be deployed
+        :param cloudshell.cp.core.models.DeployApp deploy_app_action : Specification of for the instance to be deployed
         :param cloudshell.shell.core.context.CancellationContext cancellation_context:
         :rtype str:
         """
@@ -153,6 +155,13 @@ class OpenStackShell(object):
         with LoggingSessionContext(command_context) as logger:
             with ErrorHandlingContext(logger):
                 with CloudShellSessionContext(command_context) as cs_session:
+
+
+
+                    logger.info("Deploying: DeployAction: {0}".format(deploy_app_action))
+
+                    # Get reservation
+                    reservation_model = ReservationModel.create_reservation_model_from_context_reservation(command_context.reservation)
                     resource_model = self.model_parser.get_resource_model_from_context(command_context.resource)
 
                     # Obtain OpenStack Authenticated Session from cs_session, resource_model
@@ -161,32 +170,27 @@ class OpenStackShell(object):
                     # So this does not do an API call to 'authenticate' on 'Every Command '
                     os_session = self.os_session_provider.get_openstack_session(cs_session, resource_model, logger)
 
-                    logger.info("Deploying: DeployRequest: {0}".format(deploy_request))
+                   
 
-                    # Get reservation
-                    reservation_model = ReservationModel.create_reservation_model_from_context_reservation(
-                        command_context.reservation)
-                    # From deploy_request obtain DeployOSNovaImageInstanceResourceModel
-                    deploy_req_model, app_name = self.model_parser.deploy_res_model_appname_from_deploy_req(
-                        deploy_request)
+                    # From deploy_request obtain DeployOSNovaImageInstanceDeploymentModel
 
-                    logger.info("Deploying: App: {0}".format(app_name))
+
+                    logger.info("Deploying: App: {0}".format(deploy_app_action.actionParams.appName))
 
                     # Use the authenticated session and deploy_req_model to get instance
                     deployed_data = self.deploy_operation.deploy(os_session=os_session,
-                                                                 name=app_name,
                                                                  reservation=reservation_model,
                                                                  cp_resource_model=resource_model,
-                                                                 deploy_req_model=deploy_req_model,
+                                                                 deploy_app_action=deploy_app_action,
                                                                  cancellation_context=cancellation_context,
                                                                  logger=logger)
 
-                    if not deployed_data:
-                        # Raise an exception that instance creation failed
-                        raise Exception("Failed to Deploy App: Instance creation failed.")
+                    # if not deployed_data:
+                    #     # Raise an exception that instance creation failed
+                    #     raise Exception("Failed to Deploy App: Instance creation failed.")
 
-                    logger.info("Deploying: App: 2 {0}".format(app_name))
-                    return self.command_result_parser.set_command_result(deployed_data)
+                    logger.info("Deploying: App: 2 {0}".format(deploy_app_action.actionParams.appName))
+                    return deployed_data
 
     # Deploy Operations End
 
@@ -281,7 +285,7 @@ class OpenStackShell(object):
         """
 
         :param command_context:
-        :return:
+        :return:`
         """
         with LoggingSessionContext(command_context) as logger:
             with ErrorHandlingContext(logger):

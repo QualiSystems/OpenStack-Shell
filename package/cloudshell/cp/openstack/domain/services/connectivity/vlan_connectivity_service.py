@@ -1,7 +1,7 @@
 from cloudshell.cp.openstack.common.deploy_data_holder import DeployDataHolder
 
 from cloudshell.cp.openstack.models.connectivity_action_result_model import ConnectivityActionResultModel
-from cloudshell.cp.openstack.models.driver_response_model import DriverResponse, DriverResponseRoot
+# from cloudshell.cp.openstack.models.driver_response_model import DriverResponse, DriverResponseRoot
 from cloudshell.cp.openstack.models.connectivity_action_resource_info import ConnectivityActionResourceInfo
 import jsonpickle
 
@@ -10,6 +10,9 @@ from cloudshell.cp.openstack.domain.services.waiters.instance import InstanceWai
 from cloudshell.cp.openstack.domain.services.neutron.neutron_network_service import NeutronNetworkService
 from threading import Lock
 import traceback
+from cloudshell.cp.core.converters import DriverRequestParser
+from cloudshell.cp.core.models import *
+from cloudshell.cp.core.utils import *
 
 
 class VLANConnectivityService(object):
@@ -86,15 +89,7 @@ class VLANConnectivityService(object):
                                               logger=logger)
             results += result
 
-        # We have apply Connectivity results - We should send out the JSON and encode it
-        driver_response = DriverResponse()
-        driver_response.actionResults = results
-        driver_response_root = DriverResponseRoot()
-        driver_response_root.driverResponse = driver_response
-
-        logger.info(jsonpickle.dumps(driver_response, unpicklable=False))
-
-        return driver_response_root
+        return results
 
     def _format_err_msg_for_exception(self, e):
         """
