@@ -206,6 +206,7 @@ class DeployOperation(object):
                                            errorMessage="Unable to assign Floating IP on Subnet {}".format(
                                                floating_ip_subnet_uuid))
 
+
             # Get private IP
             private_ip_address = self.instance_service.get_private_ip(instance, private_network_name)
 
@@ -219,8 +220,10 @@ class DeployOperation(object):
             vm_details_data = self.vm_details_provider.create(instance=instance, openstack_session=os_session,
                                                               management_vlan_id=management_vlan_id,
                                                               logger=logger)
+            public_ip_attr = Attribute('Public IP',floating_ip_str)
+            deployed_app_attributes = [public_ip_attr]
 
-            return DeployAppResult(actionId=action_id, success=True,vmUuid=instance.id,deployedAppAddress=private_ip_address,vmDetailsData=vm_details_data)
+            return DeployAppResult(actionId=action_id, success=True,vmUuid=instance.id,vmName=instance.name,deployedAppAddress=private_ip_address,deployedAppAttributes=deployed_app_attributes, vmDetailsData=vm_details_data)
 
         # If any Exception is raised during deploy or assign floating IP - clean up OpenStack side and re-raise
         except Exception as e:

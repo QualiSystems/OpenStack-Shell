@@ -6,8 +6,7 @@ from cloudshell.cp.openstack.openstack_shell import OpenStackShell
 from cloudshell.cp.openstack.models.openstack_resource_model import OpenStackResourceModel
 from cloudshell.cp.openstack.models.deploy_os_nova_image_instance_deployment_model import DeployOSNovaImageInstanceDeploymentModel
 from cloudshell.cp.openstack.models.deploy_result_model import DeployResultModel
-from cloudshell.cp.core.models import *
-from cloudshell.cp.core.converters import *
+from cloudshell.cp.core import DriverRequestParser
 
 class TestOpenStackShell(TestCase):
 

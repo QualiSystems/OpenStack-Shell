@@ -41,8 +41,6 @@ from cloudshell.cp.openstack.domain.services.cp_validators.cp_validator import O
 from cloudshell.cp.openstack.domain.services.connectivity.vlan_connectivity_service import VLANConnectivityService
 from cloudshell.cp.core.models import *
 
-from cloudshell.cp.core.converters import DriverRequestParser
-
 class OpenStackShell(object):
     """
     OpenStackShell: An Object of this is created by Shell Driver. Methods of
@@ -147,7 +145,7 @@ class OpenStackShell(object):
         Deploys an image with specification provided by deploy_request on a
         Nova instance
         :param cloudshell.shell.core.context.ResourceCommandContext command_context:
-        :param cloudshell.cp.core.models.DeployApp deploy_app_action : Specification of for the instance to be deployed
+        :param cloudshell.cp.core.models.DeployApp. : Specification of for the instance to be deployed
         :param cloudshell.shell.core.context.CancellationContext cancellation_context:
         :rtype str:
         """
@@ -178,19 +176,15 @@ class OpenStackShell(object):
                     logger.info("Deploying: App: {0}".format(deploy_app_action.actionParams.appName))
 
                     # Use the authenticated session and deploy_req_model to get instance
-                    deployed_data = self.deploy_operation.deploy(os_session=os_session,
+                    deploy_action_result = self.deploy_operation.deploy(os_session=os_session,
                                                                  reservation=reservation_model,
                                                                  cp_resource_model=resource_model,
                                                                  deploy_app_action=deploy_app_action,
                                                                  cancellation_context=cancellation_context,
                                                                  logger=logger)
 
-                    # if not deployed_data:
-                    #     # Raise an exception that instance creation failed
-                    #     raise Exception("Failed to Deploy App: Instance creation failed.")
 
-                    logger.info("Deploying: App: 2 {0}".format(deploy_app_action.actionParams.appName))
-                    return deployed_data
+                    return deploy_action_result
 
     # Deploy Operations End
 

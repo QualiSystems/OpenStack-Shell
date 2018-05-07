@@ -1,18 +1,13 @@
-from cloudshell.cp.openstack.common.deploy_data_holder import DeployDataHolder
+import traceback
+from threading import Lock
 
-from cloudshell.cp.openstack.models.connectivity_action_result_model import ConnectivityActionResultModel
-# from cloudshell.cp.openstack.models.driver_response_model import DriverResponse, DriverResponseRoot
-from cloudshell.cp.openstack.models.connectivity_action_resource_info import ConnectivityActionResourceInfo
 import jsonpickle
 
-from cloudshell.cp.openstack.domain.services.nova.nova_instance_service import NovaInstanceService
-from cloudshell.cp.openstack.domain.services.waiters.instance import InstanceWaiter
+from cloudshell.cp.openstack.common.deploy_data_holder import DeployDataHolder
 from cloudshell.cp.openstack.domain.services.neutron.neutron_network_service import NeutronNetworkService
-from threading import Lock
-import traceback
-from cloudshell.cp.core.converters import DriverRequestParser
-from cloudshell.cp.core.models import *
-from cloudshell.cp.core.utils import *
+from cloudshell.cp.openstack.domain.services.nova.nova_instance_service import NovaInstanceService
+from cloudshell.cp.openstack.models.connectivity_action_resource_info import ConnectivityActionResourceInfo
+from cloudshell.cp.openstack.models.connectivity_action_result_model import ConnectivityActionResultModel
 
 
 class VLANConnectivityService(object):

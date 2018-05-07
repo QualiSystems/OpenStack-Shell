@@ -1,11 +1,10 @@
-import jsonpickle
 from cloudshell.shell.core.resource_driver_interface import ResourceDriverInterface
 
 from cloudshell.cp.openstack.models.deploy_os_nova_image_instance_deployment_model import \
     DeployOSNovaImageInstanceDeploymentModel
 from cloudshell.cp.openstack.openstack_shell import OpenStackShell
 
-from cloudshell.cp.core.converters import DriverRequestParser
+from cloudshell.cp.core import DriverRequestParser
 from cloudshell.cp.core.models import *
 from cloudshell.cp.core.utils import *
 
@@ -28,19 +27,17 @@ class OpenStackShellDriver(ResourceDriverInterface):
         :param cloudshell.shell.core.context.CancellationContext cancellation_context:
         :return:
         """
-        driver_request = jsonpickle.decode(request)
-
-        actions = self.parser.convert_driver_request_to_actions(driver_request)
+        actions = self.parser.convert_driver_request_to_actions(request)
         deploy_action =   single(actions,lambda x: isinstance(x,DeployApp))
         deployment_path = deploy_action.actionParams.deployment.deploymentPath
-
 
         if not deployment_path in self.deployments.keys():
             raise Exception('Could not find deployment')
 
         deploy_action_result = self.deployments[deployment_path](context, deploy_action, cancellation_context)
-        driver_response = wrap_with_driver_response([deploy_action_result])
-        return driver_response.to_json()
+        driver_response = DriverResponse([deploy_action_result])
+
+        return driver_response.to_driver_response_json()
 
 
     def initialize(self, context):
@@ -56,13 +53,13 @@ class OpenStackShellDriver(ResourceDriverInterface):
         :param DeployDataHolder request:
         :rtype  : str
         """
-        return self.os_shell.deploy_instance_from_image(command_context=context,deploy_app_action =request,
+        deploy_action_result = self.os_shell.deploy_instance_from_image(command_context=context,deploy_app_action =request,
                                                         cancellation_context=cancellation_context)
 
-    def ApplyConnectivityChanges(self, context, request):
-        apply_connectivity_action_results = self.os_shell.apply_connectivity(context, request)
+        return deploy_action_result
 
-        return wrap_with_driver_response(apply_connectivity_action_results).to_json()
+    def ApplyConnectivityChanges(self, context, request):
+        return self.os_shell.apply_connectivity(context, request)
 
     def PowerOn(self, context, ports):
         return self.os_shell.power_on(context)
