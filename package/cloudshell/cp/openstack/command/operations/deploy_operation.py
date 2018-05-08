@@ -5,12 +5,8 @@ Implements a concrete DeployOperation class.
 # Domain Services
 from cloudshell.cp.openstack.domain.common.vm_details_provider import VmDetailsProvider
 from cloudshell.cp.openstack.domain.services.nova.nova_instance_service import NovaInstanceService
-
-# Results
-from cloudshell.cp.openstack.models.deploy_result_model import DeployResultModel
-
 import traceback
-from cloudshell.cp.core.models import *
+from cloudshell.cp.core.models import DeployAppResult,Attribute
 
 class DeployOperation(object):
     def __init__(self, instance_service, network_service, cancellation_service, vm_details_provider):
@@ -25,122 +21,6 @@ class DeployOperation(object):
         self.instance_service = instance_service
         self.network_service = network_service
         self.vm_details_provider = vm_details_provider
-
-    # def deploy(self, os_session, name, reservation, cp_resource_model, deploy_req_model, cancellation_context, logger):
-    #     """
-    #     Performs actual deploy operation.
-    #     :param keystoneauth1.session.Session os_session:
-    #     :param str name: Name of the instance to be deployed
-    #     :param ReservationModel reservation:
-    #     :param DeployOSNovaImageInstanceDeploymentModel deploy_req_model:
-    #     :param OpenStackResourceModel cp_resource_model:
-    #     :param cloudshell.shell.core.context.CancellationContext cancellation_context:
-    #     :param logging.Logger logger:
-    #     :rtype DeployResultModel:
-    #     """
-    #     logger.info("Inside Deploy Operation.")
-    #     # First create instance
-    #     instance = None
-    #     floating_ip_str = ''
-    #     try:
-    #         # Check for cancellation right at the beginning
-    #         self.cancellation_service.check_if_cancelled(cancellation_context=cancellation_context)
-    #
-    #         instance = self.instance_service.create_instance(openstack_session=os_session,
-    #                                                          name=name,
-    #                                                          reservation=reservation,
-    #                                                          cp_resource_model=cp_resource_model,
-    #                                                          deploy_req_model=deploy_req_model,
-    #                                                          cancellation_context=cancellation_context,
-    #                                                          logger=logger)
-    #
-    #         # Actually cannot come here and instance is None. If the previous statement raised an Exception,
-    #         # we'd deal with it in the except cause.
-    #
-    #         result = DeployAppResult()
-    #         if instance is None:
-    #             # raise ValueError("Create Instance Returned None")
-    #             return DeployAppResult(actionId='',success=False,errorMessage='Create Instance Returned None')
-    #
-    #
-    #         logger.info("Deploy Operation Done. Instance Created: {0}:{1}".format(instance.name, instance.id))
-    #
-    #         # Get Private Network
-    #         private_network_name = self.instance_service.get_instance_mgmt_network_name(instance=instance,
-    #                                                                                     openstack_session=os_session,
-    #                                                                                     cp_resource_model=cp_resource_model)
-    #         if private_network_name is None:
-    #             return DeployAppResult(actionId='', success=False, errorMessage="Management network with ID '{}' for instance not found".format(cp_resource_model.qs_mgmt_os_net_id))
-    #             # raise ValueError("Management network with ID for instance not found".format(cp_resource_model.qs_mgmt_os_net_id))
-    #
-    #         # Assign floating IP
-    #         if deploy_req_model.add_floating_ip:
-    #             # if deploy_req_model.floating_ip_subnet_id:
-    #             #     floating_ip_subnet_id = deploy_req_model.floating_ip_subnet_id
-    #             # else:
-    #             #     floating_ip_subnet_id = cp_resource_model.floating_ip_subnet_id
-    #             floating_ip_subnet_id = deploy_req_model.floating_ip_subnet_id if deploy_req_model.floating_ip_subnet_id else cp_resource_model.floating_ip_subnet_id
-    #
-    #             floating_ip_dict = self.network_service.create_floating_ip(
-    #                 floating_ip_subnet_id=floating_ip_subnet_id,
-    #                 openstack_session=os_session,
-    #                 logger=logger)
-    #             if floating_ip_dict:
-    #                 floating_ip_str = floating_ip_dict['floating_ip_address']
-    #             if floating_ip_str:
-    #                 self.instance_service.attach_floating_ip(instance=instance,
-    #                                                          floating_ip=floating_ip_str,
-    #                                                          openstack_session=os_session,
-    #                                                          logger=logger)
-    #             else:
-    #                 return DeployAppResult(actionId='', success=False,
-    #                                        errorMessage="Unable to assign Floating IP on Subnet {}".format(floating_ip_subnet_id))
-    #                 # raise ValueError("Unable to assign Floating IP on Subnet {}".format(floating_ip_subnet_id))
-    #         # Get private IP
-    #         private_ip_address = self.instance_service.get_private_ip(instance, private_network_name)
-    #
-    #         # deployed_app_attributes = dict()
-    #         # deployed_app_attributes['Public IP'] = floating_ip_str
-    #
-    #         # Just make sure we were not cancelled before returning result.
-    #         self.cancellation_service.check_if_cancelled(cancellation_context=cancellation_context)
-    #
-    #         management_vlan_id = cp_resource_model.qs_mgmt_os_net_uuid
-    #
-    #         logger.info("management_vlan_id is: {0}.".format(management_vlan_id))
-    #         result.deployedAppAddress = private_ip_address
-    #         # vm_details_data = self.vm_details_provider.create(instance=instance, openstack_session=os_session,
-    #         #                                                   management_vlan_id=management_vlan_id,
-    #         #                                                   logger=logger)
-    #
-    #         # return DeployResultModel(vm_name=instance.name,
-    #         #                          vm_uuid=instance.id,
-    #         #                          deployed_app_ip=private_ip_address,
-    #         #                          deployed_app_attributes=deployed_app_attributes,
-    #         #                          floating_ip=floating_ip_str,
-    #         #                          vm_details_data=vm_details_data)
-    #
-    #
-    #
-    #         result.vm_uuid = instance.id
-    #         result.vm_details_data = VmDetailsData()
-    #         result.vm_details_data.vm_instance_data = []
-    #
-    #         result.vm_details_data.vm_instance_data.append()
-    #
-    #
-    #     # If any Exception is raised during deploy or assign floating IP - clean up OpenStack side and re-raise
-    #     except Exception as e:
-    #         logger.error(traceback.format_exc())
-    #
-    #         self._rollback_failed_instance(logger=logger,
-    #                                        os_session=os_session,
-    #                                        floating_ip=floating_ip_str,
-    #                                        instance=instance)
-    #
-    #         # Re-raise for the UI
-    #         return DeployAppResult(actionId='', success=False,
-    #                                errorMessage=e.message)
 
     def deploy(self, os_session, reservation, cp_resource_model, deploy_app_action, cancellation_context, logger):
         """
@@ -181,10 +61,13 @@ class DeployOperation(object):
             # Get Private Network
             private_network_name = self.instance_service.get_instance_mgmt_network_name(instance=instance,
                                                                                         openstack_session=os_session,                                                                                        cp_resource_model=cp_resource_model)
+            # if private_network_name is None:
+            #     return DeployAppResult(actionId=action_id, success=False,
+            #                            errorMessage="Management network with ID '{}' for instance not found".format(
+            #                                cp_resource_model.qs_mgmt_os_net_id))
+
             if private_network_name is None:
-                return DeployAppResult(actionId=action_id, success=False,
-                                       errorMessage="Management network with ID '{}' for instance not found".format(
-                                           cp_resource_model.qs_mgmt_os_net_id))
+                raise ValueError("Management network with ID '{}' for instance not found".format(cp_resource_model.qs_mgmt_os_net_id))
 
             # Assign floating IP
             if deploy_req_model.add_floating_ip:
@@ -202,9 +85,7 @@ class DeployOperation(object):
                                                              openstack_session=os_session,
                                                              logger=logger)
                 else:
-                    return DeployAppResult(actionId=action_id, success=False,
-                                           errorMessage="Unable to assign Floating IP on Subnet {}".format(
-                                               floating_ip_subnet_uuid))
+                    raise ValueError("Unable to assign Floating IP on Subnet {}".format(floating_ip_subnet_uuid))
 
 
             # Get private IP

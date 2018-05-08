@@ -32,13 +32,6 @@ class TestDeployOperation(TestCase):
         test_private_ip = '1.2.3.4'
         test_floating_ip = '4.3.2.1'
         test_deployed_app_attrs = {'Public IP': 'test_public_ip'}
-        mock_deploy_result = DeployResultModel(vm_name=test_name,
-                                               vm_uuid=test_id,
-                                               deployed_app_ip=test_private_ip,
-                                               deployed_app_attributes=test_deployed_app_attrs,
-                                               floating_ip=test_floating_ip,
-                                               vm_details_data='')
-
         self.deploy_operation.instance_service.get_private_ip = Mock(return_value=test_private_ip)
 
         test_instance = Mock()
@@ -63,51 +56,11 @@ class TestDeployOperation(TestCase):
                                                    cancellation_context=mock_cancellation_context,
                                                    logger=self.mock_logger)
 
-        self.assertEqual(test_result.vm_name, test_name)
-        self.assertEqual(test_result.vm_uuid, test_id)
-        self.assertEqual(test_result.deployed_app_address, test_private_ip)
+        self.assertEqual(test_result.vmName, test_name)
+        self.assertEqual(test_result.vmUuid, test_id)
+        self.assertEqual(test_result.deployedAppAddress, test_private_ip)
 
-    def test_deploy_instance_success_new(self):
-        test_name = 'test name'
-        test_id = '1234'
-        test_cloud_provider = 'test CP'
-        test_private_ip = '1.2.3.4'
-        test_floating_ip = '4.3.2.1'
-        test_deployed_app_attrs = {'Public IP': 'test_public_ip'}
-        mock_deploy_result = DeployResultModel(vm_name=test_name,
-                                               vm_uuid=test_id,
-                                               deployed_app_ip=test_private_ip,
-                                               deployed_app_attributes=test_deployed_app_attrs,
-                                               floating_ip=test_floating_ip,
-                                               vm_details_data='')
 
-        self.deploy_operation.instance_service.get_private_ip = Mock(return_value=test_private_ip)
-
-        test_instance = Mock()
-        test_instance.name = test_name
-        test_instance.id = test_id
-
-        self.deploy_operation.instance_service.create_instance = Mock(return_value=test_instance)
-
-        mock_floating_ip_str = '1.2.3.4'
-        mock_floating_ip_dict = {'floating_ip_address': mock_floating_ip_str}
-        self.deploy_operation.network_service.create_floating_ip = Mock(return_value=mock_floating_ip_dict)
-
-        test_deploy_req_model = Mock()
-        test_deploy_req_model.cloud_provider = test_cloud_provider
-
-        mock_cancellation_context = Mock()
-
-        test_result = self.deploy_operation.deploy(os_session=self.openstack_session,
-                                                   reservation=self.reservation,
-                                                   cp_resource_model=self.cp_resource_model,
-                                                   deploy_app_action=test_deploy_req_model,
-                                                   cancellation_context=mock_cancellation_context,
-                                                   logger=self.mock_logger)
-
-        self.assertEqual(test_result.vm_name, test_name)
-        self.assertEqual(test_result.vm_uuid, test_id)
-        self.assertEqual(test_result.deployed_app_address, test_private_ip)
     def test_deploy_instance_create_instance_none(self):
         self.deploy_operation.instance_service.create_instance = Mock(return_value=None)
 
@@ -121,11 +74,8 @@ class TestDeployOperation(TestCase):
                                          cancellation_context=mock_cancellation_context,
                                          logger=self.mock_logger)
 
-        self.assertIsInstance(result,DeployAppResult)
-
-        self.assertEqual(result.errorMessage ,"Create Instance Returned None")
-        print json.dumps(result, default=lambda o: o.__dict__, sort_keys=True, indent=4)
-
+        self.assertIsInstance(result, DeployAppResult)
+        self.assertEqual(result.errorMessage, "Create Instance Returned None")
 
 
     def test_deploy_instance_no_mgmt_network_ip(self):
@@ -157,13 +107,16 @@ class TestDeployOperation(TestCase):
         self.deploy_operation.network_service.delete_floating_ip = Mock()
         self.deploy_operation.instance_service.terminate_instance = Mock()
 
-        with self.assertRaises(ValueError) as context:
-            self.deploy_operation.deploy(os_session=self.openstack_session,
+
+        result = self.deploy_operation.deploy(os_session=self.openstack_session,
                                          reservation=self.reservation,
                                          cp_resource_model=self.cp_resource_model,
                                          deploy_app_action=test_deploy_req_model,
                                          cancellation_context=mock_cancellation_context,
                                          logger=self.mock_logger)
+
+        self.assertIsInstance(result, DeployAppResult)
+        self.assertTrue("Management network with ID" in result.errorMessage)
 
         self.deploy_operation.instance_service.detach_floating_ip.assert_called_with(
             openstack_session=self.openstack_session,
@@ -178,7 +131,7 @@ class TestDeployOperation(TestCase):
             openstack_session=self.openstack_session,
             floating_ip='',
             logger=self.mock_logger)
-        self.assertTrue(context)
+
 
     def test_deploy_instance_no_floating_ip(self):
         test_name = 'test name'
@@ -210,8 +163,8 @@ class TestDeployOperation(TestCase):
         self.deploy_operation.network_service.delete_floating_ip = Mock()
         self.deploy_operation.instance_service.terminate_instance = Mock()
 
-        with self.assertRaises(ValueError) as context:
-            self.deploy_operation.deploy(os_session=self.openstack_session,
+
+        result = self.deploy_operation.deploy(os_session=self.openstack_session,
                                          reservation=self.reservation,
                                          cp_resource_model=self.cp_resource_model,
                                          deploy_app_action=test_deploy_req_model,
@@ -231,4 +184,5 @@ class TestDeployOperation(TestCase):
             openstack_session=self.openstack_session,
             floating_ip='',
             logger=self.mock_logger)
-        self.assertTrue(context)
+
+        self.assertTrue('Unable to assign Floating IP on Subnet' in result.errorMessage)

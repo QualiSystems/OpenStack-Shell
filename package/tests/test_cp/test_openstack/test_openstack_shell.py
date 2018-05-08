@@ -7,6 +7,8 @@ from cloudshell.cp.openstack.models.openstack_resource_model import OpenStackRes
 from cloudshell.cp.openstack.models.deploy_os_nova_image_instance_deployment_model import DeployOSNovaImageInstanceDeploymentModel
 from cloudshell.cp.openstack.models.deploy_result_model import DeployResultModel
 from cloudshell.cp.core import DriverRequestParser
+from cloudshell.cp.core.utils import *
+from cloudshell.cp.core.models import DeployApp,DeployAppResult
 
 class TestOpenStackShell(TestCase):
 
@@ -96,7 +98,7 @@ class TestOpenStackShell(TestCase):
                         resource_fullname=mock_full_name,
                         logger=mock_log_obj)
 
-    def test_deploy_instance_returns_deploy_result(self):
+    def test_deploy_instance_returns_deploy_app_result(self):
         """
         Tests deploy_instance method with deploy_result assertions.
         :return:
@@ -117,33 +119,32 @@ class TestOpenStackShell(TestCase):
                     parser.add_deployment_model(DeployOSNovaImageInstanceDeploymentModel)
 
 
-                    deployapp_req =  single(parser.convert_driver_request_to_actions(jsonpickle.decode(deploy_req_json)), lambda x: isinstance(x, DeployApp))
+                    deploy_app_req =  single(parser.convert_driver_request_to_actions(jsonpickle.decode(deploy_req_json)), lambda x: isinstance(x, DeployApp))
 
-                    if isinstance(deployapp_req,DeployApp):
-                        pass
+                    # deploy_result = DeployResultModel(vm_name=deploy_app_req.actionParams.appName,
+                    #                                   vm_uuid='1234-56',
+                    #                                   deployed_app_ip="10.1.1.1",
+                    #                                   deployed_app_attributes={'Public IP':'test_public_ip'},
+                    #                                   floating_ip="4.3.2.1",
+                    #                                   vm_details_data='')
 
-
-                    deploy_result = DeployResultModel(vm_name=deployapp_req.actionParams.appName,
-                                                      vm_uuid='1234-56',
-                                                      deployed_app_ip="10.1.1.1",
-                                                      deployed_app_attributes={'Public IP':'test_public_ip'},
-                                                      floating_ip="4.3.2.1",
-                                                      vm_details_data='')
-
+                    deploy_result = DeployAppResult(vmUuid='1234-56', deployedAppAddress="10.1.1.1",vmName=deploy_app_req.actionParams.appName,
+                                                    deployedAppAttributes=[Attribute('Public IP','test_public_ip')])
                     self.os_shell_api.deploy_operation.deploy = Mock(return_value=deploy_result)
 
                     cancellation_context = Mock()
-                    os_cloud_provider = OpenStackResourceModel()
-                    res = self.os_shell_api.deploy_instance_from_image(command_context=self.command_context,
-                                                                       deploy_app_action=deployapp_req,
-                                                                       cancellation_context=cancellation_context)
 
-                    decoded_res = jsonpickle.decode(res)
-                    self.assertEqual(decoded_res['vm_name'], deployapp_req.actionParams.appName)
-                    self.assertEqual(decoded_res['vm_uuid'], deploy_result.vm_uuid)
-                    self.assertEqual(decoded_res['deployed_app_address'], deploy_result.deployed_app_address)
-                    self.assertEqual(decoded_res['deployed_app_attributes'], deploy_result.deployed_app_attributes)
-                    self.assertEqual(decoded_res['floating_ip'], deploy_result.floating_ip)
+                    res = self.os_shell_api.deploy_instance_from_image(command_context=self.command_context,
+                                                                       deploy_app_action=deploy_app_req,
+                                                                       cancellation_context=cancellation_context)
+                    if isinstance(deploy_app_req ,DeployApp):
+                        pass
+                    
+
+                    self.assertEqual(res.vmName, deploy_app_req.actionParams.appName)
+                    self.assertEqual(res.vmUuid, '1234-56')
+                    self.assertEqual(res.deployedAppAddress,"10.1.1.1")
+
 
     def test_delete_instance(self):
         """

@@ -8,6 +8,7 @@ from cloudshell.cp.openstack.domain.services.neutron.neutron_network_service imp
 from cloudshell.cp.openstack.domain.services.nova.nova_instance_service import NovaInstanceService
 from cloudshell.cp.openstack.models.connectivity_action_resource_info import ConnectivityActionResourceInfo
 from cloudshell.cp.openstack.models.connectivity_action_result_model import ConnectivityActionResultModel
+from cloudshell.cp.core.models import DriverResponse,DriverResponseRoot
 
 
 class VLANConnectivityService(object):
@@ -84,7 +85,14 @@ class VLANConnectivityService(object):
                                               logger=logger)
             results += result
 
-        return results
+        driver_response = DriverResponse()
+        driver_response.actionResults = results
+        driver_response_root = DriverResponseRoot()
+        driver_response_root.driverResponse = driver_response
+
+        logger.info(jsonpickle.dumps(driver_response, unpicklable=False))
+
+        return driver_response_root
 
     def _format_err_msg_for_exception(self, e):
         """
