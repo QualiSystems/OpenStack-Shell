@@ -7,6 +7,7 @@ from cloudshell.cp.openstack.models.connectivity_action_resource_info import Con
 from cloudshell.cp.openstack.common.deploy_data_holder import DeployDataHolder
 import jsonpickle
 
+
 class TestVlanConnectivityService(TestCase):
     def setUp(self):
         self.instance_service = Mock()

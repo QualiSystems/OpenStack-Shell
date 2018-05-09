@@ -53,7 +53,7 @@ class TestHiddenOperation(TestCase):
         self.hidden_operation.instance_service.terminate_instance = Mock(side_effect=Exception("XXX"))
         with self.assertRaises(Exception) as context:
             self.hidden_operation.delete_instance(openstack_session=self.openstack_session,
-                                                  deployed_app_resource=test_deployed_app_resource,
+                                                  deployed_app_resource=test_deployed_app_resource,floating_ip='',
                                                   logger=self.mock_logger)
             self.assertTrue(context)
 

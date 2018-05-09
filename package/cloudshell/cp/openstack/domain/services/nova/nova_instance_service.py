@@ -48,7 +48,7 @@ class NovaInstanceService(object):
         :param str name: Name of Instance
         :param ReservationModel reservation: Reservation Model
         :param OpenStackResourceModel cp_resource_model:
-        :param DeployOSNovaImageInstanceResourceModel deploy_req_model: Details of the Image to be deployed
+        :param DeployOSNovaImageInstanceDeploymentModel deploy_req_model: Details of the Image to be deployed
         :param logging.Logger logger:
         :rtype novaclient.Client.servers.Server:
         """
@@ -61,10 +61,10 @@ class NovaInstanceService(object):
 
         client = novaclient.Client(self.API_VERSION, session=openstack_session, insecure=True)
 
-        logger.info("Creating OpenStack Instance for Image: {0}, Flavor: {1}".format(deploy_req_model.img_uuid,
+        logger.info("Creating OpenStack Instance for Image: {0}, Flavor: {1}".format(deploy_req_model.image_id,
                                                                                      deploy_req_model.instance_flavor))
         # FIXME: Add other arguments as kwargs
-        img_obj = client.images.find(id=deploy_req_model.img_uuid)
+        img_obj = client.images.find(id=deploy_req_model.image_id)
         flavor_obj = client.flavors.find(name=deploy_req_model.instance_flavor)
 
         # Quali Network - Quali Network UUID is a OpenStack Resource Model attribute
@@ -76,12 +76,12 @@ class NovaInstanceService(object):
         server_create_args = {'name': name, 'image': img_obj, 'flavor':flavor_obj, 'nics': [qnet_dict]}
 
         # availability zone
-        avail_zone = deploy_req_model.cp_avail_zone
-        if avail_zone:
-            server_create_args.update({'availability_zone': avail_zone})
+        availability_zone = deploy_req_model.availability_zone
+        if availability_zone:
+            server_create_args.update({'availability_zone': availability_zone})
 
         # get affinity_group_by_name
-        affinity_group_id = deploy_req_model.affinity_group_uuid
+        affinity_group_id = deploy_req_model.affinity_group_id
         if affinity_group_id:
             server_create_args.update({'scheduler_hints': {'group': affinity_group_id}})
 

@@ -1,7 +1,12 @@
-import jsonpickle
 from cloudshell.shell.core.resource_driver_interface import ResourceDriverInterface
 
+from cloudshell.cp.openstack.models.deploy_os_nova_image_instance_deployment_model import \
+    DeployOSNovaImageInstanceDeploymentModel
 from cloudshell.cp.openstack.openstack_shell import OpenStackShell
+
+from cloudshell.cp.core import DriverRequestParser
+from cloudshell.cp.core.models import *
+from cloudshell.cp.core.utils import *
 
 
 class OpenStackShellDriver(ResourceDriverInterface):
@@ -10,7 +15,9 @@ class OpenStackShellDriver(ResourceDriverInterface):
         ctor must be without arguments, it is created with reflection at run time
         """
         self.deployments = dict()
-        self.deployments['OpenStack Deploy From Glance Image'] = self.deploy_from_image
+        self.parser = DriverRequestParser()
+        self.parser.add_deployment_model(DeployOSNovaImageInstanceDeploymentModel)
+        self.deployments[DeployOSNovaImageInstanceDeploymentModel.__deploymentModel__] = self.deploy_from_image
         self.os_shell = OpenStackShell()
 
     def Deploy(self, context, request=None, cancellation_context=None):
@@ -20,13 +27,18 @@ class OpenStackShellDriver(ResourceDriverInterface):
         :param cloudshell.shell.core.context.CancellationContext cancellation_context:
         :return:
         """
-        app_request = jsonpickle.decode(request)
-        deployment_name = app_request['DeploymentServiceName']
+        actions = self.parser.convert_driver_request_to_actions(request)
+        deploy_action =   single(actions,lambda x: isinstance(x,DeployApp))
+        deployment_path = deploy_action.actionParams.deployment.deploymentPath
 
-        if deployment_name in self.deployments.keys():
-            return self.deployments[deployment_name](context, request, cancellation_context)
-        else:
-            raise Exception('Could not find the deployment')
+        if not deployment_path in self.deployments.keys():
+            raise Exception('Could not find deployment')
+
+        deploy_action_result = self.deployments[deployment_path](context, deploy_action, cancellation_context)
+        driver_response = DriverResponse([deploy_action_result])
+
+        return driver_response.to_driver_response_json()
+
 
     def initialize(self, context):
         pass
@@ -41,8 +53,10 @@ class OpenStackShellDriver(ResourceDriverInterface):
         :param DeployDataHolder request:
         :rtype  : str
         """
-        return self.os_shell.deploy_instance_from_image(command_context=context, deploy_request=request,
+        deploy_action_result = self.os_shell.deploy_instance_from_image(command_context=context,deploy_app_action =request,
                                                         cancellation_context=cancellation_context)
+
+        return deploy_action_result
 
     def ApplyConnectivityChanges(self, context, request):
         return self.os_shell.apply_connectivity(context, request)
