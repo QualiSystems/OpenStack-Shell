@@ -70,7 +70,7 @@ class OpenStackShellDriver(ResourceDriverInterface):
     def PowerCycle(self, context, ports, delay):
         pass
 
-    def destroy_vm_only(self, context, ports):
+    def DeleteInstance(self, context, ports):
         return self.os_shell.delete_instance(context)
 
     def remote_refresh_ip(self, context, ports, cancellation_context):
