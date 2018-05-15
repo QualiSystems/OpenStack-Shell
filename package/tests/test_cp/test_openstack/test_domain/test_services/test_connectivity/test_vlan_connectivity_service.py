@@ -296,12 +296,12 @@ class TestVlanConnectivityService(TestCase):
 
         self.connectivity_service.set_vlan_actions = Mock(return_value=['Success'])
 
-        result = self.connectivity_service.perform_apply_connectivity(openstack_session=self.os_session,
+        actionResults = self.connectivity_service.perform_apply_connectivity(openstack_session=self.os_session,
                                                                       connection_request=test_connection_request,
                                                                       cp_resource_model=Mock(),
                                                                       logger=self.mock_logger)
 
-        self.assertEqual(result.driverResponse.actionResults, ['Success'])
+        self.assertEqual(actionResults, ['Success'])
 
     def test_perform_apply_connectivity_removevlan(self):
 
@@ -320,9 +320,9 @@ class TestVlanConnectivityService(TestCase):
 
         self.connectivity_service.remove_vlan_actions = Mock(return_value=['Success'])
 
-        result = self.connectivity_service.perform_apply_connectivity(openstack_session=self.os_session,
+        actionResults = self.connectivity_service.perform_apply_connectivity(openstack_session=self.os_session,
                                                                       connection_request=test_connection_request,
                                                                       cp_resource_model=Mock(),
                                                                       logger=self.mock_logger)
 
-        self.assertEqual(result.driverResponse.actionResults, ['Success'])
+        self.assertEqual(actionResults, ['Success'])

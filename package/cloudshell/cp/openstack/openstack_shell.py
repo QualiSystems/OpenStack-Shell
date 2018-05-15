@@ -266,11 +266,11 @@ class OpenStackShell(object):
 
                     logger.debug(cp_resource_model)
                     os_session = self.os_session_provider.get_openstack_session(cs_session, cp_resource_model, logger)
-                    connectivity_result = self.connectivity_operation.apply_connectivity(openstack_session=os_session,
+                    connectivity_results = self.connectivity_operation.apply_connectivity(openstack_session=os_session,
                                                                                          cp_resource_model=cp_resource_model,
                                                                                          conn_request=connectivity_request,
                                                                                          logger=logger)
-                    return self.command_result_parser.set_command_result(connectivity_result)
+                    return connectivity_results
 
     # Connectivity Operations End
 

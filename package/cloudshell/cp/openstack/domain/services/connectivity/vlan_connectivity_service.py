@@ -70,29 +70,23 @@ class VLANConnectivityService(object):
             else:
                 curr_dict[action_vlanid] = [action_resource_info]
 
-        results = []
+        actions_results = []
         if set_vlan_actions_dict:
             result = self.set_vlan_actions(openstack_session=openstack_session,
                                            cp_resource_model=cp_resource_model,
                                            vlan_actions=set_vlan_actions_dict,
                                            logger=logger)
-            results += result
+            actions_results += result
 
         if remove_vlan_actions_dict:
             result = self.remove_vlan_actions(openstack_session=openstack_session,
                                               cp_resource_model=cp_resource_model,
                                               vlan_actions=remove_vlan_actions_dict,
                                               logger=logger)
-            results += result
+            actions_results += result
 
-        driver_response = DriverResponse()
-        driver_response.actionResults = results
-        driver_response_root = DriverResponseRoot()
-        driver_response_root.driverResponse = driver_response
 
-        logger.info(jsonpickle.dumps(driver_response, unpicklable=False))
-
-        return driver_response_root
+        return actions_results
 
     def _format_err_msg_for_exception(self, e):
         """
