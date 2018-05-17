@@ -59,7 +59,10 @@ class OpenStackShellDriver(ResourceDriverInterface):
         return deploy_action_result
 
     def ApplyConnectivityChanges(self, context, request):
-        return self.os_shell.apply_connectivity(context, request)
+        apply_connectivity_results =  self.os_shell.apply_connectivity(context, request)
+        driver_response = DriverResponse(apply_connectivity_results)
+
+        return driver_response.to_driver_response_json()
 
     def PowerOn(self, context, ports):
         return self.os_shell.power_on(context)
