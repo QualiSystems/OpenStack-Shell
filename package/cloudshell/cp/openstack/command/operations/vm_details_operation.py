@@ -1,6 +1,5 @@
 import traceback
-
-from cloudshell.cp.openstack.domain.common.vm_details_provider import VmDetailsProvider, VmDetails
+from cloudshell.cp.core.models import  VmDetailsData
 
 
 class VmDetailsOperation(object):
@@ -35,9 +34,9 @@ class VmDetailsOperation(object):
                 result = self.vm_details_provider.create(vm, openstack_session, management_vlan_id, logger)
             except Exception as e:
                 logger.error("Error getting vm details for '{0}': {1}".format(vm_name, traceback.format_exc()))
-                result = VmDetails(vm_name)
-                result.error = e.message
+                result = VmDetailsData(errorMessage=e.message)
 
+            result.appName = vm_name
             results.append(result)
 
         return results

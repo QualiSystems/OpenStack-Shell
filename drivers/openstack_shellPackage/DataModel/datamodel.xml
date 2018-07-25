@@ -55,6 +55,12 @@
       </Rules>
     </AttributeInfo>
 
+    <AttributeInfo DefaultValue="" IsReadOnly="false" Name="Wait for IP" Description="If set to False the deployment will not wait for the VM to get an ip" Type="Boolean">
+      <Rules>
+        <Rule Name="Configuration" />
+        <Rule Name="Setting" />
+      </Rules>
+    </AttributeInfo>
     <AttributeInfo DefaultValue="" Description="The UUID of the subnet to use for Floating IPs." IsReadOnly="false" Name="Floating IP Subnet ID" Type="String">
       <Rules>
         <Rule Name="Configuration" />
@@ -221,10 +227,10 @@
       <Models>
         <ResourceModel Description="" ImagePath="OpenStack_VM_Deploy_Icon.png" Name="OpenStack Deploy From Glance Image" SupportsConcurrentCommands="false">
           <AttachedAttributes>
-            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Availability Zone" UserInput="true">
+            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Availability Zone" UserInput="true" EditableOnlyInAppTemplate="true">
               <AllowedValues />
             </AttachedAttribute>
-            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Image ID" UserInput="true">
+            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Image ID" UserInput="true" EditableOnlyInAppTemplate="true">
               <AllowedValues />
             </AttachedAttribute>
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Instance Flavor" UserInput="true">
@@ -245,9 +251,13 @@
             <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Auto udev" UserInput="true">
               <AllowedValues />
             </AttachedAttribute>
+            <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Wait for IP" UserInput="false">
+              <AllowedValues />
+            </AttachedAttribute>
           </AttachedAttributes>
           <AttributeValues>
-            <AttributeValue Name="Autoload" Value="true"/>
+            <AttributeValue Name="Autoload" Value="True"/>
+            <AttributeValue Name="Wait for IP" Value="False" />
           </AttributeValues>
           <ParentModels />
           <Drivers/>

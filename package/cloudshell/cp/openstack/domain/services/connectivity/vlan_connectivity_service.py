@@ -1,15 +1,14 @@
-from cloudshell.cp.openstack.common.deploy_data_holder import DeployDataHolder
+import traceback
+from threading import Lock
 
-from cloudshell.cp.openstack.models.connectivity_action_result_model import ConnectivityActionResultModel
-from cloudshell.cp.openstack.models.driver_response_model import DriverResponse, DriverResponseRoot
-from cloudshell.cp.openstack.models.connectivity_action_resource_info import ConnectivityActionResourceInfo
 import jsonpickle
 
-from cloudshell.cp.openstack.domain.services.nova.nova_instance_service import NovaInstanceService
-from cloudshell.cp.openstack.domain.services.waiters.instance import InstanceWaiter
+from cloudshell.cp.openstack.common.deploy_data_holder import DeployDataHolder
 from cloudshell.cp.openstack.domain.services.neutron.neutron_network_service import NeutronNetworkService
-from threading import Lock
-import traceback
+from cloudshell.cp.openstack.domain.services.nova.nova_instance_service import NovaInstanceService
+from cloudshell.cp.openstack.models.connectivity_action_resource_info import ConnectivityActionResourceInfo
+from cloudshell.cp.openstack.models.connectivity_action_result_model import ConnectivityActionResultModel
+from cloudshell.cp.core.models import DriverResponse,DriverResponseRoot
 
 
 class VLANConnectivityService(object):
@@ -71,30 +70,23 @@ class VLANConnectivityService(object):
             else:
                 curr_dict[action_vlanid] = [action_resource_info]
 
-        results = []
+        actions_results = []
         if set_vlan_actions_dict:
             result = self.set_vlan_actions(openstack_session=openstack_session,
                                            cp_resource_model=cp_resource_model,
                                            vlan_actions=set_vlan_actions_dict,
                                            logger=logger)
-            results += result
+            actions_results += result
 
         if remove_vlan_actions_dict:
             result = self.remove_vlan_actions(openstack_session=openstack_session,
                                               cp_resource_model=cp_resource_model,
                                               vlan_actions=remove_vlan_actions_dict,
                                               logger=logger)
-            results += result
+            actions_results += result
 
-        # We have apply Connectivity results - We should send out the JSON and encode it
-        driver_response = DriverResponse()
-        driver_response.actionResults = results
-        driver_response_root = DriverResponseRoot()
-        driver_response_root.driverResponse = driver_response
 
-        logger.info(jsonpickle.dumps(driver_response, unpicklable=False))
-
-        return driver_response_root
+        return actions_results
 
     def _format_err_msg_for_exception(self, e):
         """

@@ -84,18 +84,19 @@ class TestVmDetailsOperation(TestCase):
         # Assert
         self.assertEqual(len(result), 1)
         vm_details = result[0]
-        self.assertEqual(next(x['value'] for x in vm_details.vm_instance_data if x['key'] == 'Image'), 'Image Name')
-        self.assertEqual(next(x['value'] for x in vm_details.vm_instance_data if x['key'] == 'Flavour'), 'Flavor Name')
-        self.assertEqual(next(x['value'] for x in vm_details.vm_instance_data if x['key'] == 'Availability Zone'), 'Av Zone')
-        self.assertEqual(next(x['value'] for x in vm_details.vm_instance_data if x['key'] == 'Disk Size'), '320 GB')
-        self.assertEqual(next(x['value'] for x in vm_details.vm_instance_data if x['key'] == 'Memory'), '256 GB')
-        self.assertEqual(next(x['value'] for x in vm_details.vm_instance_data if x['key'] == 'CPU'), '2 vCPU')
+        self.assertEqual(next(x.value for x in vm_details.vmInstanceData if x.key == 'Image'), 'Image Name')
+        self.assertEqual(next(x.value for x in vm_details.vmInstanceData if x.key == 'Flavour'), 'Flavor Name')
+        self.assertEqual(next(x.value for x in vm_details.vmInstanceData if x.key == 'Availability Zone'), 'Av Zone')
+        self.assertEqual(next(x.value for x in vm_details.vmInstanceData if x.key == 'Disk Size'), '320 GB')
+        self.assertEqual(next(x.value for x in vm_details.vmInstanceData if x.key == 'Memory'), '256 GB')
+        self.assertEqual(next(x.value for x in vm_details.vmInstanceData if x.key == 'CPU'), '2 vCPU')
 
-        self.assertEqual(len(vm_details.vm_network_data), 1)
-        nic = vm_details.vm_network_data[0]
-        self.assertEqual(nic['is_predefined'], False)
-        self.assertEqual(nic['network_id'], '777')
+        self.assertEqual(len(vm_details.vmNetworkData), 1)
+        nic = vm_details.vmNetworkData[0]
+        self.assertEqual(nic.isPredefined, False)
+        self.assertEqual(nic.networkId, '777')
 
-        self.assertEqual(len(nic['network_data']), 3)
-        self.assertEqual(next(x['value'] for x in nic['network_data'] if x['key'] == 'IP'), '192.168.1.1')
-        self.assertEqual(next(x['value'] for x in nic['network_data'] if x['key'] == 'VLAN Name'), 'network_name_for_test')
+        self.assertEqual(len(nic.networkData), 3)
+        self.assertEqual(nic.privateIpAddress, '192.168.1.1')
+        self.assertEqual(next(x.value for x in nic.networkData if x.key == 'IP'), '192.168.1.1')
+        self.assertEqual(next(x.value for x in nic.networkData if x.key == 'VLAN Name'), 'network_name_for_test')
