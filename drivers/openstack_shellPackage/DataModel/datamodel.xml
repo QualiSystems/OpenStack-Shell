@@ -132,7 +132,7 @@
         </Rules>
     </AttributeInfo>
 
-    <AttributeInfo DefaultValue="" Description="This attribute points to a pre-define group of execution servers. Usually used for different sites or domains." IsReadOnly="false" Name="Execution Server Selector" Type="String">
+    <AttributeInfo DefaultValue="" Description="This attribute points to a pre-defined group of execution servers. Usually used for different sites or domains." IsReadOnly="false" Name="Execution Server Selector" Type="String">
       <Rules>
         <Rule Name="Configuration" />
         <Rule Name="Setting" />
